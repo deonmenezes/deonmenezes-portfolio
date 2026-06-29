@@ -1,4 +1,4 @@
-/* Deon Menezes — polaroid portfolio interactions */
+/* Deon Menezes · polaroid portfolio interactions */
 (function () {
   "use strict";
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -77,7 +77,7 @@
     toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 2600);
   }
   function copyAgent() {
-    var done = function () { showToast("Copied — paste it into your agent ✦"); };
+    var done = function () { showToast("Copied. Paste it into your agent ✦"); };
     var fail = function () { showToast("Press ⌘C / Ctrl-C to copy"); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(md).then(done).catch(function () { legacyCopy(done, fail); });

@@ -1,6 +1,6 @@
-# deonmenezes.com — portfolio
+# deonmenezes.com · portfolio
 
-A single-page, dependency-free portfolio for **Deon Menezes** — Agentic Harness Engineer, founder, author.
+A single-page, dependency-free portfolio for **Deon Menezes** · Agentic Harness Engineer, founder, author.
 Vibrant aurora aesthetic, glassmorphism, scroll-reveal, count-up stats. Pure HTML/CSS/JS (no build step).
 
 ## Structure
@@ -14,14 +14,14 @@ vercel.json       # static hosting + long-cache for /assets
 ```
 
 ## Sections
-1. **Hero** — name, role, stats (14× wins · 100+ clients · 344★ · $35K PaaS)
-2. **OpenAI chapter** — Sam Altman interview, Romain Huet, Codex, security harness partnership
-3. **Ventures** — Virelity (CIO), Mantishack (344★), OpenTradeX (48★)
-4. **Patch-as-a-Service** — $35K delivered, 100+ clients, Mantishack AI terminal
-5. **Experience & expansion** — India → Dubai → San Francisco · Virelity / SecureNet / Emerson
-6. **The Book** — How to Build a Business in the Age of AI (Amazon)
-7. **Moments** — Y Combinator, Peter Steinberger, event videos
-8. **Connect** — Instagram @deon_tech, Discord, LinkedIn, email
+1. **Hero** · name, role, stats (14× wins · 100+ clients · 344★ · $35K PaaS)
+2. **OpenAI chapter** · Sam Altman interview, Romain Huet, Codex, security harness partnership
+3. **Ventures** · Virelity (CIO), Mantishack (344★), OpenTradeX (48★)
+4. **Patch-as-a-Service** · $35K delivered, 100+ clients, Mantishack AI terminal
+5. **Experience & expansion** · India → Dubai → San Francisco · Virelity / SecureNet / Emerson
+6. **The Book** · How to Build a Business in the Age of AI (Amazon)
+7. **Moments** · Y Combinator, Peter Steinberger, event videos
+8. **Connect** · Instagram @deon_tech, Discord, LinkedIn, email
 
 `virelity.com` is linked as the home/main site in the nav and footer.
 
