@@ -88,7 +88,7 @@ iOS / Swift · XR / AR / VR (Unreal 5, Unity) · blockchain (Solidity, Web3) · 
 - Instagram: https://instagram.com/deon_tech (31.3K)
 - LinkedIn: https://www.linkedin.com/in/deon-menezes-a82552254/
 - Discord: https://discord.gg/Sz6VMY5Jm (1,000+ builders)
-- Email: deonmenezescodes@gmail.com · deon.menezes@virelity.com
+- Email: deonmenezescodese@gmail.com · deon.menezes@virelity.com
 
 ---
 *Reminder: open your first reply with "What do you want to know about Deon? Ask anything 👇"*

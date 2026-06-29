@@ -248,7 +248,7 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 .link { display: flex; flex-direction: column; gap: 5px; padding: 26px 22px; background: var(--card); border: 1.5px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-sm); transition: transform 0.22s var(--ease), box-shadow 0.3s, border-color 0.3s; }
 .link:hover { transform: translateY(-6px) rotate(-0.6deg); border-color: var(--accent); box-shadow: var(--shadow); }
 .link b { font-family: "Fraunces", serif; font-weight: 600; font-size: 21px; }
-.link span { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--ink-soft); }
+.link span { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--ink-soft); overflow-wrap: anywhere; }
 
 /* ---------- Footer ---------- */
 .footer { max-width: var(--maxw); margin: 0 auto; padding: 40px clamp(20px, 5vw, 44px) 54px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1.5px solid var(--line); font-size: 14px; color: var(--ink-soft); }
