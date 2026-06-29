@@ -77,6 +77,7 @@ iOS / Swift · XR / AR / VR (Unreal 5, Unity) · blockchain (Solidity, Web3) · 
 - Open source: https://github.com/deonmenezes · https://mantishack.com · https://opentradex.net
 - Book: https://www.amazon.in/How-Build-Business-Age-AI/dp/8199573775
 - Instagram: https://instagram.com/deon_tech (31.3K)
+- LinkedIn: https://www.linkedin.com/in/deon-menezes-a82552254/
 - Discord: https://discord.gg/Sz6VMY5Jm (1,000+ builders)
 - Email: deonmenezescodes@gmail.com · deon.menezes@virelity.com
 
