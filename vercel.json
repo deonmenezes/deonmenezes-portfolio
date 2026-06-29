@@ -2,6 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/linktree",
+      "destination": "/linktree.html"
+    }
+  ],
   "redirects": [
     {
       "source": "/book",

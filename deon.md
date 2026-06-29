@@ -34,7 +34,8 @@
   workflow. 344★ on GitHub, 61 forks, 1,000+ developers in the Discord. → mantishack.com
 - **OpenTradeX** · Creator. Open-source **AI-driven trading CLI harness**. 12 markets,
   paper-first, keys stay local. 48★. → opentradex.net
-- **moltcompany.ai** · building agentic skill systems / AI engineering. → moltcompany.ai
+- **MoltCompany.ai** · open-source marketplace where decentralized agents claim and complete
+  tasks. → moltcompany.ai · github.com/deonmenezes/moltcompany
 
 ## Patch-as-a-Service (via Mantishack)
 - **$35K+ delivered** in secure patches; **100+ clients** worldwide.
@@ -56,6 +57,9 @@ Callbook.ai · RentAHuman · Tenkara · SecureNetMe · Naytive · Arqio
   text prompt. Recognized by the Chief Minister; offered Government of India incubation for Virelity.
 - **REALMS XR Hackathon** · Founder of Maharashtra's biggest XR hackathon (550+ registrations,
   130+ participants, 36 hours).
+- **Apify Hackathon** · Winner.
+- **NVIDIA Hackathon** · Winner.
+- **Lovable Hackathon** · Winner.
 - Winner / finalist across the circuit · sponsored & judged by HP, OpenAI Codex, NVIDIA, Lovable, Apify.
 
 ## Selected work
