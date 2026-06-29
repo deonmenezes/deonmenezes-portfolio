@@ -106,6 +106,8 @@ img, video { display: block; max-width: 100%; }
 .head { margin-bottom: clamp(34px, 5vw, 58px); max-width: 760px; }
 .kicker { display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
 .kicker.center { display: block; text-align: center; color: var(--ink-soft); margin-bottom: 22px; }
+.head-sub { margin-top: 16px; color: var(--ink-soft); font-size: clamp(15px, 2vw, 17px); line-height: 1.5; max-width: 580px; }
+.head-sub a { color: var(--accent); font-weight: 600; border-bottom: 1px solid rgba(224,80,45,0.35); }
 h2 { font-family: "Fraunces", serif; font-weight: 600; font-size: clamp(30px, 5.4vw, 60px); line-height: 1.02; letter-spacing: -0.015em; }
 h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; }
 
@@ -304,6 +306,27 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 .logo-chip { display: inline-flex; align-items: center; gap: 11px; flex: 0 0 auto; font-family: "Fraunces", serif; font-weight: 600; font-size: 20px; color: var(--ink-soft); background: var(--card); border: 1.5px solid var(--line); border-radius: 40px; padding: 12px 23px; box-shadow: var(--shadow-sm); transition: transform 0.2s var(--ease), color 0.2s, border-color 0.2s; }
 .logo-chip i { width: 11px; height: 11px; border-radius: 50%; background: var(--c, var(--accent)); flex: 0 0 auto; }
 .logo-chip:hover { color: var(--ink); transform: translateY(-3px); border-color: var(--c, var(--accent)); }
+.logo-mark { width: 27px; height: 27px; border-radius: 7px; object-fit: contain; flex: 0 0 auto; background: #fff; padding: 2px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); }
+
+/* ---------- What I've built · categorized project grid ---------- */
+.built-cats { display: flex; flex-direction: column; gap: clamp(36px, 5vw, 58px); }
+.cat-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.cat-head h3 { font-family: "Fraunces", serif; font-weight: 600; font-size: clamp(20px, 2.6vw, 27px); letter-spacing: -0.01em; white-space: nowrap; }
+.cat-count { font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--ink-faint); border: 1px solid var(--line); border-radius: 20px; padding: 3px 10px; flex: 0 0 auto; }
+.cat-line { flex: 1; height: 1px; background: var(--line); }
+.built-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(234px, 1fr)); gap: 18px; }
+.bcard { position: relative; display: flex; flex-direction: column; background: var(--card); border: 1.5px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); transition: transform 0.25s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s; }
+.bcard:hover { transform: translateY(-6px) rotate(-0.5deg); border-color: var(--brand, var(--accent)); box-shadow: var(--shadow); }
+.bcard-top { position: relative; height: 88px; display: flex; align-items: center; justify-content: center; border-bottom: 1.5px solid var(--line); background: linear-gradient(135deg, color-mix(in srgb, var(--brand, var(--accent)) 26%, #fff), color-mix(in srgb, var(--brand, var(--accent)) 7%, #fff)); }
+.bcard-glyph { font-size: 33px; line-height: 1; filter: drop-shadow(0 3px 5px rgba(60,48,30,0.18)); transition: transform 0.3s var(--ease); }
+.bcard:hover .bcard-glyph { transform: scale(1.12) rotate(-4deg); }
+.bcard-arrow { position: absolute; right: 10px; bottom: 8px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; background: var(--card); border: 1.5px solid var(--line); font-size: 13px; font-weight: 700; color: var(--brand, var(--accent)); transition: transform 0.2s var(--ease), border-color 0.2s; }
+.bcard:hover .bcard-arrow { transform: translate(2px, -2px); border-color: var(--brand, var(--accent)); }
+.bcard-body { display: flex; flex-direction: column; gap: 7px; padding: 14px 16px 16px; flex: 1; }
+.bcard-body h4 { font-family: "Fraunces", serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em; }
+.bcard-body p { color: var(--ink-soft); font-size: 13px; line-height: 1.45; flex: 1; }
+.bcard-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.bcard-tags span { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.02em; color: var(--ink-soft); border: 1px solid var(--line); padding: 3px 7px; border-radius: 20px; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 920px) {
@@ -325,6 +348,10 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
   .wall { grid-template-columns: 1fr 1fr; gap: 14px; }
   .hack-shots { grid-template-columns: 1fr 1fr; gap: 14px; }
   .hack-shots .polaroid:nth-child(2) { margin-top: 0; }
+  .built-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .bcard-top { height: 74px; }
+  .bcard-glyph { font-size: 27px; }
+  .cat-head h3 { font-size: 19px; }
   .links { grid-template-columns: 1fr; }
   .nav-cta .chip-ghost { display: none; }
   .footer { justify-content: center; text-align: center; }
