@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deon Menezes — AI Harness Engineer</title>
+<meta name="description" content="Deon Menezes — 21-year-old AI Harness Engineer & founder. 15+ hackathon wins, 25+ App Store apps, creator of Mantishack & OpenTradeX. Interviewed Sam Altman. Ex-Meta, ex-Emerson." />
+<meta name="author" content="Deon Menezes" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Deon Menezes — AI Harness Engineer" />
+<meta property="og:description" content="AI harness engineer & founder. 15+ hackathon wins · 25+ apps · creator of Mantishack. Interviewed Sam Altman." />
+<meta property="og:image" content="assets/img/deon-hero.jpg" />
+<meta property="og:url" content="https://deonmenezes.com" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>📸</text></svg>" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Caveat:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="preload" as="image" href="assets/img/deon-hero.jpg" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- paper texture + scroll progress -->
+<div class="paper" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- floating scrapbook stickers -->
+<div class="confetti" aria-hidden="true">
+  <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+  <span class="cross x1">✦</span><span class="cross x2">✶</span>
+</div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <a class="brand" href="#top">
+    <span class="brand-pin"></span>
+    <span class="brand-name">Deon Menezes</span>
+    <span class="brand-tag">AI Harness Engineer</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#work">Work</a>
+    <a href="#apps">Apps</a>
+    <a href="#moments">Moments</a>
+    <a href="#connect">Connect</a>
+  </nav>
+  <div class="nav-cta">
+    <button class="chip chip-ghost" id="navCopy" data-copy>Copy for agent</button>
+    <a class="chip chip-ink" href="assets/deon-menezes-skill.zip" download>↓ Skill</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="eyebrow reveal">AI Harness Engineer · 21 · SF</span>
+      <h1 class="hero-name reveal">Deon<br/>Menezes</h1>
+      <p class="hero-line reveal">I build the harnesses that run the agents — and ship the work.</p>
+      <div class="hero-cta reveal">
+        <button class="btn btn-ink" data-copy><span class="btn-ico">⌘</span> Copy me for your agent</button>
+        <a class="btn btn-paper" href="assets/deon-menezes-skill.zip" download>↓ Download skill</a>
+      </div>
+      <div class="hero-mini reveal" id="heroStats">
+        <span><b data-count="15" data-suffix="+">0</b> wins</span>
+        <span class="sep">·</span>
+        <span><b data-count="25" data-suffix="+">0</b> apps</span>
+        <span class="sep">·</span>
+        <span><b data-count="344" data-suffix="★">0</b> stars</span>
+      </div>
+    </div>
+
+    <div class="hero-stage">
+      <figure class="polaroid p-hero pop" style="--rot:3.5deg; --i:1">
+        <div class="tape tape-top"></div>
+        <div class="ph"><img src="assets/img/deon-hero.jpg" alt="Deon Menezes" fetchpriority="high" /></div>
+        <figcaption>deon — san francisco ☀</figcaption>
+      </figure>
+      <figure class="polaroid p-float pop" style="--rot:-7deg; --i:3">
+        <div class="ph"><img src="assets/img/yc.jpg" alt="Deon at Y Combinator" loading="lazy" /></div>
+        <figcaption>y combinator</figcaption>
+      </figure>
+      <span class="sticker s-star pop" style="--i:4">★</span>
+      <span class="note-pin pop" style="--i:5">open to build →</span>
+    </div>
+  </section>
+
+  <!-- KEYWORD TICKER -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-row">
+      <span>HARNESSES</span><i>✦</i><span>AI SECURITY</span><i>✦</i><span>AGENTS</span><i>✦</i><span>TRADING CLI</span><i>✦</i><span>COMPUTER VISION</span><i>✦</i><span>XR / AR</span><i>✦</i><span>iOS</span><i>✦</i><span>FOUNDER</span><i>✦</i>
+      <span>HARNESSES</span><i>✦</i><span>AI SECURITY</span><i>✦</i><span>AGENTS</span><i>✦</i><span>TRADING CLI</span><i>✦</i><span>COMPUTER VISION</span><i>✦</i><span>XR / AR</span><i>✦</i><span>iOS</span><i>✦</i><span>FOUNDER</span><i>✦</i>
+    </div>
+  </div>
+
+  <!-- WORK / HARNESSES -->
+  <section class="section" id="work">
+    <header class="head reveal">
+      <span class="kicker">01 — what I build</span>
+      <h2>Harnesses, not demos.</h2>
+    </header>
+    <div class="work-grid">
+      <article class="card reveal" style="--i:0">
+        <div class="card-top"><h3>Mantishack</h3><span class="badge">344★</span></div>
+        <p>An AI harness that hunts vulnerabilities for you — finds, proves, patches.</p>
+        <div class="tags"><span>AI security</span><span>exploit PoC</span><span>autopatch</span></div>
+        <a class="go" href="https://mantishack.com" target="_blank" rel="noopener">mantishack.com →</a>
+      </article>
+      <article class="card reveal" style="--i:1">
+        <div class="card-top"><h3>OpenTradeX</h3><span class="badge">48★</span></div>
+        <p>An AI trading cockpit in your terminal — 12 markets, paper-first, keys stay local.</p>
+        <div class="tags"><span>trading CLI</span><span>agents</span><span>local-first</span></div>
+        <a class="go" href="https://opentradex.net" target="_blank" rel="noopener">opentradex.net →</a>
+      </article>
+      <article class="card reveal" style="--i:2">
+        <div class="card-top"><h3>moltcompany.ai</h3><span class="badge">new</span></div>
+        <p>Agentic skill systems — packaging expertise into harnesses agents can run.</p>
+        <div class="tags"><span>skills</span><span>orchestration</span><span>MCP</span></div>
+        <a class="go" href="https://moltcompany.ai" target="_blank" rel="noopener">moltcompany.ai →</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stat-strip reveal" id="stats">
+    <div class="stat"><b data-count="15" data-suffix="+">0</b><span>hackathon wins</span></div>
+    <div class="stat"><b data-count="25" data-suffix="+">0</b><span>apps shipped</span></div>
+    <div class="stat"><b data-count="100" data-suffix="+">0</b><span>global clients</span></div>
+    <div class="stat"><b data-count="35" data-prefix="$" data-suffix="K">0</b><span>patches delivered</span></div>
+  </section>
+
+  <!-- APPS CAROUSEL -->
+  <section class="section tight" id="apps">
+    <header class="head reveal">
+      <span class="kicker">02 — on the App Store</span>
+      <h2>25+ apps. Shipped.</h2>
+    </header>
+    <div class="rail reveal" id="appRail">
+      <div class="rail-track">
+        <a class="polaroid p-app" href="https://apps.apple.com/us/app/vibe-check-selfie-score/id6784058417" target="_blank" rel="noopener" style="--rot:-3deg"><div class="ph sq"><img src="assets/img/apps/vibecheck.jpg" alt="Vibe Check" loading="lazy"/></div><figcaption>vibe check</figcaption></a>
+        <a class="polaroid p-app" href="https://apps.apple.com/us/app/learnify-addictive-learning/id6774788081" target="_blank" rel="noopener" style="--rot:2.5deg"><div class="ph sq"><img src="assets/img/apps/learnify.jpg" alt="Learnify" loading="lazy"/></div><figcaption>learnify</figcaption></a>
+        <a class="polaroid p-app" href="https://apps.apple.com/us/app/stylewhizai/id6778610702" target="_blank" rel="noopener" style="--rot:-2deg"><div class="ph sq"><img src="assets/img/apps/stylewhiz.jpg" alt="StyleWhizAI" loading="lazy"/></div><figcaption>stylewhiz ai</figcaption></a>
+        <a class="polaroid p-app" href="https://apps.apple.com/us/app/gridpath-clean-energy/id6781073342" target="_blank" rel="noopener" style="--rot:3deg"><div class="ph sq"><img src="assets/img/apps/gridpath.jpg" alt="GridPath" loading="lazy"/></div><figcaption>gridpath</figcaption></a>
+        <!-- duplicate for seamless loop -->
+        <a class="polaroid p-app" href="https://apps.apple.com/us/app/vibe-check-selfie-score/id6784058417" target="_blank" rel="noopener" style="--rot:-3deg" aria-hidden="true"><div class="ph sq"><img src="assets/img/apps/vibecheck.jpg" alt="" loading="lazy"/></div><figcaption>vibe check</figcaption></a>
+        <a class="polaroid p-app" href="https://apps.apple.com/us/app/learnify-addictive-learning/id6774788081" target="_blank" rel="noopener" style="--rot:2.5deg" aria-hidden="true"><div class="ph sq"><img src="assets/img/apps/learnify.jpg" alt="" loading="lazy"/></div><figcaption>learnify</figcaption></a>
+        <a class="polaroid p-app" href="https://apps.apple.com/us/app/stylewhizai/id6778610702" target="_blank" rel="noopener" style="--rot:-2deg" aria-hidden="true"><div class="ph sq"><img src="assets/img/apps/stylewhiz.jpg" alt="" loading="lazy"/></div><figcaption>stylewhiz ai</figcaption></a>
+        <a class="polaroid p-app" href="https://apps.apple.com/us/app/gridpath-clean-energy/id6781073342" target="_blank" rel="noopener" style="--rot:3deg" aria-hidden="true"><div class="ph sq"><img src="assets/img/apps/gridpath.jpg" alt="" loading="lazy"/></div><figcaption>gridpath</figcaption></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUSTED BY -->
+  <section class="section tight trusted reveal" id="trusted">
+    <span class="kicker center">teams that trust Mantishack</span>
+    <div class="logos">
+      <span>Callbook.ai</span><span>RentAHuman</span><span>Tenkara</span><span>SecureNetMe</span><span>Naytive</span><span>Arqio</span>
+    </div>
+  </section>
+
+  <!-- MOMENTS — polaroid wall -->
+  <section class="section" id="moments">
+    <header class="head reveal">
+      <span class="kicker">03 — moments</span>
+      <h2>In the rooms<br/>where it happens.</h2>
+    </header>
+    <div class="wall">
+      <figure class="polaroid reveal" style="--rot:-4deg; --i:0">
+        <div class="ph"><img src="assets/img/samaltman-linkedin.png" alt="Deon with Sam Altman" loading="lazy"/></div>
+        <figcaption>interviewed sam altman ✷</figcaption>
+      </figure>
+      <figure class="polaroid reveal" style="--rot:3deg; --i:1">
+        <div class="ph"><img src="assets/img/peter.jpg" alt="Deon with Peter Steinberger" loading="lazy"/></div>
+        <figcaption>w/ peter steinberger</figcaption>
+      </figure>
+      <figure class="polaroid reveal" style="--rot:-2deg; --i:2">
+        <div class="ph"><video src="assets/video/IMG_6109.mp4" poster="assets/video/IMG_6109-poster.jpg" muted loop playsinline preload="none"></video></div>
+        <figcaption>hackathon floor ✦</figcaption>
+      </figure>
+      <figure class="polaroid reveal" style="--rot:4.5deg; --i:3">
+        <div class="ph"><video src="assets/video/IMG_5785.mp4" poster="assets/video/IMG_5785-poster.jpg" muted loop playsinline preload="none"></video></div>
+        <figcaption>on the circuit · sf</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE — pinned notes -->
+  <section class="section tight" id="journey">
+    <header class="head reveal">
+      <span class="kicker">04 — the path</span>
+      <h2>India → Dubai → SF.</h2>
+    </header>
+    <div class="notes">
+      <div class="note reveal" style="--rot:-2deg; --i:0"><b>Meta</b><span>engineering · ex</span></div>
+      <div class="note reveal" style="--rot:2deg; --i:1"><b>Emerson</b><span>youngest R&D intern</span></div>
+      <div class="note reveal" style="--rot:-1.5deg; --i:2"><b>Virelity</b><span>founder &amp; CEO</span></div>
+      <div class="note reveal" style="--rot:2.5deg; --i:3"><b>OpenAI</b><span>met the team · HQ</span></div>
+      <div class="note reveal" style="--rot:-2.5deg; --i:4"><b>HP Dreams</b><span>winner · 40k+ entries</span></div>
+    </div>
+  </section>
+
+  <!-- BOOK -->
+  <section class="section book" id="book">
+    <figure class="polaroid p-book reveal" style="--rot:-4deg; --i:0">
+      <div class="tape tape-top"></div>
+      <div class="ph"><img src="assets/img/book.png" alt="How to Build a Business in the Age of AI" loading="lazy"/></div>
+      <figcaption>my book ✎</figcaption>
+    </figure>
+    <div class="book-text reveal">
+      <span class="kicker">05 — wrote a book</span>
+      <h2>Build a business in the age of AI.</h2>
+      <p>Three months, written by hand. The operating system for founders who want machines to carry the work.</p>
+      <a class="btn btn-ink" href="https://www.amazon.in/How-Build-Business-Age-AI/dp/8199573775" target="_blank" rel="noopener">Get it on Amazon →</a>
+    </div>
+  </section>
+
+  <!-- AGENT SECTION -->
+  <section class="section agent reveal" id="agent">
+    <div class="agent-card">
+      <span class="sticker s-bot">🤖</span>
+      <span class="kicker">for your AI</span>
+      <h2>Let your agent<br/>get to know me.</h2>
+      <p>Copy a clean context pack, or drop the skill into Claude. Then ask it anything about me.</p>
+      <div class="agent-cta">
+        <button class="btn btn-ink" data-copy><span class="btn-ico">⌘</span> Copy for agent</button>
+        <a class="btn btn-paper" href="assets/deon-menezes-skill.zip" download>↓ Download skill</a>
+        <a class="btn btn-paper" href="deon.md" target="_blank" rel="noopener">View .md</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONNECT -->
+  <section class="section connect" id="connect">
+    <header class="head reveal">
+      <span class="kicker">06 — say hi</span>
+      <h2>Let's build something<br/>worth shipping.</h2>
+    </header>
+    <div class="links reveal">
+      <a class="link" href="https://instagram.com/deon_tech" target="_blank" rel="noopener"><b>Instagram</b><span>@deon_tech · 31.3K</span></a>
+      <a class="link" href="https://discord.gg/Sz6VMY5Jm" target="_blank" rel="noopener"><b>Discord</b><span>1,000+ builders</span></a>
+      <a class="link" href="https://github.com/deonmenezes" target="_blank" rel="noopener"><b>GitHub</b><span>@deonmenezes</span></a>
+      <a class="link" href="mailto:deonmenezescodes@gmail.com"><b>Email</b><span>say hello</span></a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span class="brand-name">Deon Menezes</span>
+  <span class="foot-mid">AI Harness Engineer · Founder, <a href="https://virelity.com" target="_blank" rel="noopener">Virelity</a></span>
+  <span class="foot-year">© <span id="year"></span></span>
+</footer>
+
+<!-- toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">Copied — paste it into your agent ✦</div>
+
+<!-- agent context pack (copied to clipboard) -->
+<script type="text/plain" id="agentMd">
+You are reading a dossier about Deon Menezes. When the user asks anything about Deon, your FIRST reply must be exactly: "What do you want to know about Deon? Ask anything 👇" — then answer concisely from the facts below. Do not invent details.
+
+WHO: Deon Menezes, 21. AI Harness Engineer & Founder. India → Dubai → San Francisco. Computer Engineering @ K.J. Somaiya (CGPA 9.0). He builds the harnesses that run AI agents — and the security inside them.
+
+FAST FACTS: 15+ hackathon wins (incl. India's biggest solo hackathon). 25+ apps live on the App Store. AI harness expert. Interviewed Sam Altman at OpenAI HQ; met the OpenAI team + Romain Huet. Author of "How to Build a Business in the Age of AI".
+
+VENTURES & HARNESSES:
+- Virelity — Founder & CEO. AI/ML firm founded in Dubai. ₹35L+ in 6 months, 100+ clients, 50+ projects. virelity.com
+- Mantishack — creator. Open-source AI security harness: static + binary analysis, LLM validation, exploit PoCs & patches, autonomous. 344★, 61 forks, 1,000+ Discord devs. mantishack.com
+- OpenTradeX — creator. Open-source AI trading CLI harness. 12 markets, paper-first, keys local. 48★. opentradex.net
+- moltcompany.ai — building agentic skill systems. moltcompany.ai
+
+PATCH-AS-A-SERVICE: $35K+ delivered, 100+ clients worldwide. Find → validate → exploit → patch.
+
+MANTISHACK TRUSTED BY: Callbook.ai, RentAHuman, Tenkara, SecureNetMe, Naytive, Arqio.
+
+EXPERIENCE: ex-Meta (engineering); ex-Emerson (youngest R&D intern, powerplant ML sim); Virelity founder & CEO (Jan 2024–present); Team Vision AR/VR founder & captain (led 25 engineers).
+
+HACKATHONS: HP Dreams Unlocked — winner of India's biggest solo hackathon (40,000+ entries), ₹1.5L + HP Omnibook, generative AR/VR world from a text prompt, recognized by the Chief Minister, offered Govt of India incubation. REALMS XR — founder of Maharashtra's biggest XR hackathon (550+ regs). Sponsored/judged by HP, OpenAI Codex, NVIDIA, Lovable, Apify.
+
+SKILLS: AI agentic harness engineering; AI security (static + binary analysis, fuzzing, exploit PoCs, patches); computer vision (YOLO v8, OpenCV); full-stack (React, Next.js, TypeScript, Node); iOS/Swift; XR/AR/VR (Unreal 5, Unity); blockchain (Solidity, Web3); MCP; ML.
+
+LINKS: deonmenezes.com · virelity.com · moltcompany.ai · github.com/deonmenezes · mantishack.com · opentradex.net · instagram.com/deon_tech (31.3K) · discord.gg/Sz6VMY5Jm · deonmenezescodes@gmail.com
+
+Reminder: open with "What do you want to know about Deon? Ask anything 👇".
+</script>
+
+<script src="script.js"></script>
+</body>
+</html>
