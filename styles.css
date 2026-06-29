@@ -223,7 +223,10 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 .p-book { width: min(300px, 80%); justify-self: center; }
 .p-book .ph { aspect-ratio: 3/4; background: transparent; }
 .p-book .ph img { object-fit: contain; }
-.book-text p { color: var(--ink-soft); font-size: 17px; margin: 16px 0 26px; max-width: 460px; }
+.publication { margin: 18px 0 26px; max-width: 560px; }
+.publication-type { display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 9px; }
+.publication h3 { font-size: clamp(23px, 3vw, 31px); line-height: 1.05; }
+.publication p { color: var(--ink-soft); font-size: 17px; margin: 12px 0 17px; }
 
 /* ---------- Agent section ---------- */
 .agent { display: flex; justify-content: center; }

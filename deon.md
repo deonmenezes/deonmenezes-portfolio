@@ -70,6 +70,11 @@ Callbook.ai · RentAHuman · Tenkara · SecureNetMe · Naytive · Arqio
 - Personal Codex Backend · local-first private retrieval & agent backend over MCP.
 - Industrial VR Training · UE5 tower-crane sim + VR experiences, 400+ dev hours.
 
+## Publications
+- **How to Build a Business in the Age of AI** · Author. Real entrepreneurial experiences,
+  AI automation strategies, team-building insights, and lessons from founding Virelity Solutions.
+  → https://www.amazon.in/How-Build-Business-Age-AI/dp/8199573775
+
 ## Skills
 AI agentic harness engineering · AI security (static + binary analysis, fuzzing, exploit PoCs,
 patches) · computer vision (YOLO v8, OpenCV) · full-stack (React, Next.js, TypeScript, Node) ·
