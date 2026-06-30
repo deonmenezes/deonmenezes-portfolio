@@ -266,7 +266,7 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 /* ---------- Connect ---------- */
 .connect .head { text-align: center; max-width: none; }
 .connect .kicker { display: inline-block; }
-.links { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.links { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
 .link { display: flex; flex-direction: column; gap: 5px; padding: 26px 22px; background: var(--card); border: 1.5px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-sm); transition: transform 0.22s var(--ease), box-shadow 0.3s, border-color 0.3s; }
 .link:hover { transform: translateY(-6px) rotate(-0.6deg); border-color: var(--accent); box-shadow: var(--shadow); }
 .link b { font-family: "Fraunces", serif; font-weight: 600; font-size: 21px; }
