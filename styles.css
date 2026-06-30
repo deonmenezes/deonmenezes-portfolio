@@ -348,6 +348,23 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 .bcard-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .bcard-tags span { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.02em; color: var(--ink-soft); border: 1px solid var(--line); padding: 3px 7px; border-radius: 20px; }
 
+/* ---------- Category carousel · two-row marquee (Virelity "What We Build" style, light theme) ---------- */
+.cat-carousel { margin: clamp(6px,1.6vw,16px) calc(-1 * clamp(20px,5vw,44px)) clamp(40px,6vw,66px); display: flex; flex-direction: column; gap: 18px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.cat-row { overflow: hidden; }
+.cat-track { display: flex; gap: 18px; width: max-content; padding: 6px clamp(20px,5vw,44px) 6px 0; animation: marq 46s linear infinite; }
+.cat-track.rev { animation-direction: reverse; animation-duration: 54s; }
+.cat-row:hover .cat-track { animation-play-state: paused; }
+.cat-card { width: 300px; flex: 0 0 auto; display: block; background: var(--card); border: 1.5px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); transition: transform 0.25s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s; }
+.cat-card:hover { transform: translateY(-5px) rotate(-0.5deg); border-color: var(--brand, var(--accent)); box-shadow: var(--shadow); }
+.cat-card-top { position: relative; height: 122px; border-bottom: 1.5px solid var(--line); background: linear-gradient(135deg, color-mix(in srgb, var(--brand, var(--accent)) 24%, #fff), color-mix(in srgb, var(--brand, var(--accent)) 6%, #fff)); }
+.cat-ico { position: absolute; top: 14px; left: 14px; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 23px; background: var(--brand, var(--accent)); border: 1.5px solid rgba(33,29,24,0.16); box-shadow: 0 7px 16px -7px rgba(60,48,30,0.55); }
+.cat-arrow { position: absolute; right: 14px; bottom: 14px; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-size: 15px; font-weight: 700; color: var(--brand, var(--accent)); background: var(--card); border: 1.5px solid var(--line); transition: transform 0.2s var(--ease), border-color 0.2s; }
+.cat-card:hover .cat-arrow { transform: translate(3px,-3px); border-color: var(--brand, var(--accent)); }
+.cat-card-body { padding: 15px 18px 18px; }
+.cat-card-body h4 { font-family: "Hanken Grotesk", sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.015em; font-size: 16px; color: var(--ink); }
+.cat-card-body p { color: var(--ink-soft); font-size: 13px; line-height: 1.42; margin-top: 5px; }
+@media (max-width: 540px) { .cat-card { width: 250px; } .cat-card-top { height: 104px; } }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 920px) {
   .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 120px; gap: 40px; }
