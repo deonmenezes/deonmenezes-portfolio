@@ -32,6 +32,8 @@
   .link{display:flex;align-items:center;gap:14px;width:100%;padding:17px 18px;background:var(--panel);border:2px solid var(--line);box-shadow:5px 5px 0 0 rgba(0,0,0,.5);transition:all .15s var(--ease)}
   .link:hover{transform:translate(-3px,-3px);box-shadow:8px 8px 0 0 var(--amber);border-color:var(--amber)}
   .link .ic{width:38px;height:38px;display:grid;place-items:center;font-size:16px;font-weight:900;color:#000;background:var(--amber);border:2px solid #000;flex-shrink:0}
+  .link .ic.ic-img{padding:0;overflow:hidden;background:#000}
+  .link .ic.ic-img img{width:100%;height:100%;object-fit:cover;display:block}
   .link .tx{display:flex;flex-direction:column;line-height:1.3}
   .link .tx b{font-family:"Archivo Black";font-size:14px;text-transform:uppercase}
   .link .tx span{font-size:12px;color:var(--ink-faint)}
@@ -56,7 +58,10 @@
   <p class="tagline">Founder · Builder · Creator. Pick a platform 👇</p>
 
   <nav class="links">
-    <a class="link feat" href="https://www.instagram.com/deon_tech/" target="_blank" rel="noopener">
+    <a class="link feat" href="https://t.co/mL29xEWIb5" target="_blank" rel="noopener">
+      <span class="ic ic-img"><img src="assets/img/edgecity.png" alt="Edge City India"/></span><span class="tx"><b>Edge City Application</b><span>India · my application ↗</span></span><span class="go">→</span>
+    </a>
+    <a class="link" href="https://www.instagram.com/deon_tech/" target="_blank" rel="noopener">
       <span class="ic">◎</span><span class="tx"><b>Instagram</b><span>@deon_tech · 31.3K followers</span></span><span class="go">→</span>
     </a>
     <a class="link" href="https://x.com/DeonMen" target="_blank" rel="noopener">
