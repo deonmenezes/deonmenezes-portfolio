@@ -97,6 +97,19 @@
     b.addEventListener("click", copyAgent);
   });
 
+  /* --- flip moment cards (click + keyboard) --- */
+  document.querySelectorAll(".moment").forEach(function (card) {
+    function toggle() {
+      var flipped = card.classList.toggle("flipped");
+      var v = card.querySelector("video");
+      if (v && flipped) v.pause();
+    }
+    card.addEventListener("click", toggle);
+    card.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); toggle(); }
+    });
+  });
+
   /* --- play moment videos on hover --- */
   document.querySelectorAll(".polaroid video").forEach(function (v) {
     var fig = v.closest(".polaroid");
