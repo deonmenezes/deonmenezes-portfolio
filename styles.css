@@ -348,22 +348,87 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 .bcard-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .bcard-tags span { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.02em; color: var(--ink-soft); border: 1px solid var(--line); padding: 3px 7px; border-radius: 20px; }
 
-/* ---------- Category carousel · two-row marquee (Virelity "What We Build" style, light theme) ---------- */
-.cat-carousel { margin: clamp(6px,1.6vw,16px) calc(-1 * clamp(20px,5vw,44px)) clamp(40px,6vw,66px); display: flex; flex-direction: column; gap: 18px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
-.cat-row { overflow: hidden; }
-.cat-track { display: flex; gap: 18px; width: max-content; padding: 6px clamp(20px,5vw,44px) 6px 0; animation: marq 46s linear infinite; }
-.cat-track.rev { animation-direction: reverse; animation-duration: 54s; }
+/* ---------- Category carousel · two-row POLAROID marquee (Virelity "What We Build", scrapbook edition) ---------- */
+.cat-carousel { margin: clamp(6px,1.6vw,16px) calc(-1 * clamp(20px,5vw,44px)) clamp(40px,6vw,66px); display: flex; flex-direction: column; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+.cat-row { overflow: hidden; padding: 24px 0 30px; }
+.cat-track { display: flex; gap: 26px; width: max-content; padding: 0 clamp(20px,5vw,44px) 0 0; animation: marq 44s linear infinite; will-change: transform; }
+.cat-track.rev { animation-direction: reverse; animation-duration: 52s; }
 .cat-row:hover .cat-track { animation-play-state: paused; }
-.cat-card { width: 300px; flex: 0 0 auto; display: block; background: var(--card); border: 1.5px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); transition: transform 0.25s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s; }
-.cat-card:hover { transform: translateY(-5px) rotate(-0.5deg); border-color: var(--brand, var(--accent)); box-shadow: var(--shadow); }
-.cat-card-top { position: relative; height: 122px; border-bottom: 1.5px solid var(--line); background: linear-gradient(135deg, color-mix(in srgb, var(--brand, var(--accent)) 24%, #fff), color-mix(in srgb, var(--brand, var(--accent)) 6%, #fff)); }
-.cat-ico { position: absolute; top: 14px; left: 14px; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 23px; background: var(--brand, var(--accent)); border: 1.5px solid rgba(33,29,24,0.16); box-shadow: 0 7px 16px -7px rgba(60,48,30,0.55); }
-.cat-arrow { position: absolute; right: 14px; bottom: 14px; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-size: 15px; font-weight: 700; color: var(--brand, var(--accent)); background: var(--card); border: 1.5px solid var(--line); transition: transform 0.2s var(--ease), border-color 0.2s; }
-.cat-card:hover .cat-arrow { transform: translate(3px,-3px); border-color: var(--brand, var(--accent)); }
-.cat-card-body { padding: 15px 18px 18px; }
-.cat-card-body h4 { font-family: "Hanken Grotesk", sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.015em; font-size: 16px; color: var(--ink); }
-.cat-card-body p { color: var(--ink-soft); font-size: 13px; line-height: 1.42; margin-top: 5px; }
-@media (max-width: 540px) { .cat-card { width: 250px; } .cat-card-top { height: 104px; } }
+
+/* polaroid: white frame, fat caption bottom, colored slab peeking behind, washi tape on top */
+.cat-card { position: relative; width: 292px; flex: 0 0 auto; display: block; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 10px 0; transform: translateY(var(--dy,0px)) rotate(var(--rot,0deg)); box-shadow: 9px 11px 0 -3px color-mix(in srgb, var(--brand, var(--accent)) 72%, var(--paper)), 22px 28px 44px -26px rgba(60,48,30,0.5); transition: transform 0.35s var(--bounce), box-shadow 0.35s var(--ease); }
+.cat-track .cat-card:nth-child(4n+1) { --rot: -1.5deg; --dy: 5px; }
+.cat-track .cat-card:nth-child(4n+2) { --rot: 1.1deg;  --dy: -3px; }
+.cat-track .cat-card:nth-child(4n+3) { --rot: -0.7deg; --dy: 2px; }
+.cat-track .cat-card:nth-child(4n+4) { --rot: 1.6deg;  --dy: -5px; }
+.cat-card:hover { transform: translateY(calc(var(--dy,0px) - 8px)) rotate(0deg) scale(1.02); box-shadow: 12px 15px 0 -3px color-mix(in srgb, var(--brand, var(--accent)) 82%, var(--paper)), 28px 38px 54px -26px rgba(60,48,30,0.55); z-index: 3; }
+.cat-card:active { transform: translateY(var(--dy,0px)) scale(0.99); }
+/* washi tape strip */
+.cat-card::before { content: ""; position: absolute; top: -10px; left: 50%; width: 78px; height: 22px; z-index: 4; transform: translateX(-50%) rotate(-3.5deg); background: var(--tape-2); box-shadow: 0 1px 3px rgba(60,48,30,0.14); clip-path: polygon(2% 0, 98% 8%, 100% 88%, 96% 100%, 3% 94%, 0 14%); }
+.cat-track .cat-card:nth-child(even)::before { background: var(--tape); transform: translateX(-50%) rotate(2.5deg); }
+
+/* the "photo" */
+.cat-card-top { position: relative; height: 134px; border-radius: 5px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--brand, var(--accent)) 26%, var(--line)); background: linear-gradient(160deg, color-mix(in srgb, var(--brand, var(--accent)) 19%, #fdfaf2), color-mix(in srgb, var(--brand, var(--accent)) 6%, #fdfaf2)); }
+/* sticker icon chip, slightly stuck on */
+.cat-ico { position: absolute; top: 11px; left: 11px; z-index: 2; width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center; font-size: 22px; background: var(--brand, var(--accent)); border: 1.5px solid rgba(33,29,24,0.35); box-shadow: 2.5px 3px 0 rgba(33,29,24,0.3); transform: rotate(-4deg); transition: transform 0.3s var(--bounce); }
+.cat-card:hover .cat-ico { transform: rotate(4deg) scale(1.08); }
+.cat-arrow { position: absolute; right: 11px; bottom: 11px; z-index: 2; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; font-weight: 800; color: var(--ink); background: var(--card); border: 1.5px solid var(--line); box-shadow: 2px 2.5px 0 rgba(33,29,24,0.18); transition: transform 0.3s var(--bounce), color 0.2s; }
+.cat-card:hover .cat-arrow { transform: translate(3px,-3px) rotate(8deg); color: var(--brand, var(--accent)); }
+/* fat polaroid bottom = caption */
+.cat-card-body { padding: 13px 8px 16px; }
+.cat-card-body h4 { font-family: "Hanken Grotesk", sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; font-size: 15.5px; color: var(--ink); }
+.cat-card-body p { color: var(--ink-soft); font-size: 12.5px; line-height: 1.42; margin-top: 4px; }
+
+/* --- per-category CSS "photographs" --- */
+/* AI · neuron core + dashed orbit + synapse dots */
+[data-scene="ai"] .cat-card-top::before { content: ""; position: absolute; right: 34px; top: 26px; width: 74px; height: 74px; border: 2px dashed color-mix(in srgb, var(--brand) 62%, transparent); border-radius: 50%; animation: spin 14s linear infinite; }
+[data-scene="ai"] .cat-card-top::after { content: ""; position: absolute; right: 59px; top: 51px; width: 24px; height: 24px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 7px color-mix(in srgb, var(--brand) 26%, transparent), -52px 34px 0 -6px var(--brand), -74px -8px 0 -8px color-mix(in srgb, var(--brand) 68%, #fff), 30px 46px 0 -8px color-mix(in srgb, var(--brand) 68%, #fff); }
+/* WEB · tiny browser window with code bars */
+[data-scene="web"] .cat-card-top::before { content: ""; position: absolute; left: 68px; right: 16px; top: 20px; height: 122px; background:
+  radial-gradient(circle 3.5px at 13px 12px, #e0502d 98%, transparent),
+  radial-gradient(circle 3.5px at 26px 12px, #d9a520 98%, transparent),
+  radial-gradient(circle 3.5px at 39px 12px, #2f9e6a 98%, transparent),
+  linear-gradient(transparent 23px, var(--ink) 23px, var(--ink) 24.5px, transparent 24.5px),
+  linear-gradient(var(--brand) 0 0) 14px 38px / 62px 7px no-repeat,
+  linear-gradient(color-mix(in srgb, var(--brand) 45%, #fff) 0 0) 26px 53px / 88px 7px no-repeat,
+  linear-gradient(var(--line) 0 0) 26px 68px / 52px 7px no-repeat,
+  linear-gradient(color-mix(in srgb, var(--brand) 45%, #fff) 0 0) 14px 83px / 74px 7px no-repeat,
+  linear-gradient(var(--line) 0 0) 26px 98px / 96px 7px no-repeat, #fffdf7;
+  border: 1.5px solid var(--ink); border-radius: 9px; box-shadow: 4px 5px 0 rgba(33,29,24,0.2); }
+/* MOBILE · phone rising from the bottom, app grid */
+[data-scene="mobile"] .cat-card-top::before { content: ""; position: absolute; left: 50%; transform: translateX(-50%) rotate(3deg); bottom: -26px; width: 78px; height: 132px; background: radial-gradient(circle 6px at 50% 50%, color-mix(in srgb, var(--brand) 62%, #fff) 97%, transparent) -2px 8px / 22px 22px, #fffdf7; border: 2px solid var(--ink); border-radius: 15px; box-shadow: 5px 4px 0 rgba(33,29,24,0.2); }
+[data-scene="mobile"] .cat-card-top::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%) rotate(3deg); bottom: 92px; width: 26px; height: 7px; border-radius: 5px; background: var(--ink); }
+/* DESIGN · fanned paint swatch cards */
+[data-scene="design"] .cat-card-top::before { content: ""; position: absolute; right: 26px; top: 24px; width: 62px; height: 96px; transform: rotate(9deg); border-radius: 7px; background: linear-gradient(var(--brand) 0 25%, color-mix(in srgb, var(--brand) 66%, #fff) 25% 50%, color-mix(in srgb, var(--brand) 38%, #fff) 50% 75%, color-mix(in srgb, var(--brand) 16%, #fff) 75%); border: 1.5px solid var(--ink); box-shadow: 4px 5px 0 rgba(33,29,24,0.2); }
+[data-scene="design"] .cat-card-top::after { content: ""; position: absolute; right: 74px; top: 30px; width: 62px; height: 96px; transform: rotate(-8deg); border-radius: 7px; background: linear-gradient(#e0502d 0 25%, #d9a520 25% 50%, #2f9e6a 50% 75%, #3a6ea5 75%); border: 1.5px solid var(--ink); }
+/* VR · headset on a perspective grid */
+[data-scene="vr"] .cat-card-top { background-image: linear-gradient(color-mix(in srgb, var(--brand) 22%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--brand) 22%, transparent) 1px, transparent 1px), linear-gradient(160deg, color-mix(in srgb, var(--brand) 16%, #fdfaf2), color-mix(in srgb, var(--brand) 5%, #fdfaf2)); background-size: 26px 26px, 26px 26px, 100%; }
+[data-scene="vr"] .cat-card-top::before { content: ""; position: absolute; left: 50%; top: 44px; transform: translateX(-38%) rotate(-2deg); width: 108px; height: 56px; border-radius: 18px 18px 22px 22px; background: radial-gradient(circle 12px at 30px 26px, var(--brand) 97%, transparent), radial-gradient(circle 12px at 78px 26px, var(--brand) 97%, transparent), #fffdf7; border: 2px solid var(--ink); box-shadow: 4px 5px 0 rgba(33,29,24,0.2); }
+[data-scene="vr"] .cat-card-top::after { content: ""; position: absolute; left: 50%; top: 52px; transform: translateX(-38%); width: 150px; height: 24px; border: 2px solid var(--ink); border-radius: 14px; z-index: -1; margin-left: -21px; background: color-mix(in srgb, var(--brand) 34%, #fff); }
+/* VIDEO · film strip + play chip */
+[data-scene="video"] .cat-card-top::before { content: ""; position: absolute; left: -10px; right: -10px; top: 46px; height: 44px; transform: rotate(-4deg); background:
+  radial-gradient(circle 3px at 10px 7px, #fdfaf2 97%, transparent) 0 0 / 20px 44px repeat-x,
+  radial-gradient(circle 3px at 10px 37px, #fdfaf2 97%, transparent) 0 0 / 20px 44px repeat-x,
+  linear-gradient(color-mix(in srgb, var(--brand) 55%, #fff) 0 0) 8px 14px / 44px 16px,
+  linear-gradient(color-mix(in srgb, var(--brand) 55%, #fff) 0 0) 60px 14px / 44px 16px,
+  linear-gradient(color-mix(in srgb, var(--brand) 55%, #fff) 0 0) 112px 14px / 44px 16px,
+  linear-gradient(color-mix(in srgb, var(--brand) 55%, #fff) 0 0) 164px 14px / 44px 16px,
+  linear-gradient(color-mix(in srgb, var(--brand) 55%, #fff) 0 0) 216px 14px / 44px 16px,
+  linear-gradient(color-mix(in srgb, var(--brand) 55%, #fff) 0 0) 268px 14px / 44px 16px, var(--ink); background-repeat: repeat-x, repeat-x, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat; box-shadow: 0 4px 10px rgba(33,29,24,0.22); }
+[data-scene="video"] .cat-card-top::after { content: "▶"; position: absolute; right: 20px; top: 14px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; padding-left: 3px; color: #fffdf7; background: var(--brand); border: 1.5px solid var(--ink); box-shadow: 2.5px 3px 0 rgba(33,29,24,0.25); }
+/* MARKETING · rising bar chart + gain tag */
+[data-scene="marketing"] .cat-card-top { background-image:
+  linear-gradient(color-mix(in srgb, var(--brand) 30%, #fff) 0 0), linear-gradient(color-mix(in srgb, var(--brand) 48%, #fff) 0 0), linear-gradient(color-mix(in srgb, var(--brand) 68%, #fff) 0 0), linear-gradient(var(--brand) 0 0), linear-gradient(color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 1px), linear-gradient(160deg, color-mix(in srgb, var(--brand) 14%, #fdfaf2), color-mix(in srgb, var(--brand) 5%, #fdfaf2));
+  background-size: 30px 34px, 30px 56px, 30px 82px, 30px 108px, 100% 26px, 100%;
+  background-position: 26px bottom, 74px bottom, 122px bottom, 170px bottom, 0 0, 0 0; background-repeat: no-repeat; }
+[data-scene="marketing"] .cat-card-top::after { content: "↗ +214%"; position: absolute; right: 14px; top: 16px; transform: rotate(2deg); font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700; color: var(--brand); padding: 5px 9px; background: #fffdf7; border: 1.5px solid var(--ink); border-radius: 7px; box-shadow: 2.5px 3px 0 rgba(33,29,24,0.2); }
+/* 3D · isometric cube on dot grid */
+[data-scene="three-d"] .cat-card-top { background-image: radial-gradient(circle 1.5px at 1.5px 1.5px, color-mix(in srgb, var(--brand) 40%, transparent) 97%, transparent), linear-gradient(160deg, color-mix(in srgb, var(--brand) 13%, #fdfaf2), color-mix(in srgb, var(--brand) 4%, #fdfaf2)); background-size: 18px 18px, 100%; }
+[data-scene="three-d"] .cat-card-top::before { content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-42%,-50%) rotate(-3deg); width: 92px; height: 100px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: conic-gradient(from -60deg at 50% 42%, var(--brand) 0 120deg, color-mix(in srgb, var(--brand) 68%, #000) 0 240deg, color-mix(in srgb, var(--brand) 40%, #fff) 0 360deg); filter: drop-shadow(4px 5px 0 rgba(33,29,24,0.2)); }
+[data-scene="three-d"] .cat-card-top::after { content: ""; position: absolute; right: 22px; top: 18px; width: 22px; height: 22px; border: 2px dashed color-mix(in srgb, var(--brand) 66%, transparent); transform: rotate(14deg); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 540px) { .cat-card { width: 246px; } .cat-card-top { height: 112px; } .cat-row { padding: 20px 0 24px; } .cat-track { gap: 20px; } }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 920px) {
