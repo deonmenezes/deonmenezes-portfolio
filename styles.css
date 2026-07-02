@@ -494,3 +494,15 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
   .svc-polaroid { justify-self: center; max-width: 340px; }
   .svc-polaroid img { height: 240px; }
 }
+
+/* svc v2 · receipts, indices, hand-notes */
+.svc-hero { position: relative; }
+.svc-note { top: auto; bottom: -6px; right: 8%; transform: rotate(-4deg); }
+.svc-mini { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.svc-chip { font-family: "JetBrains Mono", monospace; font-size: 11.5px; letter-spacing: 0.01em; color: var(--ink-soft); background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 6px 12px; }
+a.svc-chip { transition: color 0.2s, border-color 0.2s, transform 0.2s var(--ease); }
+a.svc-chip:hover { color: var(--brand, var(--accent)); border-color: var(--brand, var(--accent)); transform: translateY(-2px); }
+.svc-idx { font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--brand, var(--accent)); border: 1px solid color-mix(in srgb, var(--brand, var(--accent)) 42%, var(--line)); border-radius: 20px; padding: 3px 10px; flex: 0 0 auto; }
+.svc-shipcard { background: var(--card); }
+.svc-cta-sub { margin: 14px auto 0; max-width: none; }
+@media (max-width: 880px) { .svc-note { display: none; } }
