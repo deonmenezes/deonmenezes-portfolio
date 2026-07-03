@@ -506,3 +506,57 @@ a.svc-chip:hover { color: var(--brand, var(--accent)); border-color: var(--brand
 .svc-shipcard { background: var(--card); }
 .svc-cta-sub { margin: 14px auto 0; max-width: none; }
 @media (max-width: 880px) { .svc-note { display: none; } }
+
+/* ============ FX · awwwards motion kit ============ */
+@media (prefers-reduced-motion: no-preference) {
+  /* split-text masked word reveals */
+  .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+  .wi { display: inline-block; transform: translateY(118%) rotate(5deg); transform-origin: 0 100%; transition: transform 0.9s var(--ease) calc(var(--wi, 0) * 60ms); will-change: transform; }
+  .reveal.in .wi, .in .wi { transform: none; }
+  h1 .wi, h2 .wi { transition-duration: 1.05s; }
+
+  /* polaroid transform chain: parallax + tilt + scatter rotation compose */
+  .polaroid { transform: perspective(950px) translate3d(0, var(--ply, 0px), 0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) rotate(var(--rot, 0deg)); transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease); }
+  .reveal.in.polaroid { transform: perspective(950px) translate3d(0, var(--ply, 0px), 0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) rotate(var(--rot, 0deg)); }
+  .polaroid.popped { animation: none; opacity: 1; }
+  .polaroid:hover { z-index: 6; }
+
+  /* tape sticks onto the hero polaroid a beat after it lands */
+  .p-hero .tape { animation: tapestick 0.5s var(--bounce) 1.25s backwards; }
+  @keyframes tapestick {
+    0% { transform: translateX(-50%) rotate(-3deg) scaleX(0); opacity: 0; }
+    100% { transform: translateX(-50%) rotate(-3deg) scaleX(1); opacity: 1; }
+  }
+
+  /* marquee bands lean with scroll velocity (transform set by fx.js) */
+  .ticker, .cat-row, .svc-tech { will-change: transform; }
+
+  /* button shine sweep */
+  .btn { position: relative; overflow: hidden; }
+  .btn::after { content: ""; position: absolute; top: 0; bottom: 0; left: -80%; width: 55%; background: linear-gradient(100deg, transparent, rgba(255,253,247,0.34), transparent); transform: skewX(-18deg); transition: left 0.55s var(--ease); pointer-events: none; }
+  .btn:hover::after { left: 125%; }
+}
+
+/* custom cursor (fine pointers only; fx.js gates creation) */
+body.fx-cursor, body.fx-cursor a, body.fx-cursor button, body.fx-cursor .chip { cursor: none; }
+.cur { position: fixed; top: 0; left: 0; z-index: 300; pointer-events: none; opacity: 0; }
+.cur-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+.cur-ring { width: 40px; height: 40px; border: 1.5px solid color-mix(in srgb, var(--accent) 75%, transparent); border-radius: 50%; display: grid; place-items: center; transition: width 0.28s var(--ease), height 0.28s var(--ease), background-color 0.28s, border-color 0.28s, opacity 0.3s; }
+.cur-ring span { font-family: "Caveat", cursive; font-size: 16px; line-height: 1; color: var(--paper); opacity: 0; transition: opacity 0.18s; white-space: nowrap; }
+.cur-ring.on { width: 58px; height: 58px; background: color-mix(in srgb, var(--accent) 14%, transparent); border-color: var(--accent); }
+.cur-ring.view { width: 74px; height: 74px; background: var(--ink); border-color: var(--ink); }
+.cur-ring.view span { opacity: 1; }
+
+/* preloader · the film develops */
+.dm-loading { overflow: hidden; }
+.dmload { position: fixed; inset: 0; z-index: 400; background: var(--paper); display: grid; place-items: center; transition: clip-path 0.65s var(--ease); clip-path: inset(0 0 0% 0); }
+.dmload.done { clip-path: inset(0 0 100% 0); }
+.dmload-in { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.dmload-pin { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(224,80,45,0.18); animation: dmpin 0.55s var(--bounce) both; }
+.dmload-name { font-family: "Fraunces", serif; font-weight: 900; font-size: clamp(30px, 5vw, 52px); letter-spacing: -0.03em; color: var(--ink); overflow: hidden; }
+.dmload-name { display: inline-block; animation: dmname 0.7s var(--ease) 0.12s both; }
+.dmload-sub { font-family: "Caveat", cursive; font-size: 21px; color: var(--ink-soft); animation: dmsub 0.5s var(--ease) 0.5s both; }
+@keyframes dmpin { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+@keyframes dmname { 0% { transform: translateY(105%); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes dmsub { 0% { opacity: 0; transform: translateY(8px) rotate(-2deg); } 100% { opacity: 1; transform: rotate(-2deg); } }
+@media (prefers-reduced-motion: reduce) { .dmload { display: none; } }
