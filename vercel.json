@@ -4,8 +4,24 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/linktree",
+      "source": "/deon",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/deon/api/stats",
+      "destination": "/api/stats"
+    },
+    {
+      "source": "/deon/linktree",
       "destination": "/linktree.html"
+    },
+    {
+      "source": "/deon/services/:slug",
+      "destination": "/services/:slug.html"
+    },
+    {
+      "source": "/deon/:path*",
+      "destination": "/:path*"
     }
   ],
   "redirects": [
@@ -24,7 +40,10 @@
     {
       "source": "/assets/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     }
   ]

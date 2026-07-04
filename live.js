@@ -15,7 +15,7 @@
       el.textContent = text;
     });
   }
-  fetch("/api/stats")
+  fetch("/deon/api/stats")
     .then(function (r) { return r.json(); })
     .then(function (d) {
       if (d.mantishackStars) {
