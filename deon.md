@@ -31,9 +31,9 @@
   50+ projects. Agentic automation, AR/VR, computer vision. → virelity.com
 - **Mantishack** · Creator. Open-source **AI security harness** that hunts vulnerabilities
   autonomously: static + binary analysis, LLM validation, exploit PoCs and patches in one
-  workflow. 344★ on GitHub, 61 forks, 1,000+ developers in the Discord. → mantishack.com
+  workflow. 363★ on GitHub, 61 forks, 1,000+ developers in the Discord. → mantishack.com
 - **OpenTradeX** · Creator. Open-source **AI-driven trading CLI harness**. 12 markets,
-  paper-first, keys stay local. 48★. → opentradex.net
+  paper-first, keys stay local. 53★. → opentradex.net
 - **MoltCompany.ai** · open-source marketplace where decentralized agents claim and complete
   tasks. → moltcompany.ai · github.com/deonmenezes/moltcompany
 
@@ -85,7 +85,8 @@ iOS / Swift · XR / AR / VR (Unreal 5, Unity) · blockchain (Solidity, Web3) · 
 - Company: https://virelity.com · https://moltcompany.ai
 - Open source: https://github.com/deonmenezes · https://mantishack.com · https://opentradex.net
 - Book: https://www.amazon.in/How-Build-Business-Age-AI/dp/8199573775
-- Instagram: https://instagram.com/deon_tech (31.3K)
+- Instagram: https://instagram.com/deon_tech (32.6K)
+- X: https://x.com/DeonMen (1.3K)
 - LinkedIn: https://www.linkedin.com/in/deon-menezes-a82552254/
 - Discord: https://discord.gg/Sz6VMY5Jm (1,000+ builders)
 - Email: deonmenezescodes@gmail.com · deon.menezes@virelity.com

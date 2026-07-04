@@ -560,3 +560,7 @@ body.fx-cursor, body.fx-cursor a, body.fx-cursor button, body.fx-cursor .chip { 
 @keyframes dmname { 0% { transform: translateY(105%); opacity: 0; } 100% { transform: none; opacity: 1; } }
 @keyframes dmsub { 0% { opacity: 0; transform: translateY(8px) rotate(-2deg); } 100% { opacity: 1; transform: rotate(-2deg); } }
 @media (prefers-reduced-motion: reduce) { .dmload { display: none; } }
+
+/* Virelity nav cross-link */
+.nav-virelity { color: var(--accent) !important; font-weight: 700; }
+.nav-virelity::after { background: var(--accent); }

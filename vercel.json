@@ -10,6 +10,11 @@
   ],
   "redirects": [
     {
+      "source": "/virelity",
+      "destination": "https://virelity.com",
+      "permanent": false
+    },
+    {
       "source": "/book",
       "destination": "https://www.amazon.in/How-Build-Business-Age-AI/dp/8199573775",
       "permanent": false
