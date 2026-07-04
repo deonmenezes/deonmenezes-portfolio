@@ -5,19 +5,11 @@
   "rewrites": [
     {
       "source": "/deon",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/deon/api/stats",
       "destination": "/api/stats"
-    },
-    {
-      "source": "/deon/linktree",
-      "destination": "/linktree.html"
-    },
-    {
-      "source": "/deon/services/:slug",
-      "destination": "/services/:slug.html"
     },
     {
       "source": "/deon/:path*",
