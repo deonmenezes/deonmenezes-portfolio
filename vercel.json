@@ -30,7 +30,7 @@
           "value": "deonmenezes.com"
         }
       ],
-      "destination": "https://www.virelity.com/deon",
+      "destination": "https://deonmenezes.com/deon",
       "permanent": true
     },
     {
@@ -41,40 +41,7 @@
           "value": "www.deonmenezes.com"
         }
       ],
-      "destination": "https://www.virelity.com/deon",
-      "permanent": true
-    },
-    {
-      "source": "/deon/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "deonmenezes.com"
-        }
-      ],
-      "destination": "https://www.virelity.com/deon/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/deon/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.deonmenezes.com"
-        }
-      ],
-      "destination": "https://www.virelity.com/deon/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "deonmenezes.com"
-        }
-      ],
-      "destination": "https://www.virelity.com/deon/:path*",
+      "destination": "https://deonmenezes.com/deon",
       "permanent": true
     },
     {
@@ -85,7 +52,7 @@
           "value": "www.deonmenezes.com"
         }
       ],
-      "destination": "https://www.virelity.com/deon/:path*",
+      "destination": "https://deonmenezes.com/:path*",
       "permanent": true
     }
   ],
