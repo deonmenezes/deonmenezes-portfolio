@@ -23,7 +23,8 @@ vercel.json       # static hosting + long-cache for /assets
 7. **Moments** · Y Combinator, Peter Steinberger, event videos
 8. **Connect** · Instagram @deon_tech, Discord, LinkedIn, email
 
-`virelity.com` is linked as the home/main site in the nav and footer.
+The canonical portfolio URL is `https://deonmenezes.com/deon`. The bare domain
+redirects to that path, while Virelity remains linked in the nav and footer.
 
 ## Run locally
 ```bash
