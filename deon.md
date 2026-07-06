@@ -26,10 +26,10 @@
 - **Author** of *How to Build a Business in the Age of AI* (Amazon).
 
 ## Ventures & harnesses
-- **Virelity** · Founder & CEO. **AI agents as a service**: full-service AI/ML firm founded
-  in Dubai, serving clients worldwide. Bootstrapped to profitability in month one, ₹35L+
-  revenue in 6 months, 100+ clients, 50+ projects. Agentic automation, AR/VR, computer
-  vision. → virelity.com
+- **Virelity** · Founder & CEO. **AI agents as a service**: full-service AI/ML firm operating
+  across 3 countries (India, Dubai, US), serving clients worldwide. Bootstrapped to
+  profitability in month one, ₹35L+ revenue in 6 months, 100+ clients, 50+ projects.
+  Agentic automation, AR/VR, computer vision. → virelity.com
 - **Team Vision** · Founder & Captain. **Virtual & augmented reality services**: immersive
   VR/AR experiences, training sims and XR worlds; led 25 engineers, ran XR events for
   1,000+ people.
