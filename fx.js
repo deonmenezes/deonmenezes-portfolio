@@ -8,8 +8,8 @@
   var fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
   var lerp = function (a, b, t) { return a + (b - a) * t; };
 
-  /* ---------- 1 · preloader (once per session, < 1.2s) ---------- */
-  if (!sessionStorage.dmSeen) {
+  /* ---------- 1 · preloader (desktop only, once per session, < 1.2s) ---------- */
+  if (fine && !sessionStorage.dmSeen) {
     sessionStorage.dmSeen = "1";
     var load = document.createElement("div");
     load.className = "dmload";

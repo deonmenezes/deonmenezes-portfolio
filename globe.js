@@ -81,13 +81,24 @@
       return [c + R * x, c - R * (y1 * cosT - z1 * sinT), y1 * sinT + z1 * cosT];
     }
 
-    var i, p, r;
+    /* batch dots into a few alpha buckets: 5 fills instead of ~1300 */
+    var i, p, r, b, buckets = [[], [], [], [], []];
     for (i = 0; i < dots.length; i++) {
       p = project(dots[i][0], dots[i][1], dots[i][2]);
       if (p[2] <= 0.02) continue;
-      r = R * 0.0115 * (0.62 + 0.5 * p[2]);
-      ctx.fillStyle = "rgba(" + INK + "," + (0.16 + 0.6 * p[2]).toFixed(3) + ")";
-      ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, 7); ctx.fill();
+      buckets[Math.min(4, (p[2] * 5) | 0)].push(p);
+    }
+    for (b = 0; b < 5; b++) {
+      var bk = buckets[b], z = (b + 0.5) / 5;
+      if (!bk.length) continue;
+      r = R * 0.0115 * (0.62 + 0.5 * z);
+      ctx.fillStyle = "rgba(" + INK + "," + (0.16 + 0.6 * z).toFixed(3) + ")";
+      ctx.beginPath();
+      for (i = 0; i < bk.length; i++) {
+        ctx.moveTo(bk[i][0] + r, bk[i][1]);
+        ctx.arc(bk[i][0], bk[i][1], r, 0, 7);
+      }
+      ctx.fill();
     }
     for (i = 0; i < CITIES.length; i++) {
       p = project(CITIES[i][0], CITIES[i][1], CITIES[i][2]);
@@ -119,19 +130,21 @@
     cv.addEventListener(ev, function () { dragging = false; });
   });
 
-  var visible = true;
-  if ("IntersectionObserver" in window) {
+  /* stay idle until scrolled into view so page load pays nothing for the globe */
+  var visible = !("IntersectionObserver" in window);
+  if (!visible) {
     new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }, { rootMargin: "80px" })
       .observe(cv);
   }
-  var BASE = 0.0022;
+  var BASE = 0.0044, last = 0;
   (function loop(t) {
-    if (visible) {
+    if (visible && t - last >= 30) { /* ~30fps is plenty for a slow spin */
+      last = t;
       if (!dragging) {
         vel += (BASE - vel) * 0.04;
         rot += vel;
       }
-      draw(t || 0);
+      draw(t);
     }
     requestAnimationFrame(loop);
   })(0);

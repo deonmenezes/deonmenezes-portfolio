@@ -275,7 +275,7 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 /* ---------- Footer ---------- */
 .footer { max-width: var(--maxw); margin: 0 auto; padding: 40px clamp(20px, 5vw, 44px) 54px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1.5px solid var(--line); font-size: 14px; color: var(--ink-soft); }
 .footer .brand-name { font-size: 17px; color: var(--ink); }
-.foot-mid a { color: var(--accent); }
+.foot-mid a { color: #b23f1c; text-decoration: underline; text-underline-offset: 2px; }
 .foot-year { font-family: "JetBrains Mono", monospace; font-size: 13px; }
 
 /* ---------- Toast ---------- */
@@ -292,6 +292,12 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 @keyframes pop {
   0% { opacity: 0; transform: rotate(var(--rot,0deg)) translateY(40px) scale(0.9); }
   100% { opacity: 1; transform: rotate(var(--rot,0deg)) translateY(0) scale(1); }
+}
+/* the hero polaroid is the LCP element: keep it painted from the first frame (transform-only pop) */
+.p-hero.pop { opacity: 1; animation-name: pop-solid; }
+@keyframes pop-solid {
+  0% { transform: rotate(var(--rot,0deg)) translateY(40px) scale(0.9); }
+  100% { transform: rotate(var(--rot,0deg)) translateY(0) scale(1); }
 }
 
 /* ---------- Hackathons ---------- */
@@ -376,7 +382,7 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 .cat-card:hover .cat-arrow { transform: translate(3px,-3px) rotate(8deg); color: var(--brand, var(--accent)); }
 /* fat polaroid bottom = caption */
 .cat-card-body { padding: 13px 8px 16px; }
-.cat-card-body h4 { font-family: "Hanken Grotesk", sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; font-size: 15.5px; color: var(--ink); }
+.cat-card-body h3, .cat-card-body h4 { font-family: "Hanken Grotesk", sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; font-size: 15.5px; color: var(--ink); }
 .cat-card-body p { color: var(--ink-soft); font-size: 12.5px; line-height: 1.42; margin-top: 4px; }
 
 /* --- per-category CSS "photographs" --- */
