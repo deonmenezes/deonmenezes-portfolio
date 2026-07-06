@@ -328,6 +328,23 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
 .logo-chip:hover { color: var(--ink); transform: translateY(-3px); border-color: var(--c, var(--accent)); }
 .logo-mark { width: 27px; height: 27px; border-radius: 7px; object-fit: contain; flex: 0 0 auto; background: #fff; padding: 2px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); }
 
+/* ---------- Worldwide · dot globe + venture cards ---------- */
+.world-grid { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: clamp(30px, 4.5vw, 64px); align-items: center; }
+.p-globe { width: min(430px, 100%); margin: 0 auto; }
+.globe-ph { position: relative; background: radial-gradient(120% 100% at 30% 18%, #f4eee1, #e3dac7); }
+.globe-ph canvas { width: 100%; height: 100%; cursor: grab; touch-action: pan-y; }
+.globe-ph canvas:active { cursor: grabbing; }
+.globe-hint { position: absolute; left: 50%; bottom: 9px; transform: translateX(-50%); font-family: "JetBrains Mono", monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); pointer-events: none; }
+.ventures { display: grid; gap: 22px; }
+.venture { position: relative; background: var(--card); border: 1.5px solid var(--line); border-radius: 18px; padding: 26px 30px 26px 34px; box-shadow: var(--shadow-sm); overflow: hidden; transition: transform 0.25s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s; }
+.venture::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--brand, var(--accent)); }
+.venture:hover { transform: translateY(-5px) rotate(-0.4deg); box-shadow: var(--shadow); border-color: var(--brand, var(--accent)); }
+.venture-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.venture-top h3 { font-size: clamp(23px, 3vw, 30px); }
+.venture-what { font-family: "Caveat", cursive; font-size: clamp(21px, 2.6vw, 26px); line-height: 1.1; color: var(--accent); margin: 3px 0 9px; }
+.venture > p:not(.venture-what) { color: var(--ink-soft); font-size: 15px; }
+.venture .win-meta { margin-bottom: 16px; }
+
 
 /* ---------- Category carousel · two-row POLAROID marquee (Virelity "What We Build", scrapbook edition) ---------- */
 .cat-carousel { margin: clamp(6px,1.6vw,16px) calc(-1 * clamp(20px,5vw,44px)) clamp(40px,6vw,66px); display: flex; flex-direction: column; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
@@ -421,6 +438,8 @@ h3 { font-family: "Fraunces", serif; font-weight: 600; letter-spacing: -0.01em; 
   .stat-strip { grid-template-columns: 1fr 1fr; }
   .wins { grid-template-columns: 1fr; }
   .win.feature { grid-column: auto; }
+  .world-grid { grid-template-columns: 1fr; gap: 44px; }
+  .p-globe { width: min(360px, 88%); }
   .wall { grid-template-columns: 1fr 1fr; }
   .wall .polaroid { margin-top: 0; }
   .book { grid-template-columns: 1fr; }

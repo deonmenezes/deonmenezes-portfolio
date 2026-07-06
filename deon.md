@@ -26,9 +26,13 @@
 - **Author** of *How to Build a Business in the Age of AI* (Amazon).
 
 ## Ventures & harnesses
-- **Virelity** · Founder. Full-service AI/ML & technology firm founded in Dubai.
-  Bootstrapped to profitability in month one, ₹35L+ revenue in 6 months, 100+ clients,
-  50+ projects. Agentic automation, AR/VR, computer vision. → virelity.com
+- **Virelity** · Founder & CEO. **AI agents as a service** — full-service AI/ML firm founded
+  in Dubai, serving clients worldwide. Bootstrapped to profitability in month one, ₹35L+
+  revenue in 6 months, 100+ clients, 50+ projects. Agentic automation, AR/VR, computer
+  vision. → virelity.com
+- **Team Vision** · Founder & Captain. **Virtual & augmented reality services** — immersive
+  VR/AR experiences, training sims and XR worlds; led 25 engineers, ran XR events for
+  1,000+ people.
 - **Mantishack** · Creator. Open-source **AI security harness** that hunts vulnerabilities
   autonomously: static + binary analysis, LLM validation, exploit PoCs and patches in one
   workflow. 363★ on GitHub, 61 forks, 1,000+ developers in the Discord. → mantishack.com
