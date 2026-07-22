@@ -1,5 +1,6 @@
 import { isAdmin } from "../../lib/social/auth.js";
 import { query } from "../../lib/social/db.js";
+import { sendMessage } from "../../lib/social/meta.js";
 import { logError, readJson, requireMethod, sameOrigin, sendJson } from "../../lib/social/http.js";
 
 function normalizeTag(value) {
@@ -29,6 +30,20 @@ export default async function handler(req, res) {
       return sendJson(res, 200, { contacts: rows });
     }
     const body = await readJson(req);
+    if (req.method === "POST" && body?.recipientId && (body?.text ?? body?.message)) {
+      const recipientId = String(body.recipientId).trim();
+      const message = String(body.text ?? body.message ?? "").trim();
+      if (!recipientId || recipientId.length > 160) throw new Error("A recipient is required.");
+      if (!message || message.length > 1000) throw new Error("Message text is required and must be under 1000 characters.");
+      const result = await sendMessage(recipientId, { text: message });
+      const id = String(result?.message_id || `manual:${recipientId}:${Date.now()}`);
+      await query(
+        `INSERT INTO social_messages (id,participant_id,direction,body,created_at)
+         VALUES ($1,$2,'outbound',$3,now()) ON CONFLICT (id) DO NOTHING`,
+        [id, recipientId, message],
+      );
+      return sendJson(res, 200, { ok: true, messageId: id });
+    }
     const id = contactId(body?.contactId ?? body?.contact_id);
     const contact = await query("SELECT id FROM social_contacts WHERE id=$1", [id]);
     if (!contact[0]) return sendJson(res, 404, { error: "contact_not_found" });

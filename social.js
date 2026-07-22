@@ -700,7 +700,7 @@
     if (!body) return;
     setBusy(button, true, "Sending…");
     try {
-      await request(API_ROOT + "/messages", { method: "POST", body: { recipientId: conversation.id, text: body } });
+      await request(API_ROOT + "/contacts", { method: "POST", body: { recipientId: conversation.id, text: body } });
       input.value = "";
       toast("Reply sent.");
       await loadDashboard();
