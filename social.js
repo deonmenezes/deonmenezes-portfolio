@@ -679,8 +679,33 @@
       bubble.appendChild(element("time", "", relativeTime(message.createdAt)));
       messages.appendChild(bubble);
     });
-    var note = element("footer", "conversation-readonly", "◇ This inbox is read-only. Reply from Instagram when needed.");
-    append(target, header, messages, note);
+    var composer = element("form", "inbox-composer");
+    var input = element("textarea");
+    input.rows = 2;
+    input.maxLength = 1000;
+    input.required = true;
+    input.placeholder = "Reply from your connected Instagram account…";
+    var send = element("button", "button button-primary", "Send reply");
+    send.type = "submit";
+    composer.addEventListener("submit", function (event) {
+      event.preventDefault();
+      sendInboxMessage(conversation, input, send);
+    });
+    append(composer, input, send);
+    append(target, header, messages, composer);
+  }
+
+  async function sendInboxMessage(conversation, input, button) {
+    var body = input.value.trim();
+    if (!body) return;
+    setBusy(button, true, "Sending…");
+    try {
+      await request(API_ROOT + "/messages", { method: "POST", body: { recipientId: conversation.id, text: body } });
+      input.value = "";
+      toast("Reply sent.");
+      await loadDashboard();
+    } catch (error) { toast(error.message || "Reply could not be sent.", true); }
+    finally { setBusy(button, false); }
   }
 
   function normalizeContact(raw) {
