@@ -243,7 +243,7 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .avatar { display: grid; width: 38px; height: 38px; place-items: center; overflow: hidden; border: 1px solid rgba(255,255,255,.15); border-radius: 50%; color: #fff; background: linear-gradient(145deg, #a16dff, #49308a); font-size: 11px; font-weight: 800; }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-.workspace { min-width: 0; margin-left: var(--sidebar); }
+.workspace { min-width: 0; }
 .topbar { display: flex; position: sticky; z-index: 20; top: 0; min-height: 82px; align-items: center; justify-content: space-between; gap: 24px; padding: 15px clamp(22px, 3.5vw, 54px); border-bottom: 1px solid var(--border); background: rgba(13,9,23,.78); backdrop-filter: blur(22px); }
 .topbar h1 { margin: 3px 0 0; font-size: 22px; letter-spacing: -.035em; }
 .page-kicker { margin: 0; }
@@ -618,7 +618,7 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .flow-step-actions .button { font-size: 11px; padding: 10px 12px; }
 .legacy-copy-field { opacity: .82; }
 .contacts-list { display: grid; gap: 10px; }
-.contact-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(180px,.8fr) auto auto; gap: 18px; align-items: center; padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.025); }
+.contact-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(180px,.8fr) auto auto; gap: 18px; align-items: center; padding: 16px 18px; border: 1px solid var(--border); border-radius: 16px; background: rgba(255,255,255,.025); }
 .contact-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .contact-main > div:last-child { min-width: 0; }
 .contact-main strong, .contact-main small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -643,7 +643,7 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .broadcast-row strong, .broadcast-row p { display: block; margin: 0; }
 .broadcast-row p { margin-top: 5px; color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .broadcast-meta { color: var(--muted); font-size: 11px; }
-.inbox-composer { display: flex; gap: 10px; padding: 14px 18px; border-top: 1px solid var(--line); }
+.inbox-composer { display: flex; gap: 10px; padding: 14px 18px; border-top: 1px solid var(--border); }
 .inbox-composer textarea { min-height: 44px; flex: 1; resize: vertical; }
 .inbox-composer .button { align-self: end; white-space: nowrap; }
 @media (max-width: 760px) {
