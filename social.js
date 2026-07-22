@@ -941,11 +941,14 @@
 
   function renderHealth() {
     var health = state.data.health;
+    var metaNote = text(first(health, ["instagramError", "instagram_error"], ""), "");
+    if (!metaNote) metaNote = health.graphConfigured && health.webhookConfigured ? "Graph account and webhook credentials are present" : "Finish Meta app review and webhook subscriptions";
     var definitions = [
       { label: "Instagram API", value: first(health, ["instagram", "api", "instagramApi", "instagram_api"], "unknown"), note: text(first(health, ["instagramError", "instagram_error"], ""), "Comment and message access") },
       { label: "Webhook", value: first(health, ["webhook", "webhookStatus", "webhook_status"], "unknown"), note: "Inbound comment events" },
       { label: "Database", value: first(health, ["database", "db", "databaseStatus", "database_status"], "unknown"), note: "Rules and delivery state" },
       { label: "Delivery worker", value: first(health, ["worker", "delivery", "workerStatus", "worker_status"], "unknown"), note: "Last sync " + relativeTime(first(health, ["lastSync", "last_sync"], "")) },
+      { label: "Meta permissions", value: health.instagram === "connected" && health.webhookConfigured ? "ready" : "pending", note: metaNote },
     ];
     var target = byId("health-grid");
     clear(target);
