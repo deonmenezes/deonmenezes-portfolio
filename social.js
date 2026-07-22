@@ -156,13 +156,24 @@
 
   async function request(path, options) {
     var settings = options || {};
-    var response = await fetch(path, {
-      method: settings.method || "GET",
-      credentials: "same-origin",
-      cache: "no-store",
-      headers: settings.body ? { "Accept": "application/json", "Content-Type": "application/json" } : { "Accept": "application/json" },
-      body: settings.body ? JSON.stringify(settings.body) : undefined,
-    });
+    var controller = settings.timeoutMs ? new AbortController() : null;
+    var timeoutId = controller ? window.setTimeout(function () { controller.abort(); }, settings.timeoutMs) : null;
+    var response;
+    try {
+      response = await fetch(path, {
+        method: settings.method || "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: settings.body ? { "Accept": "application/json", "Content-Type": "application/json" } : { "Accept": "application/json" },
+        body: settings.body ? JSON.stringify(settings.body) : undefined,
+        signal: controller ? controller.signal : undefined,
+      });
+    } catch (error) {
+      if (controller && controller.signal.aborted) throw new ApiError("The request timed out. Try again in a moment.", 408);
+      throw error;
+    } finally {
+      if (timeoutId) window.clearTimeout(timeoutId);
+    }
     var payload = null;
     var contentType = response.headers.get("content-type") || "";
     if (contentType.includes("application/json")) {
@@ -1546,7 +1557,7 @@
     var button = event && event.currentTarget instanceof HTMLElement ? event.currentTarget : byId("sync-button");
     setBusy(button, true, "Syncing…");
     try {
-      await request(API_ROOT + "/sync", { method: "POST" });
+      await request(API_ROOT + "/sync", { method: "POST", timeoutMs: 20_000 });
       toast("Instagram sync started.");
       await loadDashboard();
     } catch (error) { toast(error.message || "Sync could not start.", true); }
