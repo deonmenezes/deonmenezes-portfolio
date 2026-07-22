@@ -1513,11 +1513,11 @@
 
   async function testAutomation(id, button) {
     if (!id) return;
-    setBusy(button, true, "Sending…");
+    setBusy(button, true, "Verifying…");
     try {
       await request(API_ROOT + "/test", { method: "POST", body: { automationId: id } });
       toast("Meta connection and flow preview verified.");
-    } catch (error) { toast(error.message || "The test could not be sent.", true); }
+    } catch (error) { toast(error.message || "The flow could not be verified.", true); }
     finally { setBusy(button, false); }
   }
 
