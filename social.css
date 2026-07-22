@@ -224,7 +224,7 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .preview-row em { padding: 4px 7px; border-radius: 99px; color: var(--green); background: rgba(103,219,156,.1); font-size: 8px; font-style: normal; }
 
 /* App shell */
-.dashboard { display: grid; min-height: 100vh; grid-template-columns: var(--sidebar) minmax(0, 1fr); }
+.dashboard { display: block; min-height: 100vh; }
 .sidebar { display: flex; position: fixed; z-index: 30; inset: 0 auto 0 0; width: var(--sidebar); flex-direction: column; padding: 26px 18px 18px; border-right: 1px solid var(--border); background: rgba(13, 9, 23, .9); backdrop-filter: blur(24px); }
 .sidebar > .brand-lockup { margin: 0 10px 36px; }
 .primary-nav, .sidebar-bottom nav { display: grid; gap: 4px; }
@@ -243,7 +243,7 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .avatar { display: grid; width: 38px; height: 38px; place-items: center; overflow: hidden; border: 1px solid rgba(255,255,255,.15); border-radius: 50%; color: #fff; background: linear-gradient(145deg, #a16dff, #49308a); font-size: 11px; font-weight: 800; }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-.workspace { min-width: 0; }
+.workspace { min-width: 0; margin-left: var(--sidebar); }
 .topbar { display: flex; position: sticky; z-index: 20; top: 0; min-height: 82px; align-items: center; justify-content: space-between; gap: 24px; padding: 15px clamp(22px, 3.5vw, 54px); border-bottom: 1px solid var(--border); background: rgba(13,9,23,.78); backdrop-filter: blur(22px); }
 .topbar h1 { margin: 3px 0 0; font-size: 22px; letter-spacing: -.035em; }
 .page-kicker { margin: 0; }
