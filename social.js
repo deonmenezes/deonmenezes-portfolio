@@ -2,7 +2,7 @@
   "use strict";
 
   var API_ROOT = "/api/social";
-  var ROUTES = ["overview", "automations", "posts", "inbox", "contacts", "analytics", "health"];
+  var ROUTES = ["overview", "automations", "posts", "inbox", "contacts", "broadcasts", "analytics", "health"];
   var state = {
     data: null,
     route: "overview",
@@ -309,7 +309,7 @@
     });
     var titles = {
       overview: ["Workspace", "Overview"], automations: ["Manage", "Automations"], posts: ["Library", "Posts"],
-      inbox: ["Activity", "Inbox"], contacts: ["Audience", "Contacts"], analytics: ["Insights", "Analytics"], health: ["Operations", "Health & settings"],
+      inbox: ["Activity", "Inbox"], contacts: ["Audience", "Contacts"], broadcasts: ["Outbound", "Broadcasts"], analytics: ["Insights", "Analytics"], health: ["Operations", "Health & settings"],
     };
     byId("page-kicker").textContent = titles[route][0];
     byId("page-title").textContent = titles[route][1];
@@ -404,6 +404,7 @@
   function normalizeAutomation(raw) {
     var publicReplyValue = first(raw, ["publicReply", "public_reply"], null);
     var publicReplyObject = publicReplyValue && typeof publicReplyValue === "object" ? publicReplyValue : {};
+    var storedPublicReplyText = text(first(raw, ["publicReplyText", "public_reply_text"], ""), "");
     var links = array(first(raw, ["links", "resources", "resourceLinks", "resource_links"], []));
     var steps = array(first(raw, ["flowSteps", "flow_steps"], []));
     if (!links.length && first(raw, ["resourceUrl", "resource_url"], "")) {
@@ -422,8 +423,12 @@
       followGate: first(raw, ["followGateMode", "follow_gate_mode"], "")
         ? first(raw, ["followGateMode", "follow_gate_mode"], "") === "strict"
         : booleanFrom(raw, ["followGate", "follow_gate"], false),
-      publicReplyEnabled: booleanFrom(publicReplyObject, ["enabled"], booleanFrom(raw, ["publicReplyEnabled", "public_reply_enabled"], Boolean(publicReplyValue))),
-      publicReplyText: text(typeof publicReplyValue === "string" ? publicReplyValue : first(publicReplyObject, ["text"], first(raw, ["publicReplyText", "public_reply_text"], ""))),
+      // The API stores the reply as public_reply_text (a string), while the
+      // editor submits the richer { enabled, text } shape. Treat a non-empty
+      // stored string as enabled so editing an automation does not silently
+      // erase its public comment reply.
+      publicReplyEnabled: booleanFrom(publicReplyObject, ["enabled"], booleanFrom(raw, ["publicReplyEnabled", "public_reply_enabled"], Boolean(publicReplyValue) || Boolean(storedPublicReplyText))),
+      publicReplyText: text(typeof publicReplyValue === "string" ? publicReplyValue : first(publicReplyObject, ["text"], storedPublicReplyText)),
       links: links.map(function (link) { return { label: text(first(link, ["label", "name"]), "Resource"), url: text(first(link, ["url", "href"]), "") }; }),
       steps: steps.map(function (step) {
         return {
@@ -895,7 +900,17 @@
     var submit = byId("broadcast-form").querySelector('button[type="submit"]');
     message.classList.remove("is-error");
     var scheduledAt = byId("broadcast-scheduled").value;
-    var body = { title: byId("broadcast-title").value.trim(), text: byId("broadcast-text").value.trim(), tagFilter: byId("broadcast-tag").value.trim(), scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : null };
+    var scheduledIso = null;
+    if (scheduledAt) {
+      var scheduledDate = new Date(scheduledAt);
+      if (!Number.isFinite(scheduledDate.getTime())) {
+        message.textContent = "Choose a valid schedule time.";
+        message.classList.add("is-error");
+        return;
+      }
+      scheduledIso = scheduledDate.toISOString();
+    }
+    var body = { title: byId("broadcast-title").value.trim(), text: byId("broadcast-text").value.trim(), tagFilter: byId("broadcast-tag").value.trim(), scheduledAt: scheduledIso };
     if (!body.title || !body.text) { message.textContent = "Add a campaign name and message."; message.classList.add("is-error"); return; }
     setBusy(submit, true, "Saving…");
     try {
