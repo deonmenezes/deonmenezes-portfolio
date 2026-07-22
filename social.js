@@ -760,6 +760,21 @@
     } finally { select.disabled = false; }
   }
 
+  async function saveContactField(contact, keyInput, valueInput, button) {
+    var key = keyInput.value.trim();
+    var value = valueInput.value.trim();
+    if (!key || !value) { keyInput.focus(); return; }
+    setBusy(button, true, "Saving…");
+    try {
+      await request(API_ROOT + "/contacts", { method: "POST", body: { contactId: contact.id, fields: Object.fromEntries([[key, value]]) } });
+      keyInput.value = "";
+      valueInput.value = "";
+      toast("Custom field saved.");
+      await loadDashboard();
+    } catch (error) { toast(error.message || "Could not save the custom field.", true); }
+    finally { setBusy(button, false); }
+  }
+
   function renderContacts() {
     var target = byId("contacts-list");
     if (!target) return;
@@ -787,6 +802,8 @@
         tags.appendChild(tagButton);
       });
       if (!contact.tags.length) tags.appendChild(element("small", "", "No tags yet"));
+      var fieldSummary = Object.entries(contact.fields).slice(0, 4).map(function (entry) { return entry[0] + ": " + entry[1]; }).join(" · ");
+      if (fieldSummary) tags.appendChild(element("small", "contact-field-summary", fieldSummary));
       var form = element("form", "contact-tag-form");
       var input = element("input");
       input.placeholder = "Add tag";
@@ -795,6 +812,18 @@
       button.type = "submit";
       form.addEventListener("submit", function (event) { event.preventDefault(); addContactTag(contact, input, button); });
       append(form, input, button);
+      var fieldForm = element("form", "contact-field-form");
+      var fieldKey = element("input");
+      fieldKey.placeholder = "Field";
+      fieldKey.maxLength = 60;
+      var fieldValue = element("input");
+      fieldValue.placeholder = "Value";
+      fieldValue.maxLength = 500;
+      var fieldButton = element("button", "button button-secondary", "Save field");
+      fieldButton.type = "submit";
+      fieldForm.addEventListener("submit", function (event) { event.preventDefault(); saveContactField(contact, fieldKey, fieldValue, fieldButton); });
+      append(fieldForm, fieldKey, fieldValue, fieldButton);
+      tags.appendChild(fieldForm);
       var status = element("select", "contact-status");
       [{ value: "active", label: "Active" }, { value: "blocked", label: "Blocked" }, { value: "unsubscribed", label: "Unsubscribed" }].forEach(function (optionData) {
         var option = element("option", "", optionData.label);
