@@ -11,6 +11,7 @@ import {
   isMatch,
 } from "../lib/social/automation.js";
 import { broadcastMessage } from "../lib/social/broadcast.js";
+import { sendMessage } from "../lib/social/meta.js";
 
 test("extractCaptionKeyword understands Instagram caption quotes", () => {
   assert.equal(extractCaptionKeyword('Comment “Link” and I will send it'), "LINK");
@@ -84,7 +85,36 @@ test("webhook parser extracts story mention events", () => {
   assert.equal(events[0].payload.commenterId, "u2");
 });
 
+test("webhook parser marks live comments for one-shot delivery", () => {
+  const events = extractWebhookEvents({ entry: [{ time: 300, changes: [{ field: "live_comments", value: { id: "live-c1", text: "LINK", from: { id: "u3" }, media: { id: "live-1" } } }] }] });
+  assert.equal(events[0].type, "comment");
+  assert.equal(events[0].payload.live, true);
+});
+
 test("broadcast messages enforce the Instagram message limit", () => {
   assert.deepEqual(broadcastMessage("Hello"), { text: "Hello" });
   assert.throws(() => broadcastMessage("x".repeat(1001)), /under 1000/u);
+});
+
+test("Instagram direct messages use the Graph API message shape", async () => {
+  const previousFetch = globalThis.fetch;
+  const previousToken = process.env.INSTAGRAM_ACCESS_TOKEN;
+  const previousAccount = process.env.INSTAGRAM_ACCOUNT_ID;
+  let requestBody;
+  process.env.INSTAGRAM_ACCESS_TOKEN = "test-token";
+  process.env.INSTAGRAM_ACCOUNT_ID = "123456789";
+  globalThis.fetch = async (_url, options) => {
+    requestBody = JSON.parse(options.body);
+    return new Response(JSON.stringify({ message_id: "m1", recipient_id: "u1" }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    await sendMessage("u1", { text: "Hello" });
+  } finally {
+    globalThis.fetch = previousFetch;
+    if (previousToken === undefined) delete process.env.INSTAGRAM_ACCESS_TOKEN;
+    else process.env.INSTAGRAM_ACCESS_TOKEN = previousToken;
+    if (previousAccount === undefined) delete process.env.INSTAGRAM_ACCOUNT_ID;
+    else process.env.INSTAGRAM_ACCOUNT_ID = previousAccount;
+  }
+  assert.deepEqual(requestBody, { recipient: { id: "u1" }, message: { text: "Hello" } });
 });
