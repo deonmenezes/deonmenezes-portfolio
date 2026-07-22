@@ -5,6 +5,7 @@ import { logError, readJson, requireMethod, sameOrigin, sendJson } from "../../l
 
 function validate(body) {
   const mediaId = String(body?.mediaId || body?.media_id || "").trim();
+  const triggerType = String(body?.triggerType ?? body?.trigger_type ?? "comment").trim().toLowerCase();
   const title = String(body?.title || body?.name || "").trim();
   const keyword = normalizeKeyword(body?.keyword);
   const responseText = String(body?.responseText ?? body?.response_text ?? "").trim();
@@ -27,7 +28,8 @@ function validate(body) {
     : (body?.followGateMode ?? body?.follow_gate_mode ?? "strict");
   const matchMode = body?.matchMode ?? body?.match_mode ?? "exact";
   const enabled = Boolean(body?.enabled);
-  if (!/^\d+$/u.test(mediaId)) throw new Error("Select an Instagram post.");
+  if (!["comment", "message", "mention"].includes(triggerType)) throw new Error("Automation trigger is invalid.");
+  if (triggerType === "comment" && !/^\d+$/u.test(mediaId)) throw new Error("Select an Instagram post.");
   if (!title || title.length > 120) throw new Error("Title is required and must be under 120 characters.");
   if (!keyword || keyword.length > 120) throw new Error("At least one keyword is required and the list must be under 120 characters.");
   if (!responseText && resourceLinks.length === 0 && !flowSteps.length) throw new Error("Add response text, a resource URL, or a flow step.");
@@ -50,9 +52,12 @@ function validate(body) {
       "https://deonmenezes.com",
     );
   } catch (error) {
-    throw new Error(/longer than Instagram/u.test(String(error?.message || ""))
+    const detail = String(error?.message || "");
+    throw new Error(/longer than Instagram/u.test(detail)
       ? "A flow message is too long. Keep each message under Instagram's limit."
-      : "Every flow button needs a valid HTTPS URL.");
+      : /message step/u.test(detail)
+        ? "A flow needs at least one message or button step."
+        : "Every flow button needs a valid HTTPS URL.");
   }
   for (const step of flowSteps) {
     if (step.type === "button") {
@@ -64,7 +69,8 @@ function validate(body) {
       }
     }
   }
-  return { mediaId, title, keyword, responseText, publicReplyText, resourceLinks, flowSteps, followGateMode, matchMode, enabled };
+  const triggerKey = `${triggerType}:${triggerType === "comment" ? mediaId : keyword}`;
+  return { mediaId: mediaId || null, triggerType, triggerKey, title, keyword, responseText, publicReplyText, resourceLinks, flowSteps, followGateMode, matchMode, enabled };
 }
 
 export default async function handler(req, res) {
@@ -86,29 +92,29 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
       const rows = await query(
         `INSERT INTO social_automations
-         (media_id,title,keyword,match_mode,response_text,public_reply_text,resource_links,flow_steps,follow_gate_mode,enabled,needs_setup,source)
-         VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8::jsonb,$9,$10,false,'dashboard')
-         ON CONFLICT (media_id) DO UPDATE SET title=excluded.title, keyword=excluded.keyword,
+         (media_id,trigger_type,trigger_key,title,keyword,match_mode,response_text,public_reply_text,resource_links,flow_steps,follow_gate_mode,enabled,needs_setup,source)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10::jsonb,$11,$12,false,'dashboard')
+         ON CONFLICT (trigger_key) DO UPDATE SET media_id=excluded.media_id, trigger_type=excluded.trigger_type, title=excluded.title, keyword=excluded.keyword,
            match_mode=excluded.match_mode, response_text=excluded.response_text,
            public_reply_text=excluded.public_reply_text, resource_links=excluded.resource_links,
            flow_steps=excluded.flow_steps, follow_gate_mode=excluded.follow_gate_mode, enabled=excluded.enabled, needs_setup=false,
            source='dashboard', updated_at=now() RETURNING *`,
-        [value.mediaId,value.title,value.keyword,value.matchMode,value.responseText,value.publicReplyText,JSON.stringify(value.resourceLinks),JSON.stringify(value.flowSteps),value.followGateMode,value.enabled],
+        [value.mediaId,value.triggerType,value.triggerKey,value.title,value.keyword,value.matchMode,value.responseText,value.publicReplyText,JSON.stringify(value.resourceLinks),JSON.stringify(value.flowSteps),value.followGateMode,value.enabled],
       );
       return sendJson(res, 200, { ok: true, automation: rows[0] });
     }
     const id = String(req.query.id || "");
     if (!id) return sendJson(res, 400, { error: "missing_id" });
     const rows = await query(
-      `UPDATE social_automations SET media_id=$2,title=$3,keyword=$4,match_mode=$5,response_text=$6,
-       public_reply_text=$7,resource_links=$8::jsonb,flow_steps=$9::jsonb,follow_gate_mode=$10,enabled=$11,needs_setup=false,
+      `UPDATE social_automations SET media_id=$2,trigger_type=$3,trigger_key=$4,title=$5,keyword=$6,match_mode=$7,response_text=$8,
+       public_reply_text=$9,resource_links=$10::jsonb,flow_steps=$11::jsonb,follow_gate_mode=$12,enabled=$13,needs_setup=false,
        source='dashboard',updated_at=now() WHERE id=$1 RETURNING *`,
-      [id,value.mediaId,value.title,value.keyword,value.matchMode,value.responseText,value.publicReplyText,JSON.stringify(value.resourceLinks),JSON.stringify(value.flowSteps),value.followGateMode,value.enabled],
+      [id,value.mediaId,value.triggerType,value.triggerKey,value.title,value.keyword,value.matchMode,value.responseText,value.publicReplyText,JSON.stringify(value.resourceLinks),JSON.stringify(value.flowSteps),value.followGateMode,value.enabled],
     );
     return rows[0] ? sendJson(res, 200, { ok: true, automation: rows[0] }) : sendJson(res, 404, { error: "not_found" });
   } catch (error) {
     logError("social.automations", error);
-    const clientError = /required|under|too long|HTTPS|invalid|Select|Add response|flow button|flow message|fallback/u.test(String(error.message || ""));
+    const clientError = /required|under|too long|HTTPS|invalid|Select|Add response|flow button|flow message|message step|fallback|trigger/u.test(String(error.message || ""));
     return sendJson(res, clientError ? 400 : 500, { error: clientError ? "invalid_automation" : "automation_save_failed", detail: clientError ? error.message : undefined });
   }
 }

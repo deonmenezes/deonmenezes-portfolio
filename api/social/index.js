@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   if (!requireMethod(req, res, ["GET"])) return;
   if (!isAdmin(req)) return sendJson(res, 401, { error: "authentication_required" });
   try {
-    const [accountRows, statsRows, daily, automations, media, conversationRows, healthRows] = await Promise.all([
+    const [accountRows, statsRows, daily, automations, media, conversationRows, contacts, broadcasts, healthRows] = await Promise.all([
       query("SELECT * FROM social_account_snapshots ORDER BY captured_at DESC LIMIT 1"),
       query(`SELECT
         (SELECT COUNT(*)::int FROM social_automations) AS automations,
@@ -21,6 +21,7 @@ export default async function handler(req, res) {
         (SELECT COUNT(*)::int FROM social_messages WHERE direction='inbound') AS dms_received,
         (SELECT COUNT(*)::int FROM social_link_clicks) AS link_clicks,
         (SELECT COUNT(*)::int FROM social_link_clicks WHERE clicked_at >= date_trunc('day', now())) AS clicks_today,
+        (SELECT COUNT(*)::int FROM social_contacts WHERE status='active') AS contacts,
         COALESCE((SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE status='sent') / NULLIF(COUNT(*),0),1) FROM social_deliveries),0) AS delivery_rate,
         COALESCE((SELECT ROUND(100.0 * (SELECT COUNT(*) FROM social_link_clicks) / NULLIF(COUNT(*),0),1) FROM social_messages WHERE direction='outbound'),0) AS click_rate`),
       query(`WITH days AS (
@@ -61,10 +62,27 @@ export default async function handler(req, res) {
           WHERE COALESCE(participant_id,conversation_id,id)=p.id ORDER BY created_at DESC LIMIT 100) h
       ) history ON true
       ORDER BY p.updated_at DESC LIMIT 100`),
+      query(`SELECT c.*, COALESCE(tags.tags,'[]'::json) AS tags
+        FROM social_contacts c
+        LEFT JOIN LATERAL (
+          SELECT json_agg(t.name ORDER BY t.name) AS tags
+          FROM social_contact_tags ct JOIN social_tags t ON t.id=ct.tag_id
+          WHERE ct.contact_id=c.id
+        ) tags ON true
+        ORDER BY c.last_seen_at DESC LIMIT 500`),
+      query(`SELECT b.*,COUNT(d.id)::int AS recipients,
+        COUNT(d.id) FILTER (WHERE d.status='sent')::int AS sent,
+        COUNT(d.id) FILTER (WHERE d.status='failed')::int AS failed
+        FROM social_broadcasts b LEFT JOIN social_broadcast_deliveries d ON d.broadcast_id=b.id
+        GROUP BY b.id ORDER BY b.updated_at DESC LIMIT 100`),
       query(`SELECT
         (SELECT completed_at FROM social_sync_runs WHERE status='completed' ORDER BY completed_at DESC LIMIT 1) AS last_sync,
         (SELECT COUNT(*)::int FROM social_webhook_events WHERE status IN ('pending','retryable','processing')) AS queued_events,
         (SELECT COUNT(*)::int FROM social_webhook_events WHERE status='failed') AS failed_events,
+        (SELECT COUNT(*)::int FROM social_flow_queue WHERE status IN ('pending','processing','retryable')) AS queued_steps,
+        (SELECT COUNT(*)::int FROM social_flow_queue WHERE status='failed') AS failed_steps,
+        (SELECT COUNT(*)::int FROM social_broadcasts WHERE status='scheduled') AS scheduled_broadcasts,
+        (SELECT COUNT(*)::int FROM social_broadcasts WHERE status='failed') AS failed_broadcasts,
         (SELECT COUNT(*)::int FROM social_deliveries WHERE status IN ('failed','unknown') OR last_error IS NOT NULL) AS failed_deliveries,
         (SELECT received_at FROM social_webhook_events ORDER BY received_at DESC LIMIT 1) AS last_webhook,
         (SELECT COUNT(*)::int FROM social_deliveries WHERE status='awaiting_follow') AS awaiting_follow`),
@@ -90,13 +108,13 @@ export default async function handler(req, res) {
       instagramError: graphError,
       webhook: healthRows[0]?.last_webhook ? "active" : "pending",
       database: "healthy",
-      worker: Number(healthRows[0]?.failed_events || 0) > 0 || Number(healthRows[0]?.failed_deliveries || 0) > 0 ? "degraded" : "active",
+      worker: Number(healthRows[0]?.failed_events || 0) > 0 || Number(healthRows[0]?.failed_deliveries || 0) > 0 || Number(healthRows[0]?.failed_steps || 0) > 0 || Number(healthRows[0]?.failed_broadcasts || 0) > 0 ? "degraded" : "active",
       graphConfigured: Boolean(process.env.INSTAGRAM_ACCESS_TOKEN && process.env.INSTAGRAM_ACCOUNT_ID),
       webhookConfigured: Boolean(process.env.META_APP_SECRET && process.env.META_WEBHOOK_VERIFY_TOKEN),
       webhookUrl: "https://deonmenezes.com/api/instagram/webhook",
       appReviewWarning: stats.dms_sent === 0 && Number(stats.posts || 0) > 0,
     };
-    return sendJson(res, 200, { account, stats, daily, automations, media, conversations: conversationRows, health });
+    return sendJson(res, 200, { account, stats, daily, automations, media, conversations: conversationRows, contacts, broadcasts, health });
   } catch (error) {
     logError("social.dashboard", error);
     return sendJson(res, 500, { error: "dashboard_unavailable" });

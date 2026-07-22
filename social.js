@@ -2,7 +2,7 @@
   "use strict";
 
   var API_ROOT = "/api/social";
-  var ROUTES = ["overview", "automations", "posts", "inbox", "analytics", "health"];
+  var ROUTES = ["overview", "automations", "posts", "inbox", "contacts", "analytics", "health"];
   var state = {
     data: null,
     route: "overview",
@@ -10,6 +10,7 @@
     automationFilter: "all",
     automationQuery: "",
     conversationQuery: "",
+    contactQuery: "",
     selectedConversationId: null,
     deleteAutomationId: null,
     chartGeometry: new Map(),
@@ -251,6 +252,8 @@
       automations: array(payload && payload.automations),
       media: array(payload && payload.media),
       conversations: array(payload && payload.conversations),
+      contacts: array(payload && payload.contacts),
+      broadcasts: array(payload && payload.broadcasts),
       health: payload && payload.health ? payload.health : {},
     };
   }
@@ -306,7 +309,7 @@
     });
     var titles = {
       overview: ["Workspace", "Overview"], automations: ["Manage", "Automations"], posts: ["Library", "Posts"],
-      inbox: ["Activity", "Inbox"], analytics: ["Insights", "Analytics"], health: ["Operations", "Health & settings"],
+      inbox: ["Activity", "Inbox"], contacts: ["Audience", "Contacts"], analytics: ["Insights", "Analytics"], health: ["Operations", "Health & settings"],
     };
     byId("page-kicker").textContent = titles[route][0];
     byId("page-title").textContent = titles[route][1];
@@ -320,6 +323,8 @@
     renderAutomations();
     renderPosts();
     renderConversations();
+    renderContacts();
+    renderBroadcasts();
     renderAnalytics();
     renderHealth();
     populateMediaSelect();
@@ -409,6 +414,7 @@
       id: String(first(raw, ["id", "automationId", "automation_id"], "")),
       name: text(first(raw, ["name", "title"]), "Untitled automation"),
       mediaId: String(first(raw, ["mediaId", "media_id"], "")),
+      triggerType: text(first(raw, ["triggerType", "trigger_type"], "comment"), "comment"),
       keyword: text(first(raw, ["keyword", "trigger"], ""), "—").toUpperCase(),
       responseText: text(first(raw, ["responseText", "response_text"], "")),
       enabled: isAutomationEnabled(raw),
@@ -422,6 +428,11 @@
         return {
           type: text(first(step, ["type"]), "message"),
           text: text(first(step, ["text"]), ""),
+          seconds: numberFrom(step, ["seconds", "delay_seconds", "delay"], 10),
+          condition: text(first(step, ["condition"]), "follows"),
+          value: text(first(step, ["value"]), ""),
+          yesText: text(first(step, ["yesText", "yes_text"]), ""),
+          noText: text(first(step, ["noText", "no_text"]), ""),
           buttons: array(first(step, ["buttons"], [])).map(function (button) {
             return { type: text(first(button, ["type"]), "web_url"), title: text(first(button, ["title"]), "Open"), url: text(first(button, ["url", "payload"]), "") };
           }),
@@ -480,10 +491,11 @@
     var main = element("div", "automation-main");
     var copy = element("div");
     var stepCount = automation.steps.length || 1;
-    append(copy, element("strong", "", automation.name), element("small", "", automation.followGate ? "Follow gate · " + stepCount + " step" + (stepCount === 1 ? "" : "s") : stepCount + " flow step" + (stepCount === 1 ? "" : "s")));
+    var triggerLabel = automation.triggerType === "message" ? "DM keyword" : automation.triggerType === "mention" ? "Story mention" : "Comment trigger";
+    append(copy, element("strong", "", automation.name), element("small", "", triggerLabel + " · " + stepCount + " step" + (stepCount === 1 ? "" : "s")));
     append(main, makeThumbnail(mediaForId(automation.mediaId)), copy);
     var keyword = element("div", "automation-meta");
-    append(keyword, element("span", "keyword-pill", automation.keyword), element("small", "", "Exact comment"));
+    append(keyword, element("span", "keyword-pill", automation.keyword), element("small", "", automation.triggerType === "message" ? "Incoming DM" : automation.triggerType === "mention" ? "Story mention" : "Exact comment"));
     var dmStat = element("div", "automation-stat");
     append(dmStat, element("strong", "", formatNumber(automation.dms)), element("small", "", "DMs"));
     var clickStat = element("div", "automation-stat");
@@ -669,6 +681,153 @@
     });
     var note = element("footer", "conversation-readonly", "◇ This inbox is read-only. Reply from Instagram when needed.");
     append(target, header, messages, note);
+  }
+
+  function normalizeContact(raw) {
+    return {
+      id: String(first(raw, ["id", "contactId", "contact_id"], "")),
+      username: text(first(raw, ["username", "handle"], ""), ""),
+      name: text(first(raw, ["displayName", "display_name", "username"], "Instagram user"), "Instagram user"),
+      avatar: safeUrl(first(raw, ["profilePictureUrl", "profile_picture_url"], "")),
+      status: text(first(raw, ["status"], "active"), "active"),
+      lastSeen: first(raw, ["lastSeenAt", "last_seen_at", "updatedAt", "updated_at"], ""),
+      tags: array(first(raw, ["tags"], [])),
+    };
+  }
+
+  function normalizedContacts() { return state.data.contacts.map(normalizeContact); }
+
+  async function addContactTag(contact, input, button) {
+    var tag = input.value.trim();
+    if (!tag) { input.focus(); return; }
+    setBusy(button, true, "Adding…");
+    try {
+      await request(API_ROOT + "/contacts", { method: "POST", body: { contactId: contact.id, tag: tag } });
+      input.value = "";
+      toast("Tag added.");
+      await loadDashboard();
+    } catch (error) { toast(error.message || "Could not add the tag.", true); }
+    finally { setBusy(button, false); }
+  }
+
+  async function removeContactTag(contact, tag, button) {
+    setBusy(button, true, "…");
+    try {
+      await request(API_ROOT + "/contacts", { method: "DELETE", body: { contactId: contact.id, tag: tag } });
+      toast("Tag removed.");
+      await loadDashboard();
+    } catch (error) { toast(error.message || "Could not remove the tag.", true); }
+    finally { setBusy(button, false); }
+  }
+
+  function renderContacts() {
+    var target = byId("contacts-list");
+    if (!target) return;
+    clear(target);
+    var query = state.contactQuery.toLowerCase();
+    var contacts = normalizedContacts().filter(function (contact) {
+      return !query || (contact.name + " " + contact.username + " " + contact.tags.join(" ")).toLowerCase().includes(query);
+    });
+    if (!contacts.length) {
+      target.appendChild(emptyState(state.data.contacts.length ? "No contacts match" : "No contacts yet", state.data.contacts.length ? "Try a different search." : "Contacts appear here after a comment or DM webhook is received."));
+      return;
+    }
+    contacts.forEach(function (contact) {
+      var row = element("article", "contact-row");
+      var main = element("div", "contact-main");
+      var copy = element("div");
+      append(copy, element("strong", "", contact.name), element("small", "", contact.username ? "@" + contact.username.replace(/^@/u, "") : contact.id));
+      append(main, makeAvatar(contact.name, contact.avatar), copy);
+      var tags = element("div", "contact-tags");
+      contact.tags.forEach(function (tag) {
+        var tagButton = element("button", "contact-tag", tag);
+        tagButton.type = "button";
+        tagButton.title = "Remove tag " + tag;
+        tagButton.addEventListener("click", function () { removeContactTag(contact, tag, tagButton); });
+        tags.appendChild(tagButton);
+      });
+      if (!contact.tags.length) tags.appendChild(element("small", "", "No tags yet"));
+      var form = element("form", "contact-tag-form");
+      var input = element("input");
+      input.placeholder = "Add tag";
+      input.maxLength = 40;
+      var button = element("button", "button button-secondary", "Tag");
+      button.type = "submit";
+      form.addEventListener("submit", function (event) { event.preventDefault(); addContactTag(contact, input, button); });
+      append(form, input, button);
+      append(row, main, tags, form);
+      target.appendChild(row);
+    });
+  }
+
+  function broadcastState(raw) {
+    var value = text(first(raw, ["status"], "draft"), "draft").toLowerCase();
+    var label = value.charAt(0).toUpperCase() + value.slice(1);
+    var className = value === "failed" ? "state-pill is-error" : ["draft", "cancelled"].includes(value) ? "state-pill is-paused" : "state-pill";
+    return element("span", className, label);
+  }
+
+  async function updateBroadcast(id, action, button) {
+    setBusy(button, true, action === "send" ? "Scheduling…" : "Cancelling…");
+    try {
+      await request(API_ROOT + "/broadcasts?id=" + encodeURIComponent(id) + "&action=" + encodeURIComponent(action), { method: "PATCH", body: {} });
+      toast(action === "send" ? "Broadcast scheduled." : "Broadcast cancelled.");
+      await loadDashboard();
+    } catch (error) { toast(error.message || "Broadcast update failed.", true); }
+    finally { setBusy(button, false); }
+  }
+
+  function renderBroadcasts() {
+    var target = byId("broadcasts-list");
+    if (!target) return;
+    clear(target);
+    var broadcasts = state.data.broadcasts;
+    if (!broadcasts.length) {
+      target.appendChild(emptyState("No broadcasts yet", "Save a draft above, then schedule it for your active contacts."));
+      return;
+    }
+    broadcasts.forEach(function (broadcast) {
+      var row = element("article", "broadcast-row");
+      var copy = element("div");
+      append(copy, element("strong", "", text(first(broadcast, ["title"], "Untitled broadcast"), "Untitled broadcast")), element("p", "", text(first(broadcast.message || {}, ["text"], "Message unavailable"), "Message unavailable")));
+      var meta = element("div", "broadcast-meta");
+      var recipients = formatNumber(numberFrom(broadcast, ["recipients"], 0));
+      meta.textContent = (broadcast.tag_filter ? "#" + broadcast.tag_filter + " · " : "All active contacts · ") + recipients + " recipients";
+      var actions = element("div", "row-actions");
+      var status = broadcastState(broadcast);
+      if (broadcast.status === "draft") {
+        var send = element("button", "button button-primary", "Schedule now");
+        send.type = "button";
+        send.addEventListener("click", function () { updateBroadcast(broadcast.id, "send", send); });
+        actions.appendChild(send);
+      } else if (["scheduled", "sending"].includes(broadcast.status)) {
+        var cancel = element("button", "button button-secondary", "Cancel");
+        cancel.type = "button";
+        cancel.addEventListener("click", function () { updateBroadcast(broadcast.id, "cancel", cancel); });
+        actions.appendChild(cancel);
+      }
+      append(row, copy, meta, append(element("div", "row-state"), status, actions));
+      target.appendChild(row);
+    });
+  }
+
+  async function saveBroadcast(event) {
+    event.preventDefault();
+    var message = byId("broadcast-form-message");
+    var submit = byId("broadcast-form").querySelector('button[type="submit"]');
+    message.classList.remove("is-error");
+    var scheduledAt = byId("broadcast-scheduled").value;
+    var body = { title: byId("broadcast-title").value.trim(), text: byId("broadcast-text").value.trim(), tagFilter: byId("broadcast-tag").value.trim(), scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : null };
+    if (!body.title || !body.text) { message.textContent = "Add a campaign name and message."; message.classList.add("is-error"); return; }
+    setBusy(submit, true, "Saving…");
+    try {
+      await request(API_ROOT + "/broadcasts", { method: "POST", body: body });
+      byId("broadcast-form").reset();
+      message.textContent = "Broadcast saved.";
+      toast("Broadcast saved.");
+      await loadDashboard();
+    } catch (error) { message.textContent = error.message || "Broadcast could not be saved."; message.classList.add("is-error"); }
+    finally { setBusy(submit, false); }
   }
 
   function analyticsDefinitions() {
@@ -929,6 +1088,23 @@
     append(target, visual, copy);
   }
 
+  function syncTriggerField() {
+    var type = byId("automation-trigger").value;
+    var isComment = type === "comment";
+    var media = byId("automation-media");
+    var label = byId("automation-media-label");
+    media.disabled = !isComment;
+    media.required = isComment;
+    label.hidden = !isComment;
+    media.hidden = !isComment;
+    byId("selected-post-preview").hidden = !isComment || !media.value;
+    byId("trigger-help").textContent = isComment
+      ? "Start when someone comments on a connected post."
+      : type === "mention"
+        ? "Start when someone mentions the Instagram account in a story."
+        : "Start when someone sends one of these keywords by Instagram DM.";
+  }
+
   function addResourceRow(resource) {
     var target = byId("resource-links");
     var row = element("div", "resource-row");
@@ -1000,7 +1176,10 @@
     var target = byId("flow-steps");
     var row = element("article", "flow-step");
     var head = element("div", "flow-step-head");
-    append(head, element("strong", "", value.type === "button" ? "Button step" : "Message step"));
+    var isDelay = value.type === "delay";
+    var isCondition = value.type === "condition";
+    var heading = element("strong", "", isDelay ? "Delay step" : isCondition ? "Condition step" : value.type === "button" ? "Button step" : "Message step");
+    append(head, heading);
     var remove = element("button", "icon-button", "×");
     remove.type = "button";
     remove.setAttribute("aria-label", "Remove flow step");
@@ -1008,12 +1187,12 @@
     head.appendChild(remove);
     var type = element("select");
     type.className = "flow-step-type";
-    [{ value: "message", label: "Send a message" }, { value: "button", label: "Send buttons" }].forEach(function (optionData) {
+    [{ value: "message", label: "Send a message" }, { value: "button", label: "Send buttons" }, { value: "delay", label: "Wait before continuing" }, { value: "condition", label: "Branch on a condition" }].forEach(function (optionData) {
       var option = element("option", "", optionData.label);
       option.value = optionData.value;
       type.appendChild(option);
     });
-    type.value = value.type === "button" ? "button" : "message";
+    type.value = value.type === "button" ? "button" : value.type === "delay" ? "delay" : value.type === "condition" ? "condition" : "message";
     var typeLabel = element("label", "", "Step type");
     typeLabel.appendChild(type);
     var textLabel = element("label", "", "Message");
@@ -1024,6 +1203,47 @@
     textInput.placeholder = "Write the next message…";
     textInput.value = text(value.text, "");
     textLabel.appendChild(textInput);
+    var delayLabel = element("label", "", "Wait seconds");
+    var delayInput = element("input");
+    delayInput.className = "flow-step-delay";
+    delayInput.type = "number";
+    delayInput.min = "1";
+    delayInput.max = "86400";
+    delayInput.step = "1";
+    delayInput.value = String(Math.max(1, Number(value.seconds) || 10));
+    delayLabel.appendChild(delayInput);
+    var conditionWrap = element("div", "flow-condition-fields");
+    var conditionLabel = element("label", "", "Check");
+    var condition = element("select");
+    condition.className = "flow-step-condition";
+    [{ value: "follows", label: "Whether they follow" }, { value: "keyword", label: "Whether the keyword matches" }, { value: "tag", label: "Whether they have a tag" }].forEach(function (optionData) {
+      var option = element("option", "", optionData.label);
+      option.value = optionData.value;
+      condition.appendChild(option);
+    });
+    condition.value = ["follows", "keyword", "tag"].includes(value.condition) ? value.condition : "follows";
+    conditionLabel.appendChild(condition);
+    var conditionValueLabel = element("label", "", "Tag or keyword (optional)");
+    var conditionValue = element("input");
+    conditionValue.className = "flow-step-condition-value";
+    conditionValue.placeholder = "VIP or LINK";
+    conditionValue.value = text(value.value, "");
+    conditionValueLabel.appendChild(conditionValue);
+    var yesLabel = element("label", "", "If true");
+    var yesInput = element("textarea");
+    yesInput.className = "flow-step-yes";
+    yesInput.maxLength = 700;
+    yesInput.placeholder = "Message when true";
+    yesInput.value = text(value.yesText, "");
+    yesLabel.appendChild(yesInput);
+    var noLabel = element("label", "", "If false");
+    var noInput = element("textarea");
+    noInput.className = "flow-step-no";
+    noInput.maxLength = 700;
+    noInput.placeholder = "Message when false (optional)";
+    noInput.value = text(value.noText, "");
+    noLabel.appendChild(noInput);
+    append(conditionWrap, conditionLabel, conditionValueLabel, yesLabel, noLabel);
     var buttons = element("div", "flow-step-buttons");
     var buttonActions = element("div", "flow-step-actions");
     var addButton = element("button", "button button-dashed", "＋ Add button");
@@ -1033,14 +1253,22 @@
     var buttonList = array(value.buttons);
     if (value.type === "button" && !buttonList.length) buttonList.push({ type: "web_url", title: "Open", url: "" });
     buttonList.forEach(function (button) { addFlowButtonRow(buttons, button); });
+    textLabel.hidden = isDelay || isCondition;
+    delayLabel.hidden = !isDelay;
+    conditionWrap.hidden = !isCondition;
     if (value.type !== "button") buttonActions.hidden = true;
     type.addEventListener("change", function () {
       var isButton = type.value === "button";
-      head.querySelector("strong").textContent = isButton ? "Button step" : "Message step";
+      var selectedDelay = type.value === "delay";
+      var selectedCondition = type.value === "condition";
+      head.querySelector("strong").textContent = selectedDelay ? "Delay step" : selectedCondition ? "Condition step" : isButton ? "Button step" : "Message step";
+      textLabel.hidden = selectedDelay || selectedCondition;
+      delayLabel.hidden = !selectedDelay;
+      conditionWrap.hidden = !selectedCondition;
       buttonActions.hidden = !isButton;
       if (isButton && !buttons.children.length) addFlowButtonRow(buttons, { type: "web_url", title: "Open", url: "" });
     });
-    append(row, head, typeLabel, textLabel, buttons, buttonActions);
+    append(row, head, typeLabel, textLabel, delayLabel, conditionWrap, buttons, buttonActions);
     target.appendChild(row);
   }
 
@@ -1054,6 +1282,17 @@
   function collectFlowSteps() {
     return Array.from(byId("flow-steps").querySelectorAll(".flow-step")).map(function (row) {
       var type = row.querySelector(".flow-step-type").value;
+      if (type === "delay") {
+        var seconds = Number(row.querySelector(".flow-step-delay").value);
+        if (!Number.isInteger(seconds) || seconds < 1 || seconds > 86400) throw new Error("Delay steps must be between 1 and 86400 seconds.");
+        return { type: type, seconds: seconds };
+      }
+      if (type === "condition") {
+        var yesText = row.querySelector(".flow-step-yes").value.trim();
+        var noText = row.querySelector(".flow-step-no").value.trim();
+        if (!yesText && !noText) throw new Error("Add a true or false branch message.");
+        return { type: type, condition: row.querySelector(".flow-step-condition").value, value: row.querySelector(".flow-step-condition-value").value.trim(), yesText: yesText, noText: noText };
+      }
       var value = { type: type, text: row.querySelector(".flow-step-text").value.trim() };
       if (!value.text) throw new Error("Every flow step needs message text.");
       if (type === "button") {
@@ -1083,6 +1322,7 @@
     byId("drawer-title").textContent = editing ? "Edit automation" : "Create automation";
     byId("automation-name").value = editing ? editing.name : "";
     byId("automation-keyword").value = editing ? editing.keyword : "";
+    byId("automation-trigger").value = editing ? editing.triggerType : "comment";
     byId("response-text").value = editing ? editing.responseText : "Here’s what you asked for:";
     byId("public-reply").value = editing ? editing.publicReplyText : "Sent it — check your DMs ✦";
     byId("public-reply-enabled").checked = editing ? editing.publicReplyEnabled : true;
@@ -1097,6 +1337,7 @@
     links.forEach(addResourceRow);
     renderFlowSteps(editing ? editing.steps : [], editing ? editing.responseText : "Here’s what you asked for:");
     populateMediaSelect(editing ? editing.mediaId : mediaId || "");
+    syncTriggerField();
     dom.drawer.hidden = false;
     dom.drawerBackdrop.hidden = false;
     dom.dashboard.inert = true;
@@ -1138,7 +1379,8 @@
     });
     return {
       name: byId("automation-name").value.trim(),
-      mediaId: byId("automation-media").value,
+      triggerType: byId("automation-trigger").value,
+      mediaId: byId("automation-trigger").value === "comment" ? byId("automation-media").value : null,
       keyword: byId("automation-keyword").value.trim().toUpperCase(),
       responseText: byId("response-text").value.trim(),
       flowSteps: collectFlowSteps(),
@@ -1175,7 +1417,7 @@
     setBusy(button, true, "Sending…");
     try {
       await request(API_ROOT + "/test", { method: "POST", body: { automationId: id } });
-      toast("Meta connection and message preview verified.");
+      toast("Meta connection and flow preview verified.");
     } catch (error) { toast(error.message || "The test could not be sent.", true); }
     finally { setBusy(button, false); }
   }
@@ -1250,6 +1492,8 @@
     });
     byId("automation-search").addEventListener("input", function (event) { state.automationQuery = event.target.value.trim(); renderFilteredAutomations(); });
     byId("conversation-search").addEventListener("input", function (event) { state.conversationQuery = event.target.value.trim(); renderConversationList(); });
+    byId("contact-search").addEventListener("input", function (event) { state.contactQuery = event.target.value.trim(); renderContacts(); });
+    byId("broadcast-form").addEventListener("submit", saveBroadcast);
     byId("sync-button").addEventListener("click", syncDashboard);
     byId("posts-sync-button").addEventListener("click", syncDashboard);
     byId("health-sync-button").addEventListener("click", syncDashboard);
@@ -1258,11 +1502,14 @@
     dom.drawerBackdrop.addEventListener("click", closeDrawer);
     dom.drawerForm.addEventListener("submit", saveAutomation);
     byId("automation-media").addEventListener("change", renderSelectedPost);
+    byId("automation-trigger").addEventListener("change", syncTriggerField);
     byId("public-reply-enabled").addEventListener("change", syncPublicReplyField);
     byId("automation-keyword").addEventListener("input", function (event) { event.target.value = event.target.value.toUpperCase(); });
     byId("add-resource").addEventListener("click", function () { addResourceRow({ label: "", url: "" }); });
     byId("add-message-step").addEventListener("click", function () { addFlowStep({ type: "message", text: "" }); });
     byId("add-button-step").addEventListener("click", function () { addFlowStep({ type: "button", text: "Choose an option", buttons: [{ type: "web_url", title: "Open", url: "" }] }); });
+    byId("add-delay-step").addEventListener("click", function () { addFlowStep({ type: "delay", seconds: 10 }); });
+    byId("add-condition-step").addEventListener("click", function () { addFlowStep({ type: "condition", condition: "follows", yesText: "Thanks for following!", noText: "Please follow to continue." }); });
     byId("automation-test").addEventListener("click", function (event) { testAutomation(byId("automation-id").value, event.currentTarget); });
     byId("confirm-delete").addEventListener("click", confirmDelete);
     byId("performance-chart").addEventListener("mousemove", handleChartPointer);

@@ -1,5 +1,5 @@
 import { isAdmin } from "../../lib/social/auth.js";
-import { buildDeliveryText } from "../../lib/social/automation.js";
+import { buildDeliveryText, buildFlowMessages } from "../../lib/social/automation.js";
 import { query } from "../../lib/social/db.js";
 import { publicBaseUrl, readJson, requireMethod, sameOrigin, sendJson } from "../../lib/social/http.js";
 import { getAccount } from "../../lib/social/meta.js";
@@ -14,7 +14,8 @@ export default async function handler(req, res) {
   try {
     const account = await getAccount();
     const preview = buildDeliveryText(rows[0], "preview", publicBaseUrl(req));
-    return sendJson(res, 200, { ok: true, liveConnection: true, account: account.username, preview });
+    const flow = buildFlowMessages(rows[0], "preview", publicBaseUrl(req));
+    return sendJson(res, 200, { ok: true, liveConnection: true, account: account.username, preview, flow });
   } catch (error) {
     return sendJson(res, 502, { error: "meta_connection_failed", detail: String(error.message || "Meta connection failed").slice(0, 180) });
   }

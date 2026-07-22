@@ -3,12 +3,14 @@ import test from "node:test";
 import {
   buildDeliveryText,
   buildFlowMessages,
+  buildFlowPlan,
   buildFollowCard,
   extractCaptionKeyword,
   extractWebhookEvents,
   FOLLOW_CONFIRMATION_PAYLOAD,
   isMatch,
 } from "../lib/social/automation.js";
+import { broadcastMessage } from "../lib/social/broadcast.js";
 
 test("extractCaptionKeyword understands Instagram caption quotes", () => {
   assert.equal(extractCaptionKeyword('Comment “Link” and I will send it'), "LINK");
@@ -54,8 +56,33 @@ test("flow steps can deliver multiple messages and interactive buttons", () => {
   assert.equal(messages[1].attachment.payload.buttons[1].payload, "FLOW_CONTINUE:42:1");
 });
 
+test("flow plans preserve durable delays between message steps", () => {
+  const plan = buildFlowPlan({ id: "automation-id", flow_steps: [{ type: "message", text: "First" }, { type: "delay", seconds: 30 }, { type: "message", text: "Second" }], resource_links: [] }, 9, "https://deonmenezes.com");
+  assert.equal(plan.length, 2);
+  assert.equal(plan[0].delaySeconds, 0);
+  assert.equal(plan[1].delaySeconds, 30);
+  assert.equal(plan[1].message.text, "Second");
+});
+
+test("flow conditions choose the branch from webhook context", () => {
+  const followed = buildFlowPlan({ id: "automation-id", flow_steps: [{ type: "condition", condition: "follows", yesText: "Welcome back", noText: "Please follow first" }], resource_links: [] }, 10, "https://deonmenezes.com", { follows: true });
+  assert.equal(followed[0].message.text, "Welcome back");
+});
+
 test("webhook parser extracts comments, postbacks, and messages", () => {
   const events = extractWebhookEvents({ entry: [{ time: 100, changes: [{ field: "comments", value: { id: "c1", text: "LINK", from: { id: "u1", username: "person" }, media: { id: "m1" } } }], messaging: [{ sender: { id: "u1" }, recipient: { id: "business" }, timestamp: 101, postback: { payload: FOLLOW_CONFIRMATION_PAYLOAD } }, { sender: { id: "u1" }, recipient: { id: "business" }, timestamp: 102, message: { mid: "msg1", text: "hello" } }] }] });
   assert.deepEqual(events.map((event) => event.type), ["comment", "postback", "message"]);
   assert.equal(events[0].payload.mediaId, "m1");
+});
+
+test("webhook parser extracts story mention events", () => {
+  const events = extractWebhookEvents({ entry: [{ time: 200, changes: [{ field: "mentions", value: { id: "mention-1", from: { id: "u2", username: "viewer" }, media_id: "story-1" } }] }] });
+  assert.equal(events.length, 1);
+  assert.equal(events[0].type, "mention");
+  assert.equal(events[0].payload.commenterId, "u2");
+});
+
+test("broadcast messages enforce the Instagram message limit", () => {
+  assert.deepEqual(broadcastMessage("Hello"), { text: "Hello" });
+  assert.throws(() => broadcastMessage("x".repeat(1001)), /under 1000/u);
 });
