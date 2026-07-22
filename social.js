@@ -17,6 +17,7 @@
   };
 
   var dom = {};
+  var drawerCloseTimer = null;
 
   function byId(id) { return document.getElementById(id); }
 
@@ -1424,6 +1425,10 @@
 
   function openDrawer(automation, mediaId) {
     var editing = automation || null;
+    if (drawerCloseTimer) {
+      window.clearTimeout(drawerCloseTimer);
+      drawerCloseTimer = null;
+    }
     byId("automation-id").value = editing ? editing.id : "";
     byId("drawer-kicker").textContent = editing ? "Edit flow" : "New flow";
     byId("drawer-title").textContent = editing ? "Edit automation" : "Create automation";
@@ -1458,11 +1463,16 @@
   }
 
   function closeDrawer() {
+    if (drawerCloseTimer) window.clearTimeout(drawerCloseTimer);
     dom.drawer.classList.remove("is-open");
     dom.drawerBackdrop.classList.remove("is-open");
     dom.dashboard.inert = false;
     document.body.style.overflow = "";
-    window.setTimeout(function () { dom.drawer.hidden = true; dom.drawerBackdrop.hidden = true; }, 230);
+    drawerCloseTimer = window.setTimeout(function () {
+      dom.drawer.hidden = true;
+      dom.drawerBackdrop.hidden = true;
+      drawerCloseTimer = null;
+    }, 230);
   }
 
   function syncPublicReplyField() {
