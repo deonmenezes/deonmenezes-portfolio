@@ -599,3 +599,22 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
   .quick-start-panel h3 { max-width: 320px; font-size: 27px; }
   .quick-start-panel p { max-width: 340px; font-size: 12px; }
 }
+
+.flow-steps { display: grid; gap: 12px; margin: 16px 0 12px; }
+.flow-step { position: relative; display: grid; gap: 10px; padding: 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 16px; background: rgba(255,255,255,.035); }
+.flow-step-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.flow-step-head strong { color: #f6f1ff; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.flow-step-head .icon-button { width: 28px; height: 28px; }
+.flow-step textarea, .flow-step input, .flow-step select { width: 100%; }
+.flow-step textarea { min-height: 68px; resize: vertical; }
+.flow-step-buttons { display: grid; gap: 8px; }
+.flow-button-row { display: grid; grid-template-columns: 92px minmax(0,1fr) minmax(0,1.4fr) auto; gap: 8px; align-items: end; }
+.flow-button-row label { min-width: 0; }
+.flow-button-row .icon-button { margin-bottom: 1px; }
+.flow-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.flow-step-actions .button { font-size: 11px; padding: 10px 12px; }
+.legacy-copy-field { opacity: .82; }
+@media (max-width: 680px) {
+  .flow-button-row { grid-template-columns: 1fr 1fr auto; }
+  .flow-button-row label:first-child { grid-column: span 2; }
+}

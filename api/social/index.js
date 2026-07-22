@@ -1,6 +1,7 @@
 import { isAdmin } from "../../lib/social/auth.js";
 import { query } from "../../lib/social/db.js";
 import { logError, requireMethod, sendJson } from "../../lib/social/http.js";
+import { getAccount } from "../../lib/social/meta.js";
 
 export default async function handler(req, res) {
   if (!requireMethod(req, res, ["GET"])) return;
@@ -71,9 +72,22 @@ export default async function handler(req, res) {
 
     const account = accountRows[0] || { username: "deon_tech", followers_count: 0, follows_count: 0, media_count: media.length };
     const stats = statsRows[0] || {};
+    let graphStatus = "error";
+    let graphError = null;
+    if (process.env.INSTAGRAM_ACCESS_TOKEN && process.env.INSTAGRAM_ACCOUNT_ID) {
+      try {
+        await getAccount();
+        graphStatus = "connected";
+      } catch (error) {
+        graphError = String(error?.message || "Instagram Graph API rejected the configured credentials.").slice(0, 180);
+      }
+    } else {
+      graphError = "Instagram Graph API credentials are not configured.";
+    }
     const health = {
       ...(healthRows[0] || {}),
-      instagram: process.env.INSTAGRAM_ACCESS_TOKEN && process.env.INSTAGRAM_ACCOUNT_ID ? "connected" : "error",
+      instagram: graphStatus,
+      instagramError: graphError,
       webhook: healthRows[0]?.last_webhook ? "active" : "pending",
       database: "healthy",
       worker: Number(healthRows[0]?.failed_events || 0) > 0 || Number(healthRows[0]?.failed_deliveries || 0) > 0 ? "degraded" : "active",

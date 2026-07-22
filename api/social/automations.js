@@ -1,5 +1,5 @@
 import { isAdmin } from "../../lib/social/auth.js";
-import { buildDeliveryText, normalizeKeyword } from "../../lib/social/automation.js";
+import { buildDeliveryText, buildFlowMessages, normalizeFlowSteps, normalizeKeyword } from "../../lib/social/automation.js";
 import { query } from "../../lib/social/db.js";
 import { logError, readJson, requireMethod, sameOrigin, sendJson } from "../../lib/social/http.js";
 
@@ -8,6 +8,7 @@ function validate(body) {
   const title = String(body?.title || body?.name || "").trim();
   const keyword = normalizeKeyword(body?.keyword);
   const responseText = String(body?.responseText ?? body?.response_text ?? "").trim();
+  const flowSteps = normalizeFlowSteps(body?.flowSteps ?? body?.flow_steps);
   const publicReply = body?.publicReply && typeof body.publicReply === "object" ? body.publicReply : null;
   const publicReplyText = publicReply && publicReply.enabled === false
     ? ""
@@ -29,7 +30,8 @@ function validate(body) {
   if (!/^\d+$/u.test(mediaId)) throw new Error("Select an Instagram post.");
   if (!title || title.length > 120) throw new Error("Title is required and must be under 120 characters.");
   if (!keyword || keyword.length > 120) throw new Error("At least one keyword is required and the list must be under 120 characters.");
-  if (!responseText && resourceLinks.length === 0) throw new Error("Add response text or at least one resource URL.");
+  if (!responseText && resourceLinks.length === 0 && !flowSteps.length) throw new Error("Add response text, a resource URL, or a flow step.");
+  if (Array.isArray(body?.flowSteps ?? body?.flow_steps) && !flowSteps.length) throw new Error("Add at least one valid flow step.");
   if (responseText.length > 700 || publicReplyText.length > 220) throw new Error("Reply copy is too long.");
   if (!['strict', 'immediate'].includes(followGateMode) || !['exact', 'contains'].includes(matchMode)) throw new Error("Automation mode is invalid.");
   try {
@@ -39,9 +41,30 @@ function validate(body) {
       "https://deonmenezes.com",
     );
   } catch {
-    throw new Error("The combined private reply is too long. Shorten the text or use fewer links.");
+    throw new Error("The fallback private reply is too long. Shorten the text or use fewer links.");
   }
-  return { mediaId, title, keyword, responseText, publicReplyText, resourceLinks, followGateMode, matchMode, enabled };
+  try {
+    buildFlowMessages(
+      { id: "ffffffff-ffff-ffff-ffff-ffffffffffff", response_text: responseText, resource_links: resourceLinks, flow_steps: flowSteps },
+      "9223372036854775807",
+      "https://deonmenezes.com",
+    );
+  } catch (error) {
+    throw new Error(/longer than Instagram/u.test(String(error?.message || ""))
+      ? "A flow message is too long. Keep each message under Instagram's limit."
+      : "Every flow button needs a valid HTTPS URL.");
+  }
+  for (const step of flowSteps) {
+    if (step.type === "button") {
+      for (const button of step.buttons) {
+        if (button.type === "web_url") {
+          const url = new URL(button.url);
+          if (url.protocol !== "https:") throw new Error("Every flow button URL must use HTTPS.");
+        }
+      }
+    }
+  }
+  return { mediaId, title, keyword, responseText, publicReplyText, resourceLinks, flowSteps, followGateMode, matchMode, enabled };
 }
 
 export default async function handler(req, res) {
@@ -63,14 +86,14 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
       const rows = await query(
         `INSERT INTO social_automations
-         (media_id,title,keyword,match_mode,response_text,public_reply_text,resource_links,follow_gate_mode,enabled,needs_setup,source)
-         VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8,$9,false,'dashboard')
+         (media_id,title,keyword,match_mode,response_text,public_reply_text,resource_links,flow_steps,follow_gate_mode,enabled,needs_setup,source)
+         VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8::jsonb,$9,$10,false,'dashboard')
          ON CONFLICT (media_id) DO UPDATE SET title=excluded.title, keyword=excluded.keyword,
            match_mode=excluded.match_mode, response_text=excluded.response_text,
            public_reply_text=excluded.public_reply_text, resource_links=excluded.resource_links,
-           follow_gate_mode=excluded.follow_gate_mode, enabled=excluded.enabled, needs_setup=false,
+           flow_steps=excluded.flow_steps, follow_gate_mode=excluded.follow_gate_mode, enabled=excluded.enabled, needs_setup=false,
            source='dashboard', updated_at=now() RETURNING *`,
-        [value.mediaId,value.title,value.keyword,value.matchMode,value.responseText,value.publicReplyText,JSON.stringify(value.resourceLinks),value.followGateMode,value.enabled],
+        [value.mediaId,value.title,value.keyword,value.matchMode,value.responseText,value.publicReplyText,JSON.stringify(value.resourceLinks),JSON.stringify(value.flowSteps),value.followGateMode,value.enabled],
       );
       return sendJson(res, 200, { ok: true, automation: rows[0] });
     }
@@ -78,14 +101,14 @@ export default async function handler(req, res) {
     if (!id) return sendJson(res, 400, { error: "missing_id" });
     const rows = await query(
       `UPDATE social_automations SET media_id=$2,title=$3,keyword=$4,match_mode=$5,response_text=$6,
-       public_reply_text=$7,resource_links=$8::jsonb,follow_gate_mode=$9,enabled=$10,needs_setup=false,
+       public_reply_text=$7,resource_links=$8::jsonb,flow_steps=$9::jsonb,follow_gate_mode=$10,enabled=$11,needs_setup=false,
        source='dashboard',updated_at=now() WHERE id=$1 RETURNING *`,
-      [id,value.mediaId,value.title,value.keyword,value.matchMode,value.responseText,value.publicReplyText,JSON.stringify(value.resourceLinks),value.followGateMode,value.enabled],
+      [id,value.mediaId,value.title,value.keyword,value.matchMode,value.responseText,value.publicReplyText,JSON.stringify(value.resourceLinks),JSON.stringify(value.flowSteps),value.followGateMode,value.enabled],
     );
     return rows[0] ? sendJson(res, 200, { ok: true, automation: rows[0] }) : sendJson(res, 404, { error: "not_found" });
   } catch (error) {
     logError("social.automations", error);
-    const clientError = /required|under|too long|HTTPS|invalid|Select|Add response/u.test(String(error.message || ""));
+    const clientError = /required|under|too long|HTTPS|invalid|Select|Add response|flow button|flow message|fallback/u.test(String(error.message || ""));
     return sendJson(res, clientError ? 400 : 500, { error: clientError ? "invalid_automation" : "automation_save_failed", detail: clientError ? error.message : undefined });
   }
 }

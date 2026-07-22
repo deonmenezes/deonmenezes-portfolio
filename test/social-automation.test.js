@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildDeliveryText,
+  buildFlowMessages,
   buildFollowCard,
   extractCaptionKeyword,
   extractWebhookEvents,
@@ -36,6 +37,21 @@ test("delivery text uses deonmenezes.com tracking links", () => {
   const text = buildDeliveryText({ id: "automation-id", response_text: "Here it is", resource_links: [{ label: "Guide", url: "https://example.com" }] }, 42, "https://deonmenezes.com");
   assert.match(text, /https:\/\/deonmenezes\.com\/go\/automation-id\/0\?d=42/u);
   assert.doesNotMatch(text, /example\.com/u);
+});
+
+test("flow steps can deliver multiple messages and interactive buttons", () => {
+  const messages = buildFlowMessages({
+    id: "automation-id",
+    flow_steps: [
+      { type: "message", text: "Here is the guide." },
+      { type: "button", text: "Choose an option", buttons: [{ type: "web_url", title: "Open guide", url: "https://example.com/guide" }, { type: "postback", title: "Continue", payload: "FLOW_CONTINUE" }] },
+    ],
+    resource_links: [],
+  }, 42, "https://deonmenezes.com");
+  assert.equal(messages.length, 2);
+  assert.equal(messages[0].text, "Here is the guide.");
+  assert.equal(messages[1].attachment.payload.buttons[0].type, "web_url");
+  assert.equal(messages[1].attachment.payload.buttons[1].payload, "FLOW_CONTINUE:42:1");
 });
 
 test("webhook parser extracts comments, postbacks, and messages", () => {

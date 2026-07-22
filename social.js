@@ -353,7 +353,8 @@
       image.addEventListener("error", function () { image.remove(); });
       avatar.appendChild(image);
     }
-    var connected = booleanFrom(account, ["connected", "isConnected", "is_connected"], Boolean(first(account, ["id", "username"], "")));
+    var graphConnected = text(first(state.data.health, ["instagram"], ""), "").toLowerCase() === "connected";
+    var connected = graphConnected && booleanFrom(account, ["connected", "isConnected", "is_connected"], Boolean(first(account, ["id", "username"], "")));
     var pill = byId("connection-pill");
     pill.classList.toggle("is-healthy", connected);
     pill.classList.toggle("is-error", !connected);
@@ -399,6 +400,7 @@
     var publicReplyValue = first(raw, ["publicReply", "public_reply"], null);
     var publicReplyObject = publicReplyValue && typeof publicReplyValue === "object" ? publicReplyValue : {};
     var links = array(first(raw, ["links", "resources", "resourceLinks", "resource_links"], []));
+    var steps = array(first(raw, ["flowSteps", "flow_steps"], []));
     if (!links.length && first(raw, ["resourceUrl", "resource_url"], "")) {
       links = [{ label: text(first(raw, ["resourceLabel", "resource_label"]), "Resource"), url: first(raw, ["resourceUrl", "resource_url"], "") }];
     }
@@ -416,6 +418,15 @@
       publicReplyEnabled: booleanFrom(publicReplyObject, ["enabled"], booleanFrom(raw, ["publicReplyEnabled", "public_reply_enabled"], Boolean(publicReplyValue))),
       publicReplyText: text(typeof publicReplyValue === "string" ? publicReplyValue : first(publicReplyObject, ["text"], first(raw, ["publicReplyText", "public_reply_text"], ""))),
       links: links.map(function (link) { return { label: text(first(link, ["label", "name"]), "Resource"), url: text(first(link, ["url", "href"]), "") }; }),
+      steps: steps.map(function (step) {
+        return {
+          type: text(first(step, ["type"]), "message"),
+          text: text(first(step, ["text"]), ""),
+          buttons: array(first(step, ["buttons"], [])).map(function (button) {
+            return { type: text(first(button, ["type"]), "web_url"), title: text(first(button, ["title"]), "Open"), url: text(first(button, ["url", "payload"]), "") };
+          }),
+        };
+      }),
       dms: numberFrom(raw, ["dms", "dmsSent", "dms_sent", "deliveries"]),
       clicks: numberFrom(raw, ["clicks", "linkClicks", "link_clicks"]),
       updatedAt: first(raw, ["updatedAt", "updated_at", "createdAt", "created_at"], ""),
@@ -468,7 +479,8 @@
     var row = element("article", "automation-row");
     var main = element("div", "automation-main");
     var copy = element("div");
-    append(copy, element("strong", "", automation.name), element("small", "", automation.followGate ? "Follow gate · " + automation.links.length + " link" + (automation.links.length === 1 ? "" : "s") : automation.links.length + " resource link" + (automation.links.length === 1 ? "" : "s")));
+    var stepCount = automation.steps.length || 1;
+    append(copy, element("strong", "", automation.name), element("small", "", automation.followGate ? "Follow gate · " + stepCount + " step" + (stepCount === 1 ? "" : "s") : stepCount + " flow step" + (stepCount === 1 ? "" : "s")));
     append(main, makeThumbnail(mediaForId(automation.mediaId)), copy);
     var keyword = element("div", "automation-meta");
     append(keyword, element("span", "keyword-pill", automation.keyword), element("small", "", "Exact comment"));
@@ -722,7 +734,7 @@
   function renderHealth() {
     var health = state.data.health;
     var definitions = [
-      { label: "Instagram API", value: first(health, ["instagram", "api", "instagramApi", "instagram_api"], "unknown"), note: "Comment and message access" },
+      { label: "Instagram API", value: first(health, ["instagram", "api", "instagramApi", "instagram_api"], "unknown"), note: text(first(health, ["instagramError", "instagram_error"], ""), "Comment and message access") },
       { label: "Webhook", value: first(health, ["webhook", "webhookStatus", "webhook_status"], "unknown"), note: "Inbound comment events" },
       { label: "Database", value: first(health, ["database", "db", "databaseStatus", "database_status"], "unknown"), note: "Rules and delivery state" },
       { label: "Delivery worker", value: first(health, ["worker", "delivery", "workerStatus", "worker_status"], "unknown"), note: "Last sync " + relativeTime(first(health, ["lastSync", "last_sync"], "")) },
@@ -947,6 +959,123 @@
     target.appendChild(row);
   }
 
+  function addFlowButtonRow(target, button) {
+    var row = element("div", "flow-button-row");
+    var typeWrap = element("label", "", "Action");
+    var type = element("select");
+    type.className = "flow-button-type";
+    [{ value: "web_url", label: "Open URL" }, { value: "postback", label: "Postback" }].forEach(function (optionData) {
+      var option = element("option", "", optionData.label);
+      option.value = optionData.value;
+      type.appendChild(option);
+    });
+    type.value = button && button.type === "postback" ? "postback" : "web_url";
+    typeWrap.appendChild(type);
+    var titleWrap = element("label", "", "Button label");
+    var title = element("input");
+    title.className = "flow-button-title";
+    title.maxLength = 20;
+    title.required = true;
+    title.placeholder = "Open guide";
+    title.value = text(button && button.title, "");
+    titleWrap.appendChild(title);
+    var valueWrap = element("label", "", "URL or payload");
+    var value = element("input");
+    value.className = "flow-button-value";
+    value.required = true;
+    value.placeholder = "https://example.com/guide";
+    value.value = text(button && (button.url || button.payload), "");
+    valueWrap.appendChild(value);
+    var remove = element("button", "icon-button", "×");
+    remove.type = "button";
+    remove.setAttribute("aria-label", "Remove button");
+    remove.addEventListener("click", function () { row.remove(); });
+    type.addEventListener("change", function () { value.placeholder = type.value === "postback" ? "FLOW_CONTINUE" : "https://example.com/guide"; });
+    append(row, typeWrap, titleWrap, valueWrap, remove);
+    target.appendChild(row);
+  }
+
+  function addFlowStep(step) {
+    var value = step || { type: "message", text: "" };
+    var target = byId("flow-steps");
+    var row = element("article", "flow-step");
+    var head = element("div", "flow-step-head");
+    append(head, element("strong", "", value.type === "button" ? "Button step" : "Message step"));
+    var remove = element("button", "icon-button", "×");
+    remove.type = "button";
+    remove.setAttribute("aria-label", "Remove flow step");
+    remove.addEventListener("click", function () { row.remove(); });
+    head.appendChild(remove);
+    var type = element("select");
+    type.className = "flow-step-type";
+    [{ value: "message", label: "Send a message" }, { value: "button", label: "Send buttons" }].forEach(function (optionData) {
+      var option = element("option", "", optionData.label);
+      option.value = optionData.value;
+      type.appendChild(option);
+    });
+    type.value = value.type === "button" ? "button" : "message";
+    var typeLabel = element("label", "", "Step type");
+    typeLabel.appendChild(type);
+    var textLabel = element("label", "", "Message");
+    var textInput = element("textarea");
+    textInput.className = "flow-step-text";
+    textInput.maxLength = 700;
+    textInput.required = true;
+    textInput.placeholder = "Write the next message…";
+    textInput.value = text(value.text, "");
+    textLabel.appendChild(textInput);
+    var buttons = element("div", "flow-step-buttons");
+    var buttonActions = element("div", "flow-step-actions");
+    var addButton = element("button", "button button-dashed", "＋ Add button");
+    addButton.type = "button";
+    addButton.addEventListener("click", function () { addFlowButtonRow(buttons, { type: "web_url", title: "Open", url: "" }); });
+    buttonActions.appendChild(addButton);
+    var buttonList = array(value.buttons);
+    if (value.type === "button" && !buttonList.length) buttonList.push({ type: "web_url", title: "Open", url: "" });
+    buttonList.forEach(function (button) { addFlowButtonRow(buttons, button); });
+    if (value.type !== "button") buttonActions.hidden = true;
+    type.addEventListener("change", function () {
+      var isButton = type.value === "button";
+      head.querySelector("strong").textContent = isButton ? "Button step" : "Message step";
+      buttonActions.hidden = !isButton;
+      if (isButton && !buttons.children.length) addFlowButtonRow(buttons, { type: "web_url", title: "Open", url: "" });
+    });
+    append(row, head, typeLabel, textLabel, buttons, buttonActions);
+    target.appendChild(row);
+  }
+
+  function renderFlowSteps(steps, fallbackText) {
+    var target = byId("flow-steps");
+    clear(target);
+    var values = steps && steps.length ? steps : [{ type: "message", text: fallbackText || "Here’s what you asked for:" }];
+    values.forEach(addFlowStep);
+  }
+
+  function collectFlowSteps() {
+    return Array.from(byId("flow-steps").querySelectorAll(".flow-step")).map(function (row) {
+      var type = row.querySelector(".flow-step-type").value;
+      var value = { type: type, text: row.querySelector(".flow-step-text").value.trim() };
+      if (!value.text) throw new Error("Every flow step needs message text.");
+      if (type === "button") {
+        value.buttons = Array.from(row.querySelectorAll(".flow-button-row")).map(function (buttonRow) {
+          var buttonType = buttonRow.querySelector(".flow-button-type").value;
+          var buttonTitle = buttonRow.querySelector(".flow-button-title").value.trim();
+          var buttonValue = buttonRow.querySelector(".flow-button-value").value.trim();
+          if (!buttonTitle || !buttonValue) throw new Error("Every button needs a label and URL or payload.");
+          if (buttonType === "web_url") {
+            var url;
+            try { url = new URL(buttonValue); } catch (_error) { throw new Error("Every flow button needs a valid HTTPS URL."); }
+            if (url.protocol !== "https:") throw new Error("Every flow button needs a valid HTTPS URL.");
+            return { type: buttonType, title: buttonTitle, url: url.toString() };
+          }
+          return { type: buttonType, title: buttonTitle, payload: buttonValue };
+        });
+        if (!value.buttons.length) throw new Error("Add at least one button to a button step.");
+      }
+      return value;
+    });
+  }
+
   function openDrawer(automation, mediaId) {
     var editing = automation || null;
     byId("automation-id").value = editing ? editing.id : "";
@@ -966,6 +1095,7 @@
     clear(byId("resource-links"));
     var links = editing && editing.links.length ? editing.links : [{ label: "", url: "" }];
     links.forEach(addResourceRow);
+    renderFlowSteps(editing ? editing.steps : [], editing ? editing.responseText : "Here’s what you asked for:");
     populateMediaSelect(editing ? editing.mediaId : mediaId || "");
     dom.drawer.hidden = false;
     dom.drawerBackdrop.hidden = false;
@@ -1011,6 +1141,7 @@
       mediaId: byId("automation-media").value,
       keyword: byId("automation-keyword").value.trim().toUpperCase(),
       responseText: byId("response-text").value.trim(),
+      flowSteps: collectFlowSteps(),
       links: links,
       followGate: byId("follow-gate").checked,
       publicReply: { enabled: byId("public-reply-enabled").checked, text: byId("public-reply").value.trim() },
@@ -1130,6 +1261,8 @@
     byId("public-reply-enabled").addEventListener("change", syncPublicReplyField);
     byId("automation-keyword").addEventListener("input", function (event) { event.target.value = event.target.value.toUpperCase(); });
     byId("add-resource").addEventListener("click", function () { addResourceRow({ label: "", url: "" }); });
+    byId("add-message-step").addEventListener("click", function () { addFlowStep({ type: "message", text: "" }); });
+    byId("add-button-step").addEventListener("click", function () { addFlowStep({ type: "button", text: "Choose an option", buttons: [{ type: "web_url", title: "Open", url: "" }] }); });
     byId("automation-test").addEventListener("click", function (event) { testAutomation(byId("automation-id").value, event.currentTarget); });
     byId("confirm-delete").addEventListener("click", confirmDelete);
     byId("performance-chart").addEventListener("mousemove", handleChartPointer);
