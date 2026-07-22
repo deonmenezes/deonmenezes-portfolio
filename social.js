@@ -1388,10 +1388,11 @@
   }
 
   function collectAutomation() {
+    var triggerType = byId("automation-trigger").value;
     var links = Array.from(byId("resource-links").querySelectorAll(".resource-row")).map(function (row) {
       return { label: row.querySelector(".resource-label").value.trim(), url: row.querySelector(".resource-url").value.trim() };
     });
-    if (!byId("automation-media").value) throw new Error("Choose an Instagram post.");
+    if (triggerType === "comment" && !byId("automation-media").value) throw new Error("Choose an Instagram post.");
     if (!byId("automation-name").value.trim()) throw new Error("Give this automation a name.");
     if (!byId("automation-keyword").value.trim()) throw new Error("Enter an exact comment keyword.");
     links = links.filter(function (link) { return link.label || link.url; });
@@ -1404,8 +1405,8 @@
     });
     return {
       name: byId("automation-name").value.trim(),
-      triggerType: byId("automation-trigger").value,
-      mediaId: byId("automation-trigger").value === "comment" ? byId("automation-media").value : null,
+      triggerType: triggerType,
+      mediaId: triggerType === "comment" ? byId("automation-media").value : null,
       keyword: byId("automation-keyword").value.trim().toUpperCase(),
       responseText: byId("response-text").value.trim(),
       flowSteps: collectFlowSteps(),

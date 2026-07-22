@@ -40,8 +40,8 @@ export default async function handler(req, res) {
         m.comments_count, m.like_count,
         (SELECT COUNT(*)::int FROM social_deliveries d WHERE d.automation_id=a.id AND d.status='sent') AS deliveries,
         (SELECT COUNT(*)::int FROM social_link_clicks c WHERE c.automation_id=a.id) AS clicks
-      FROM social_automations a JOIN social_media m ON m.id=a.media_id
-      ORDER BY a.enabled DESC, a.needs_setup DESC, m.published_at DESC`),
+      FROM social_automations a LEFT JOIN social_media m ON m.id=a.media_id
+      ORDER BY a.enabled DESC, a.needs_setup DESC, COALESCE(m.published_at,a.updated_at) DESC`),
       query(`SELECT m.*, a.id AS automation_id, a.keyword, a.enabled, a.needs_setup
         FROM social_media m LEFT JOIN social_automations a ON a.media_id=m.id
         ORDER BY m.published_at DESC LIMIT 250`),
