@@ -133,13 +133,13 @@
   function setBusy(button, busy, label) {
     if (!button) return;
     if (busy) {
-      button.dataset.originalLabel = button.textContent;
+      button.dataset.originalMarkup = button.innerHTML;
       button.disabled = true;
       button.textContent = label || "Working…";
     } else {
       button.disabled = false;
-      if (button.dataset.originalLabel) button.textContent = button.dataset.originalLabel;
-      delete button.dataset.originalLabel;
+      if (button.dataset.originalMarkup) button.innerHTML = button.dataset.originalMarkup;
+      delete button.dataset.originalMarkup;
     }
   }
 
