@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Private Instagram comment-to-DM automation dashboard for Deon Tech.">
+  <meta name="theme-color" content="#100a1f">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Instant DM · Private dashboard</title>
+  <link rel="stylesheet" href="/social.css">
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <main id="auth-screen" class="auth-screen" aria-labelledby="login-title">
+    <section class="login-card">
+      <div class="brand-lockup brand-lockup-login">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span><strong>Instant DM</strong><small>by Deon Tech</small></span>
+      </div>
+      <div class="login-copy">
+        <span class="eyebrow"><i class="status-dot"></i> Private workspace</span>
+        <h1 id="login-title">Turn comments into conversations.</h1>
+        <p>Manage Instagram automations, delivery health, and responses from one focused dashboard.</p>
+      </div>
+      <form id="login-form" class="login-form" novalidate>
+        <label for="password">Dashboard password</label>
+        <div class="password-field">
+          <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password">
+          <button id="toggle-password" class="icon-button password-toggle" type="button" aria-label="Show password">Show</button>
+        </div>
+        <button id="login-submit" class="button button-primary button-wide" type="submit">
+          <span>Open dashboard</span><span aria-hidden="true">→</span>
+        </button>
+        <p id="login-message" class="form-message" role="status">Checking private access…</p>
+      </form>
+      <p class="login-security"><span aria-hidden="true">◇</span> Protected with a secure, HttpOnly session.</p>
+    </section>
+    <section class="login-preview" aria-hidden="true">
+      <div class="preview-glow"></div>
+      <div class="preview-window">
+        <div class="preview-top"><span></span><span></span><span></span><b>Automation overview</b></div>
+        <div class="preview-body">
+          <div class="preview-stat"><small>DMs sent</small><strong>1,284</strong><em>+18.4%</em></div>
+          <div class="preview-stat"><small>Link clicks</small><strong>872</strong><em>+11.2%</em></div>
+          <div class="preview-chart"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="preview-row"><span></span><b>Comment “LINK”</b><em>Live</em></div>
+          <div class="preview-row"><span></span><b>Comment “APP”</b><em>Live</em></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="dashboard" class="dashboard" hidden>
+    <aside class="sidebar">
+      <a class="brand-lockup" href="#overview" aria-label="Instant DM overview">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span><strong>Instant DM</strong><small>Instagram automation</small></span>
+      </a>
+
+      <nav class="primary-nav" aria-label="Dashboard">
+        <button class="nav-item is-active" type="button" data-route="overview"><span aria-hidden="true">⌂</span><b>Overview</b></button>
+        <button class="nav-item" type="button" data-route="automations"><span aria-hidden="true">⌁</span><b>Automations</b></button>
+        <button class="nav-item" type="button" data-route="posts"><span aria-hidden="true">▦</span><b>Posts</b></button>
+        <button class="nav-item" type="button" data-route="inbox"><span aria-hidden="true">✉</span><b>Inbox</b><i id="nav-unread" class="nav-badge" hidden>0</i></button>
+        <button class="nav-item" type="button" data-route="analytics"><span aria-hidden="true">↗</span><b>Analytics</b></button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <nav aria-label="Workspace settings">
+          <button class="nav-item" type="button" data-route="health"><span aria-hidden="true">◎</span><b>Health &amp; settings</b></button>
+        </nav>
+        <div class="sidebar-account">
+          <div id="sidebar-avatar" class="avatar">DT</div>
+          <div><strong id="sidebar-name">Instagram account</strong><small id="sidebar-handle">Not connected</small></div>
+          <button id="logout-button" class="icon-button" type="button" aria-label="Log out">↪</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div>
+          <p id="page-kicker" class="page-kicker">Workspace</p>
+          <h1 id="page-title">Overview</h1>
+        </div>
+        <div class="topbar-actions">
+          <button id="connection-pill" class="connection-pill" type="button" aria-label="Open connection health"><i></i><span>Checking account</span></button>
+          <button id="sync-button" class="button button-secondary" type="button"><span aria-hidden="true">↻</span> Sync</button>
+          <button class="button button-primary new-automation" type="button"><span aria-hidden="true">＋</span> New automation</button>
+        </div>
+      </header>
+
+      <div id="global-error" class="global-message" role="alert" hidden>
+        <div><strong>We couldn’t load your dashboard.</strong><span id="global-error-text">Try again in a moment.</span></div>
+        <button id="retry-button" class="button button-secondary" type="button">Try again</button>
+      </div>
+
+      <div id="loading-state" class="loading-state" aria-live="polite">
+        <div class="loading-orb"></div>
+        <strong>Loading your Instagram workspace…</strong>
+        <span>Checking automations and delivery health.</span>
+      </div>
+
+      <div id="views" class="views" hidden>
+        <section class="view is-active" data-view="overview" aria-labelledby="overview-heading">
+          <div class="section-heading">
+            <div><span class="eyebrow"><i class="status-dot"></i> Live performance</span><h2 id="overview-heading">Good morning, <span id="greeting-name">Deon</span>.</h2><p>Here’s what your Instagram automations are doing today.</p></div>
+            <div class="period-control" role="group" aria-label="Analytics period">
+              <button type="button" data-period="7">7D</button><button class="is-active" type="button" data-period="30">30D</button><button type="button" data-period="90">90D</button>
+            </div>
+          </div>
+          <div id="metric-grid" class="metric-grid" aria-live="polite"></div>
+          <div class="overview-grid">
+            <article class="panel chart-panel">
+              <div class="panel-heading"><div><span class="panel-label">Performance</span><h3>DMs and link clicks</h3></div><div class="chart-legend"><span><i class="legend-dm"></i>DMs sent</span><span><i class="legend-click"></i>Link clicks</span></div></div>
+              <div class="chart-wrap"><canvas id="performance-chart" role="img" aria-label="Daily direct messages and link clicks"></canvas><div id="chart-tooltip" class="chart-tooltip" hidden></div></div>
+              <p id="chart-empty" class="empty-inline" hidden>No daily activity yet. New delivery data will appear here.</p>
+            </article>
+            <article class="panel quick-start-panel">
+              <div class="quick-start-orb" aria-hidden="true">✦</div>
+              <span class="panel-label">Quick start</span>
+              <h3>Build a comment-to-DM flow</h3>
+              <p>Pick a post, set an exact keyword, and send one or more resources automatically.</p>
+              <button class="button button-light new-automation" type="button">Create automation <span aria-hidden="true">→</span></button>
+              <div class="quick-steps"><span><b>1</b>Pick post</span><i></i><span><b>2</b>Set keyword</span><i></i><span><b>3</b>Go live</span></div>
+            </article>
+          </div>
+          <article class="panel">
+            <div class="panel-heading"><div><span class="panel-label">Recently updated</span><h3>Automations</h3></div><button class="text-button" type="button" data-go="automations">View all <span aria-hidden="true">→</span></button></div>
+            <div id="recent-automations" class="automation-list"></div>
+          </article>
+        </section>
+
+        <section class="view" data-view="automations" aria-labelledby="automations-heading">
+          <div class="section-heading compact"><div><span class="eyebrow">Comment triggers</span><h2 id="automations-heading">Automations</h2><p>Control the exact keyword and resource flow for every Reel.</p></div><button class="button button-primary new-automation" type="button"><span aria-hidden="true">＋</span> New automation</button></div>
+          <div class="filter-bar"><label class="search-box"><span aria-hidden="true">⌕</span><input id="automation-search" type="search" placeholder="Search automations or keywords" aria-label="Search automations"></label><div class="segmented" role="group" aria-label="Filter automations"><button class="is-active" type="button" data-filter="all">All</button><button type="button" data-filter="active">Active</button><button type="button" data-filter="paused">Paused</button></div></div>
+          <div id="automations-list" class="automation-list automation-list-full"></div>
+        </section>
+
+        <section class="view" data-view="posts" aria-labelledby="posts-heading">
+          <div class="section-heading compact"><div><span class="eyebrow">Instagram library</span><h2 id="posts-heading">Posts</h2><p>Connect a Reel to an automation or check its current trigger.</p></div><button id="posts-sync-button" class="button button-secondary" type="button"><span aria-hidden="true">↻</span> Refresh posts</button></div>
+          <div id="posts-summary" class="post-summary"></div>
+          <div id="posts-grid" class="posts-grid"></div>
+        </section>
+
+        <section class="view inbox-view" data-view="inbox" aria-labelledby="inbox-heading">
+          <div class="section-heading compact"><div><span class="eyebrow">Read-only activity</span><h2 id="inbox-heading">Inbox</h2><p>See the conversations started by your automations.</p></div></div>
+          <div class="inbox-shell">
+            <aside class="conversation-sidebar">
+              <label class="search-box"><span aria-hidden="true">⌕</span><input id="conversation-search" type="search" placeholder="Search conversations" aria-label="Search conversations"></label>
+              <div id="conversation-list" class="conversation-list"></div>
+            </aside>
+            <section id="conversation-detail" class="conversation-detail" aria-live="polite"></section>
+          </div>
+        </section>
+
+        <section class="view" data-view="analytics" aria-labelledby="analytics-heading">
+          <div class="section-heading compact"><div><span class="eyebrow">Audience intent</span><h2 id="analytics-heading">Analytics</h2><p>Understand what turns a comment into a click.</p></div><div class="period-control" role="group" aria-label="Analytics period"><button type="button" data-period="7">7D</button><button class="is-active" type="button" data-period="30">30D</button><button type="button" data-period="90">90D</button></div></div>
+          <div id="analytics-metrics" class="metric-grid"></div>
+          <div class="analytics-grid">
+            <article class="panel chart-panel"><div class="panel-heading"><div><span class="panel-label">Trend</span><h3>Delivery performance</h3></div><div class="chart-legend"><span><i class="legend-dm"></i>DMs sent</span><span><i class="legend-click"></i>Link clicks</span></div></div><div class="chart-wrap"><canvas id="analytics-chart" role="img" aria-label="Delivery performance chart"></canvas></div></article>
+            <article class="panel"><div class="panel-heading"><div><span class="panel-label">Conversion path</span><h3>Automation funnel</h3></div></div><div id="conversion-funnel" class="funnel"></div></article>
+          </div>
+          <article class="panel"><div class="panel-heading"><div><span class="panel-label">Leaderboard</span><h3>Top automations</h3></div></div><div id="top-automations" class="automation-list"></div></article>
+        </section>
+
+        <section class="view" data-view="health" aria-labelledby="health-heading">
+          <div class="section-heading compact"><div><span class="eyebrow">Operations</span><h2 id="health-heading">Health &amp; settings</h2><p>Keep the account connection, webhook, and delivery worker healthy.</p></div><button id="health-sync-button" class="button button-primary" type="button"><span aria-hidden="true">↻</span> Run sync</button></div>
+          <div id="health-grid" class="health-grid"></div>
+          <div class="settings-grid">
+            <article class="panel account-panel"><div class="panel-heading"><div><span class="panel-label">Connected account</span><h3>Instagram profile</h3></div></div><div id="account-detail" class="account-detail"></div><div class="account-actions"><button id="settings-logout-button" class="button button-secondary" type="button">Log out of dashboard</button></div></article>
+            <article class="panel"><div class="panel-heading"><div><span class="panel-label">Delivery policy</span><h3>Safety controls</h3></div></div><div class="policy-list"><div><span>Exact keyword matching</span><strong>Always on</strong></div><div><span>Duplicate message prevention</span><strong>Always on</strong></div><div><span>Historical backfill</span><strong>Blocked by default</strong></div><div><span>Credentials</span><strong>Server-side only</strong></div></div></article>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+  <aside id="automation-drawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+    <form id="automation-form" class="drawer-form">
+      <header class="drawer-header"><div><span id="drawer-kicker" class="eyebrow">New flow</span><h2 id="drawer-title">Create automation</h2></div><button id="drawer-close" class="icon-button" type="button" aria-label="Close automation editor">×</button></header>
+      <div class="drawer-scroll">
+        <input id="automation-id" type="hidden">
+        <section class="form-section"><div class="form-section-number">1</div><div class="form-section-body"><h3>Choose the post</h3><p>Each post has its own exact keyword and resource set.</p><label for="automation-media">Instagram post</label><select id="automation-media" required><option value="">Select a post</option></select><div id="selected-post-preview" class="selected-post-preview" hidden></div></div></section>
+        <section class="form-section"><div class="form-section-number">2</div><div class="form-section-body"><h3>Set the trigger</h3><p>Enter exact keywords separated by commas, or * to reply to every new comment.</p><div class="field-row"><label for="automation-name">Automation name<input id="automation-name" required maxlength="80" placeholder="Reel resource delivery"></label><label for="automation-keyword">Comment keywords<input id="automation-keyword" required maxlength="120" placeholder="LINK, TOOL, DOC, 🔗" autocapitalize="characters"></label></div><label for="public-reply">Public comment reply<textarea id="public-reply" rows="3" maxlength="220" placeholder="Sent it — check your DMs ✦"></textarea></label><label class="switch-row"><span><strong>Reply publicly</strong><small>Post the message above beneath matching comments.</small></span><input id="public-reply-enabled" type="checkbox"><i aria-hidden="true"></i></label></div></section>
+        <section class="form-section"><div class="form-section-number">3</div><div class="form-section-body"><h3>Add what they’ll receive</h3><p>Write the DM and optionally include one or more labeled HTTPS links.</p><label for="response-text">Direct message<textarea id="response-text" rows="4" maxlength="700" placeholder="Here’s what you asked for:"></textarea></label><div id="resource-links" class="resource-links"></div><button id="add-resource" class="button button-dashed" type="button"><span aria-hidden="true">＋</span> Add another link</button></div></section>
+        <section class="form-section"><div class="form-section-number">4</div><div class="form-section-body"><h3>Delivery settings</h3><label class="switch-row"><span><strong>Follow gate</strong><small>Ask for SEND, verify follow status, then deliver.</small></span><input id="follow-gate" type="checkbox"><i aria-hidden="true"></i></label><label class="switch-row"><span><strong>Automation active</strong><small>Start watching for new matching comments after saving.</small></span><input id="automation-enabled" type="checkbox" checked><i aria-hidden="true"></i></label><div class="safety-note"><span aria-hidden="true">◇</span><p><strong>No historical blast.</strong> Only eligible comments after the automation’s activation boundary are processed.</p></div></div></section>
+      </div>
+      <footer class="drawer-footer"><div id="drawer-form-message" class="form-message" role="status"></div><div><button id="automation-test" class="button button-secondary" type="button" hidden>Send test</button><button class="button button-primary" type="submit">Save automation</button></div></footer>
+    </form>
+  </aside>
+
+  <dialog id="delete-dialog" class="confirm-dialog">
+    <form method="dialog"><span class="confirm-icon" aria-hidden="true">!</span><h2>Disable this automation?</h2><p>The post will stop responding to its keyword. Existing delivery records will remain available.</p><div><button class="button button-secondary" value="cancel">Keep it</button><button id="confirm-delete" class="button button-danger" value="confirm">Disable automation</button></div></form>
+  </dialog>
+
+  <div id="toast-region" class="toast-region" role="status" aria-live="polite" aria-atomic="true"></div>
+  <script src="/social.js" defer></script>
+</body>
+</html>
