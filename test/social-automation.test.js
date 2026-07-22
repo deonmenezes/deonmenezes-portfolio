@@ -8,10 +8,11 @@ import {
   extractCaptionKeyword,
   extractWebhookEvents,
   FOLLOW_CONFIRMATION_PAYLOAD,
+  isRetryableError,
   isMatch,
 } from "../lib/social/automation.js";
 import { broadcastMessage } from "../lib/social/broadcast.js";
-import { sendMessage } from "../lib/social/meta.js";
+import { listMedia, sendMessage } from "../lib/social/meta.js";
 
 test("extractCaptionKeyword understands Instagram caption quotes", () => {
   assert.equal(extractCaptionKeyword('Comment “Link” and I will send it'), "LINK");
@@ -117,4 +118,40 @@ test("Instagram direct messages use the Graph API message shape", async () => {
     else process.env.INSTAGRAM_ACCOUNT_ID = previousAccount;
   }
   assert.deepEqual(requestBody, { recipient: { id: "u1" }, message: { text: "Hello" } });
+});
+
+test("transient Meta failures stay retryable but terminal API errors do not", () => {
+  assert.equal(isRetryableError({ status: 429 }, 1), true);
+  assert.equal(isRetryableError({ status: 503 }, 1), true);
+  assert.equal(isRetryableError(new Error("validation"), 1), false);
+  assert.equal(isRetryableError({ status: 403 }, 1), false);
+  assert.equal(isRetryableError({ status: 503 }, 5), false);
+});
+
+test("Instagram pagination retries transient page failures", async () => {
+  const previousFetch = globalThis.fetch;
+  const previousToken = process.env.INSTAGRAM_ACCESS_TOKEN;
+  const previousAccount = process.env.INSTAGRAM_ACCOUNT_ID;
+  let calls = 0;
+  process.env.INSTAGRAM_ACCESS_TOKEN = "test-token";
+  process.env.INSTAGRAM_ACCOUNT_ID = "123456789";
+  globalThis.fetch = async (url) => {
+    calls += 1;
+    if (calls === 1) {
+      return new Response(JSON.stringify({ data: [{ id: "m1" }], paging: { next: "https://graph.instagram.com/v25.0/123456789/media?after=1" } }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    if (calls === 2) return new Response(JSON.stringify({ error: { code: 2, message: "temporary" } }), { status: 503, headers: { "retry-after": "0.01" } });
+    return new Response(JSON.stringify({ data: [{ id: "m2" }] }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    const media = await listMedia();
+    assert.deepEqual(media.map((item) => item.id), ["m1", "m2"]);
+    assert.equal(calls, 3);
+  } finally {
+    globalThis.fetch = previousFetch;
+    if (previousToken === undefined) delete process.env.INSTAGRAM_ACCESS_TOKEN;
+    else process.env.INSTAGRAM_ACCESS_TOKEN = previousToken;
+    if (previousAccount === undefined) delete process.env.INSTAGRAM_ACCOUNT_ID;
+    else process.env.INSTAGRAM_ACCOUNT_ID = previousAccount;
+  }
 });

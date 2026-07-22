@@ -5,3 +5,4 @@ assets/img/.omc
 node_modules
 .env*
 !.env.example
+.env*.local
