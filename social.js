@@ -416,6 +416,7 @@
       mediaId: String(first(raw, ["mediaId", "media_id"], "")),
       triggerType: text(first(raw, ["triggerType", "trigger_type"], "comment"), "comment"),
       keyword: text(first(raw, ["keyword", "trigger"], ""), "—").toUpperCase(),
+      matchMode: text(first(raw, ["matchMode", "match_mode"], "exact"), "exact"),
       responseText: text(first(raw, ["responseText", "response_text"], "")),
       enabled: isAutomationEnabled(raw),
       followGate: first(raw, ["followGateMode", "follow_gate_mode"], "")
@@ -715,6 +716,7 @@
       name: text(first(raw, ["displayName", "display_name", "username"], "Instagram user"), "Instagram user"),
       avatar: safeUrl(first(raw, ["profilePictureUrl", "profile_picture_url"], "")),
       status: text(first(raw, ["status"], "active"), "active"),
+      fields: first(raw, ["fields"], {}) || {},
       lastSeen: first(raw, ["lastSeenAt", "last_seen_at", "updatedAt", "updated_at"], ""),
       tags: array(first(raw, ["tags"], [])),
     };
@@ -743,6 +745,19 @@
       await loadDashboard();
     } catch (error) { toast(error.message || "Could not remove the tag.", true); }
     finally { setBusy(button, false); }
+  }
+
+  async function updateContactStatus(contact, select) {
+    var status = select.value;
+    select.disabled = true;
+    try {
+      await request(API_ROOT + "/contacts", { method: "POST", body: { contactId: contact.id, status: status } });
+      toast(status === "active" ? "Contact opted back in." : "Contact status updated.");
+      await loadDashboard();
+    } catch (error) {
+      select.value = contact.status;
+      toast(error.message || "Could not update contact status.", true);
+    } finally { select.disabled = false; }
   }
 
   function renderContacts() {
@@ -780,7 +795,16 @@
       button.type = "submit";
       form.addEventListener("submit", function (event) { event.preventDefault(); addContactTag(contact, input, button); });
       append(form, input, button);
-      append(row, main, tags, form);
+      var status = element("select", "contact-status");
+      [{ value: "active", label: "Active" }, { value: "blocked", label: "Blocked" }, { value: "unsubscribed", label: "Unsubscribed" }].forEach(function (optionData) {
+        var option = element("option", "", optionData.label);
+        option.value = optionData.value;
+        status.appendChild(option);
+      });
+      status.value = contact.status;
+      status.setAttribute("aria-label", "Contact status");
+      status.addEventListener("change", function () { updateContactStatus(contact, status); });
+      append(row, main, tags, form, status);
       target.appendChild(row);
     });
   }
@@ -1347,6 +1371,7 @@
     byId("drawer-title").textContent = editing ? "Edit automation" : "Create automation";
     byId("automation-name").value = editing ? editing.name : "";
     byId("automation-keyword").value = editing ? editing.keyword : "";
+    byId("automation-match-mode").value = editing ? editing.matchMode : "exact";
     byId("automation-trigger").value = editing ? editing.triggerType : "comment";
     byId("response-text").value = editing ? editing.responseText : "Here’s what you asked for:";
     byId("public-reply").value = editing ? editing.publicReplyText : "Sent it — check your DMs ✦";
@@ -1408,6 +1433,7 @@
       triggerType: triggerType,
       mediaId: triggerType === "comment" ? byId("automation-media").value : null,
       keyword: byId("automation-keyword").value.trim().toUpperCase(),
+      matchMode: byId("automation-match-mode").value,
       responseText: byId("response-text").value.trim(),
       flowSteps: collectFlowSteps(),
       links: links,

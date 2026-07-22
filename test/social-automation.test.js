@@ -23,6 +23,8 @@ test("comment matching supports exact aliases and all-comments flows", () => {
   assert.equal(isMatch("🔗", "LINK, TOOL, DOC, 🔗", "exact"), true);
   assert.equal(isMatch("please send link", "LINK, TOOL, DOC, 🔗", "exact"), false);
   assert.equal(isMatch("anything", "*", "exact"), true);
+  assert.equal(isMatch("please send the link", "LINK", "contains"), true);
+  assert.equal(isMatch("please send the tool", "LINK", "contains"), false);
 });
 
 test("follow card has the required interactive buttons", () => {

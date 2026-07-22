@@ -37,6 +37,26 @@ python3 -m http.server 8745
 vercel --prod        # then add the deonmenezes.com domain in the Vercel dashboard
 ```
 
+## Instagram automation setup
+
+The private `/social` workspace is ready for Instagram Graph API delivery, but Meta must be configured separately before real comments or DMs can be sent. Set these server-side environment variables in Vercel:
+
+```text
+INSTAGRAM_ACCESS_TOKEN
+INSTAGRAM_ACCOUNT_ID
+META_APP_ID
+META_APP_SECRET
+META_WEBHOOK_VERIFY_TOKEN
+CRON_SECRET
+SOCIAL_ADMIN_PASSWORD_HASH
+SOCIAL_SESSION_SECRET
+PUBLIC_SITE_URL=https://deonmenezes.com
+```
+
+Configure the Meta webhook callback as `https://deonmenezes.com/api/instagram/webhook` and subscribe the Instagram account to comments, messages, messaging postbacks, mentions, and live comments. The GitHub Actions worker calls `/api/instagram/process` every five minutes to deliver queued flow steps, retries, and broadcasts. The dashboard Health view reports whether the Graph token, webhook, database, and worker are ready.
+
+Contacts can opt out by sending `STOP` (or `UNSUBSCRIBE`, `CANCEL`, `END`, or `QUIT`); `START`, `UNSTOP`, and `RESUME` opt them back in. The dashboard can also block or reactivate a contact manually.
+
 ## Editing client logos
 The Patch-as-a-Service / Ventures copy uses verified figures (100+ clients, $35K, GitHub stars).
 Drop a client logo wall into the `#work` section when you have approved logos to display.

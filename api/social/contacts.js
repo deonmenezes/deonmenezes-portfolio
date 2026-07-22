@@ -47,12 +47,19 @@ export default async function handler(req, res) {
     const id = contactId(body?.contactId ?? body?.contact_id);
     const contact = await query("SELECT id FROM social_contacts WHERE id=$1", [id]);
     if (!contact[0]) return sendJson(res, 404, { error: "contact_not_found" });
+    const requestedStatus = body?.status === undefined ? null : String(body.status).trim().toLowerCase();
+    if (requestedStatus !== null) {
+      if (!["active", "blocked", "unsubscribed"].includes(requestedStatus)) throw new Error("Contact status is invalid.");
+      await query("UPDATE social_contacts SET status=$2,updated_at=now() WHERE id=$1", [id, requestedStatus]);
+    }
+    let fieldsUpdated = false;
     if (body?.fields && typeof body.fields === "object" && !Array.isArray(body.fields)) {
       const fields = Object.fromEntries(Object.entries(body.fields).slice(0, 30).map(([key, value]) => [String(key).slice(0, 60), String(value ?? "").slice(0, 500)]));
       await query("UPDATE social_contacts SET fields=fields || $2::jsonb,updated_at=now() WHERE id=$1", [id, JSON.stringify(fields)]);
+      fieldsUpdated = true;
     }
     const tag = normalizeTag(body?.tag);
-    if (!tag && body?.fields) return sendJson(res, 200, { ok: true, contactId: id, fieldsUpdated: true });
+    if (!tag && (fieldsUpdated || requestedStatus !== null)) return sendJson(res, 200, { ok: true, contactId: id, fieldsUpdated, status: requestedStatus });
     if (req.method === "POST") {
       if (!tag) return sendJson(res, 400, { error: "tag_required" });
       const tagRows = await query("INSERT INTO social_tags (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name RETURNING id,name", [tag]);

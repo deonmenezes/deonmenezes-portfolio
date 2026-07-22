@@ -618,7 +618,7 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .flow-step-actions .button { font-size: 11px; padding: 10px 12px; }
 .legacy-copy-field { opacity: .82; }
 .contacts-list { display: grid; gap: 10px; }
-.contact-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(180px,.8fr) auto; gap: 18px; align-items: center; padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.025); }
+.contact-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(180px,.8fr) auto auto; gap: 18px; align-items: center; padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.025); }
 .contact-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .contact-main > div:last-child { min-width: 0; }
 .contact-main strong, .contact-main small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -628,6 +628,7 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .contact-tag-form { display: flex; gap: 6px; }
 .contact-tag-form input { min-width: 0; width: 130px; padding: 9px 10px; }
 .contact-tag-form .button { padding: 9px 11px; font-size: 10px; }
+.contact-status { min-width: 120px; padding: 9px 10px; font-size: 11px; }
 .broadcast-composer { margin-bottom: 16px; }
 .broadcast-form { display: grid; gap: 14px; padding: 0 25px 25px; }
 .broadcast-form textarea { resize: vertical; }
