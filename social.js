@@ -383,7 +383,9 @@
     var dms = numberFrom(stats, ["dmsToday", "dms_today", "dmsSent", "dms_sent"]);
     var clicks = numberFrom(stats, ["clicksToday", "clicks_today", "linkClicks", "link_clicks"]);
     var comments = numberFrom(stats, ["commentsToday", "comments_today", "matchedComments", "matched_comments"]);
-    var active = numberFrom(stats, ["activeAutomations", "active_automations"], state.data.automations.filter(isAutomationEnabled).length);
+    var active = numberFrom(stats, ["activeAutomations", "active_automations"], state.data.automations.filter(function (automation) {
+      return isAutomationEnabled(automation) && !booleanFrom(automation, ["needsSetup", "needs_setup"], false);
+    }).length);
     return [
       { label: "Matched comments", value: formatNumber(comments), trend: numberFrom(stats, ["commentsChange", "comments_change"]), note: "vs previous period", icon: "⌁", color: "#a976ff" },
       { label: "DMs sent", value: formatNumber(dms), trend: numberFrom(stats, ["dmsChange", "dms_change"]), note: "vs previous period", icon: "✉", color: "#f16fc6" },
@@ -432,6 +434,7 @@
       matchMode: text(first(raw, ["matchMode", "match_mode"], "exact"), "exact"),
       responseText: text(first(raw, ["responseText", "response_text"], "")),
       enabled: isAutomationEnabled(raw),
+      needsSetup: booleanFrom(raw, ["needsSetup", "needs_setup"], false),
       followGate: first(raw, ["followGateMode", "follow_gate_mode"], "")
         ? first(raw, ["followGateMode", "follow_gate_mode"], "") === "strict"
         : booleanFrom(raw, ["followGate", "follow_gate"], false),
@@ -500,8 +503,8 @@
 
   function statePill(automation) {
     var failed = automation.status.toLowerCase() === "error" || automation.status.toLowerCase() === "failed";
-    var className = "state-pill" + (failed ? " is-error" : automation.enabled ? "" : " is-paused");
-    return element("span", className, failed ? "Needs attention" : automation.enabled ? "Live" : "Paused");
+    var className = "state-pill" + (failed ? " is-error" : automation.enabled && !automation.needsSetup ? "" : " is-paused");
+    return element("span", className, failed ? "Needs attention" : automation.needsSetup ? "Needs setup" : automation.enabled ? "Live" : "Paused");
   }
 
   function automationRow(automation, options) {
@@ -565,7 +568,7 @@
     var target = byId("automations-list");
     var query = state.automationQuery.toLowerCase();
     var filtered = normalizedAutomations().filter(function (automation) {
-      var statusMatch = state.automationFilter === "all" || (state.automationFilter === "active" ? automation.enabled : !automation.enabled);
+      var statusMatch = state.automationFilter === "all" || (state.automationFilter === "active" ? automation.enabled && !automation.needsSetup : !automation.enabled || automation.needsSetup);
       var textMatch = !query || (automation.name + " " + automation.keyword).toLowerCase().includes(query);
       return statusMatch && textMatch;
     });
@@ -585,7 +588,7 @@
     var automations = normalizedAutomations();
     clear(target);
     clear(summary);
-    append(summary, element("span", "", formatNumber(media.length) + " posts synced"), element("span", "", formatNumber(automations.filter(function (automation) { return automation.enabled; }).length) + " live flows"));
+    append(summary, element("span", "", formatNumber(media.length) + " posts synced"), element("span", "", formatNumber(automations.filter(function (automation) { return automation.enabled && !automation.needsSetup; }).length) + " live flows"));
     if (!media.length) {
       target.appendChild(emptyState("No posts available", "Run a sync after the Instagram account and app permissions are ready.", "Refresh posts", syncDashboard));
       return;
@@ -999,9 +1002,11 @@
     var health = state.data.health;
     var metaNote = text(first(health, ["instagramError", "instagram_error"], ""), "");
     if (!metaNote) metaNote = health.graphConfigured && health.webhookConfigured ? "Graph account and webhook credentials are present" : "Finish Meta app review and webhook subscriptions";
+    var subscribedFields = array(first(health, ["webhookSubscriptionFields", "webhook_subscription_fields"], [])).join(", ");
     var definitions = [
       { label: "Instagram API", value: first(health, ["instagram", "api", "instagramApi", "instagram_api"], "unknown"), note: text(first(health, ["instagramError", "instagram_error"], ""), "Comment and message access") },
       { label: "Webhook", value: first(health, ["webhook", "webhookStatus", "webhook_status"], "unknown"), note: "Inbound comment events" },
+      { label: "Account subscription", value: first(health, ["webhookSubscription", "webhook_subscription"], "unknown"), note: subscribedFields || text(first(health, ["webhookSubscriptionError", "webhook_subscription_error"], "Meta account subscription fields") ) },
       { label: "Database", value: first(health, ["database", "db", "databaseStatus", "database_status"], "unknown"), note: "Rules and delivery state" },
       { label: "Delivery worker", value: first(health, ["worker", "delivery", "workerStatus", "worker_status"], "unknown"), note: "Last sync " + relativeTime(first(health, ["lastSync", "last_sync"], "")) },
       { label: "Meta permissions", value: health.instagram === "connected" && health.webhookConfigured ? "ready" : "pending", note: metaNote },

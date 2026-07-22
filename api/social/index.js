@@ -1,7 +1,7 @@
 import { isAdmin } from "../../lib/social/auth.js";
 import { query } from "../../lib/social/db.js";
 import { logError, requireMethod, sendJson } from "../../lib/social/http.js";
-import { getAccount } from "../../lib/social/meta.js";
+import { getAccount, getSubscribedApps } from "../../lib/social/meta.js";
 
 export default async function handler(req, res) {
   if (!requireMethod(req, res, ["GET"])) return;
@@ -92,12 +92,26 @@ export default async function handler(req, res) {
     const stats = statsRows[0] || {};
     let graphStatus = "error";
     let graphError = null;
+    let webhookSubscription = "unknown";
+    let webhookSubscriptionFields = [];
+    let webhookSubscriptionError = null;
     if (process.env.INSTAGRAM_ACCESS_TOKEN && process.env.INSTAGRAM_ACCOUNT_ID) {
       try {
         await getAccount();
         graphStatus = "connected";
       } catch (error) {
         graphError = String(error?.message || "Instagram Graph API rejected the configured credentials.").slice(0, 180);
+      }
+      if (graphStatus === "connected") {
+        try {
+          const subscription = await getSubscribedApps();
+          webhookSubscriptionFields = [...new Set((Array.isArray(subscription?.data) ? subscription.data : [])
+            .flatMap((entry) => Array.isArray(entry?.subscribed_fields) ? entry.subscribed_fields : []))];
+          webhookSubscription = webhookSubscriptionFields.includes("comments") && webhookSubscriptionFields.includes("messages") ? "active" : "pending";
+        } catch (error) {
+          webhookSubscriptionError = String(error?.message || "Meta did not return the account webhook subscription.").slice(0, 180);
+          webhookSubscription = "pending";
+        }
       }
     } else {
       graphError = "Instagram Graph API credentials are not configured.";
@@ -112,6 +126,9 @@ export default async function handler(req, res) {
       graphConfigured: Boolean(process.env.INSTAGRAM_ACCESS_TOKEN && process.env.INSTAGRAM_ACCOUNT_ID),
       webhookConfigured: Boolean(process.env.META_APP_SECRET && process.env.META_WEBHOOK_VERIFY_TOKEN),
       webhookUrl: "https://deonmenezes.com/api/instagram/webhook",
+      webhookSubscription,
+      webhookSubscriptionFields,
+      webhookSubscriptionError,
       appReviewWarning: stats.dms_sent === 0 && Number(stats.posts || 0) > 0,
     };
     return sendJson(res, 200, { account, stats, daily, automations, media, conversations: conversationRows, contacts, broadcasts, health });
