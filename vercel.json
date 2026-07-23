@@ -42,6 +42,11 @@
       "permanent": true
     },
     {
+      "source": "/resources/security",
+      "destination": "https://www.virelity.com/resources/security",
+      "permanent": true
+    },
+    {
       "source": "/reseources",
       "destination": "https://www.virelity.com/resources/reverse-image",
       "permanent": true
