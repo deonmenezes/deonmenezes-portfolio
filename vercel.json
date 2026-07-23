@@ -27,6 +27,21 @@
       "permanent": false
     },
     {
+      "source": "/resources/reverse-image",
+      "destination": "https://www.virelity.com/resources/reverse-image",
+      "permanent": true
+    },
+    {
+      "source": "/resources/humanizer",
+      "destination": "https://www.virelity.com/resources/humanizer",
+      "permanent": true
+    },
+    {
+      "source": "/reseources",
+      "destination": "https://www.virelity.com/resources/reverse-image",
+      "permanent": true
+    },
+    {
       "source": "/",
       "has": [
         {
