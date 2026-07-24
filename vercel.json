@@ -22,6 +22,81 @@
   ],
   "redirects": [
     {
+      "source": "/reels/international-students",
+      "destination": "/resources/f1-status-checklist",
+      "permanent": true
+    },
+    {
+      "source": "/reels/edge-city",
+      "destination": "/resources/edge-city-ai-community",
+      "permanent": true
+    },
+    {
+      "source": "/reels/edge-city-application",
+      "destination": "/resources/edge-city-india-application",
+      "permanent": true
+    },
+    {
+      "source": "/reels/claude-trading",
+      "destination": "/resources/claude-start-here",
+      "permanent": true
+    },
+    {
+      "source": "/reels/doomscroll-learning",
+      "destination": "/resources/doomscroll-learning-app",
+      "permanent": true
+    },
+    {
+      "source": "/reels/security-guide",
+      "destination": "/resources/neet-jee-security-starting-points",
+      "permanent": true
+    },
+    {
+      "source": "/reels/techscroll-beta",
+      "destination": "/resources/techscroll-beta",
+      "permanent": true
+    },
+    {
+      "source": "/reels/techscroll-iphone",
+      "destination": "/resources/techscroll-iphone",
+      "permanent": true
+    },
+    {
+      "source": "/reels/tradingview-mcp",
+      "destination": "/resources/tradingview-mcp-with-claude",
+      "permanent": true
+    },
+    {
+      "source": "/reels/tradingview-workflow",
+      "destination": "/resources/claude-tradingview-workflow",
+      "permanent": true
+    },
+    {
+      "source": "/reels/mantishack-mcp",
+      "destination": "/resources/mantishack-mcp",
+      "permanent": true
+    },
+    {
+      "source": "/reels/x-tips",
+      "destination": "/resources/x-tips",
+      "permanent": true
+    },
+    {
+      "source": "/reels/research-profile",
+      "destination": "/resources/research-papers",
+      "permanent": true
+    },
+    {
+      "source": "/reels/mythos-interview",
+      "destination": "/resources/mythos-interview",
+      "permanent": true
+    },
+    {
+      "source": "/reels/ar-vr-guide",
+      "destination": "/resources/ar-vr-starting-points",
+      "permanent": true
+    },
+    {
       "source": "/book",
       "destination": "https://www.amazon.in/How-Build-Business-Age-AI/dp/8199573775",
       "permanent": false
@@ -93,6 +168,22 @@
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
         }
+      ]
+    },
+    {
+      "source": "/resources",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https: data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    },
+    {
+      "source": "/resources/:path*",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https: data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
       ]
     },
     {
