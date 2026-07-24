@@ -7,7 +7,9 @@
     "node": "24.x"
   },
   "scripts": {
-    "test": "node --test test/*.test.js",
+    "build:resources": "node scripts/build-resource-pages.js",
+    "vercel-build": "pnpm run build:resources",
+    "test": "pnpm run build:resources && node --test test/*.test.js",
     "migrate": "node scripts/migrate.js",
     "seed:social": "node scripts/seed-social.js",
     "check": "node scripts/check-social.js"
