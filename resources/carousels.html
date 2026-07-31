@@ -34,6 +34,7 @@
     <nav aria-label="Page navigation">
       <a href="#prompts">Prompts</a>
       <a href="#workflow">Workflow</a>
+      <a href="#newsletter">Newsletter</a>
       <a href="/resources">All resources</a>
     </nav>
   </header>
@@ -276,6 +277,40 @@ Finish with a slide-by-slide layout assignment I can follow in Canva.</pre>
         <strong>The rule that saves the most time:</strong>
         <p>Do not ask ChatGPT to rewrite the copy while you are fixing the design. Freeze the words first, then build the slides.</p>
       </aside>
+    </section>
+
+    <section class="newsletter" id="newsletter" aria-labelledby="newsletter-heading">
+      <div class="newsletter-stamp" aria-hidden="true">
+        <span>Fresh ideas</span>
+        <strong>1× a week</strong>
+      </div>
+      <div class="newsletter-copy">
+        <p class="section-kicker">The useful internet, edited</p>
+        <h2 id="newsletter-heading">Better prompts.<br><em>Fewer tabs open.</em></h2>
+        <p>Join me for practical AI workflows, creator experiments, and the occasional strong opinion—written to be used, not just skimmed.</p>
+        <ul aria-label="Newsletter highlights">
+          <li>One useful idea</li>
+          <li>One workflow to steal</li>
+          <li>Zero daily noise</li>
+        </ul>
+      </div>
+
+      <form class="newsletter-form" action="/api/newsletter" method="post" data-newsletter-form>
+        <label for="newsletter-email">Where should I send it?</label>
+        <div class="newsletter-field">
+          <input id="newsletter-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="you@example.com" required>
+          <button class="button newsletter-submit" type="submit" data-newsletter-submit>
+            <span data-newsletter-label>Join the newsletter</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+        <div class="newsletter-trap" aria-hidden="true" inert>
+          <label for="newsletter-company">Company</label>
+          <input id="newsletter-company" name="company" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <p class="newsletter-consent">By subscribing, you agree to receive Deon’s newsletter. Unsubscribe anytime. <a href="/privacy">Privacy policy</a>.</p>
+        <p class="newsletter-status" role="status" aria-live="polite" aria-atomic="true" data-newsletter-status></p>
+      </form>
     </section>
 
     <section class="final-cta">

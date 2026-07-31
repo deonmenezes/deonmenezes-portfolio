@@ -75,3 +75,49 @@ copyAllButton?.addEventListener("click", async () => {
     window.setTimeout(() => toast.classList.remove("visible"), 2400);
   }
 });
+
+const newsletterForm = document.querySelector("[data-newsletter-form]");
+const newsletterSubmit = document.querySelector("[data-newsletter-submit]");
+const newsletterLabel = document.querySelector("[data-newsletter-label]");
+const newsletterStatus = document.querySelector("[data-newsletter-status]");
+
+newsletterForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!newsletterForm.reportValidity()) return;
+
+  newsletterSubmit.disabled = true;
+  newsletterLabel.textContent = "Joining…";
+  newsletterStatus.textContent = "";
+  newsletterStatus.classList.remove("is-error");
+
+  const formData = new FormData(newsletterForm);
+
+  try {
+    const response = await fetch(newsletterForm.action, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: formData.get("email"),
+        company: formData.get("company"),
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(
+        response.status === 400
+          ? "Enter a valid email address."
+          : "Unable to subscribe right now. Please try again.",
+      );
+    }
+
+    newsletterForm.reset();
+    newsletterLabel.textContent = "Request received";
+    newsletterStatus.textContent = "Thanks—your newsletter request is recorded.";
+  } catch (error) {
+    newsletterLabel.textContent = "Join the newsletter";
+    newsletterStatus.textContent = error.message || "Unable to subscribe right now. Please try again.";
+    newsletterStatus.classList.add("is-error");
+  } finally {
+    newsletterSubmit.disabled = false;
+  }
+});

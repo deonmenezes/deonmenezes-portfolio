@@ -12,6 +12,10 @@
       "destination": "/api/stats"
     },
     {
+      "source": "/api/newsletter",
+      "destination": "/api/stats?route=newsletter"
+    },
+    {
       "source": "/deon/:path*",
       "destination": "/:path*"
     },

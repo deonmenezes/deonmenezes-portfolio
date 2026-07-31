@@ -3,6 +3,8 @@
    X syndication. Every field falls back to a recent known value so
    the site never shows a hole when an upstream blocks a datacenter IP. */
 
+import newsletterHandler from "../lib/newsletter.js";
+
 const FALLBACK = {
   mantishackStars: 363,
   opentradexStars: 53,
@@ -76,6 +78,8 @@ const tasks = {
 };
 
 export default async function handler(req, res) {
+  if (req.query?.route === "newsletter") return newsletterHandler(req, res);
+
   const keys = Object.keys(tasks);
   const settled = await Promise.allSettled(keys.map((k) => tasks[k]()));
   const out = { ...FALLBACK, fetchedAt: new Date().toISOString(), live: [] };
