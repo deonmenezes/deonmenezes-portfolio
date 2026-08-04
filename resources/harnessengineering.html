@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Harness Engineering Learning Path · Deon Menezes</title>
+  <meta name="description" content="A six-video, watch-in-order learning path for building reliable AI agent harnesses, with a practical checklist and official reading.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/harnessengineering">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Harness Engineering: Build the system around the model">
+  <meta property="og:description" content="Six videos, one practical build checklist, and the official reading that turns agent demos into dependable systems.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/harnessengineering">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Harness Engineering Learning Path">
+  <meta name="twitter:description" content="A free, watch-in-order path for growing your AI agent harness engineering skills.">
+  <link rel="stylesheet" href="/assets/fonts/fonts.css">
+  <link rel="stylesheet" href="/resources/harnessengineering.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the learning path</a>
+  <div class="paper-texture" aria-hidden="true"></div>
+
+  <header class="site-nav">
+    <a class="brand" href="/deon" aria-label="Deon Menezes portfolio">
+      <span class="brand-mark" aria-hidden="true">D</span>
+      <span>Deon Menezes</span>
+    </a>
+    <nav aria-label="Page navigation">
+      <a href="#watch">Watch</a>
+      <a href="#build">Build</a>
+      <a href="#read">Read</a>
+      <a class="nav-resource" href="/resources">All resources</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span aria-hidden="true">✦</span> AI engineering field guide · 01</p>
+        <h1 id="page-title">Build the system<br><em>around the model.</em></h1>
+        <p class="hero-lede">A model can reason. A harness makes that reasoning useful: it supplies instructions, tools, memory, an execution environment, a control loop, recovery, evaluation, and visibility into what happened.</p>
+        <div class="hero-actions">
+          <a class="button button-ink" href="#watch">Start the learning path <span aria-hidden="true">↓</span></a>
+          <a class="button button-paper" href="#build">Jump to the checklist</a>
+        </div>
+      </div>
+
+      <aside class="hero-board" aria-label="Learning path overview">
+        <span class="tape tape-top" aria-hidden="true"></span>
+        <p class="board-label">The route</p>
+        <ol>
+          <li><span>01</span><strong>Understand</strong><small>What a harness is</small></li>
+          <li><span>02</span><strong>Inspect</strong><small>Loops, memory, evals</small></li>
+          <li><span>03</span><strong>Operate</strong><small>Humans steer, agents execute</small></li>
+          <li><span>04</span><strong>Architect</strong><small>Boundaries and responsibilities</small></li>
+          <li><span>05</span><strong>Harden</strong><small>Long-running agents</small></li>
+          <li><span>06</span><strong>Compare</strong><small>A working implementation</small></li>
+        </ol>
+        <div class="board-stats">
+          <span><strong>6</strong> videos</span>
+          <span><strong>3h 09m</strong> total</span>
+          <span><strong>1</strong> build</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="definition" aria-labelledby="definition-heading">
+      <div class="definition-index" aria-hidden="true">HARNESS<br>/{ noun }</div>
+      <div class="definition-copy">
+        <p class="section-kicker">The short version</p>
+        <h2 id="definition-heading">The model is an engine.<br><em>The harness is the vehicle.</em></h2>
+        <p>The harness turns a model call into a dependable workflow. It decides what context the model sees, which actions it may take, where state lives, when to retry or stop, and how a person can inspect the result.</p>
+      </div>
+      <ul class="system-parts" aria-label="Parts of an agent harness">
+        <li><span>01</span>Instructions</li>
+        <li><span>02</span>Tools</li>
+        <li><span>03</span>State + memory</li>
+        <li><span>04</span>Execution</li>
+        <li><span>05</span>Control loop</li>
+        <li><span>06</span>Evals + observability</li>
+      </ul>
+    </section>
+
+    <section class="watch-section" id="watch" aria-labelledby="watch-heading">
+      <header class="section-head">
+        <div>
+          <p class="section-kicker">Watch in order</p>
+          <h2 id="watch-heading">Six lessons.<br><em>One system view.</em></h2>
+        </div>
+        <p>Start with the vocabulary, look at the code, then move into architecture and long-running work. Finish by comparing the principles with a compact implementation.</p>
+      </header>
+
+      <div class="video-path">
+        <article class="video-card card-coral">
+          <div class="step-rail">
+            <span class="step-number">01</span>
+            <span class="step-phase">Understand</span>
+          </div>
+          <div class="video-content">
+            <div class="video-frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/HKVIMMrFvGQ"
+                title="The LLM Interview Series #9: What Is Harness Engineering?"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+            </div>
+            <div class="video-heading">
+              <p class="video-meta"><span>Vizuara</span><span>21:04</span></p>
+              <h3>The LLM Interview Series #9: What Is Harness Engineering?</h3>
+              <p>Begin with the definition. Build a clean mental model of the layer that coordinates an agent before you get lost in frameworks.</p>
+            </div>
+            <div class="notice">
+              <p>What to notice</p>
+              <ul>
+                <li>Where the model’s responsibility ends</li>
+                <li>What makes a harness different from one prompt</li>
+                <li>Why reliability comes from the surrounding system</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card card-teal">
+          <div class="step-rail">
+            <span class="step-number">02</span>
+            <span class="step-phase">Inspect</span>
+          </div>
+          <div class="video-content">
+            <div class="video-frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/rvRyBhILrls"
+                title="You Can Learn AI Agent Harness In Real Code In 20 Min | Loop Engineering, Memory, Eval, Open Source"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+            </div>
+            <div class="video-heading">
+              <p class="video-meta"><span>Sean‘s AI Stories</span><span>20:49</span></p>
+              <h3>You Can Learn AI Agent Harness In Real Code In 20 Min | Loop Engineering, Memory, Eval, Open Source</h3>
+              <p>Move from diagram to code. Trace how the loop, memory, and evaluation layer cooperate instead of treating them as separate features.</p>
+            </div>
+            <div class="notice">
+              <p>What to notice</p>
+              <ul>
+                <li>The plan → act → observe control loop</li>
+                <li>What should persist between model turns</li>
+                <li>Where evaluation enters the workflow</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card card-lime">
+          <div class="step-rail">
+            <span class="step-number">03</span>
+            <span class="step-phase">Operate</span>
+          </div>
+          <div class="video-content">
+            <div class="video-frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/am_oeAoUhew"
+                title="Harness Engineering: How to Build Software When Humans Steer, Agents Execute — Ryan Lopopolo, OpenAI"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+            </div>
+            <div class="video-heading">
+              <p class="video-meta"><span>AI Engineer</span><span>46:20</span></p>
+              <h3>Harness Engineering: How to Build Software When Humans Steer, Agents Execute — Ryan Lopopolo, OpenAI</h3>
+              <p>Zoom out from code to operating model. Learn how engineers shape the environment, express intent, and create feedback when agents do the execution.</p>
+            </div>
+            <div class="notice">
+              <p>What to notice</p>
+              <ul>
+                <li>The repository as part of the agent environment</li>
+                <li>How constraints become executable feedback</li>
+                <li>Where human judgment stays essential</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card card-blue">
+          <div class="step-rail">
+            <span class="step-number">04</span>
+            <span class="step-phase">Architect</span>
+          </div>
+          <div class="video-content">
+            <div class="video-frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/C_GG5g38vLU"
+                title="Harnesses in AI: A Deep Dive — Tejas Kumar, IBM"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+            </div>
+            <div class="video-heading">
+              <p class="video-meta"><span>AI Engineer</span><span>20:26</span></p>
+              <h3>Harnesses in AI: A Deep Dive — Tejas Kumar, IBM</h3>
+              <p>Pressure-test the architecture. Identify the harness’s responsibilities and draw useful boundaries around models, tools, state, and runtime.</p>
+            </div>
+            <div class="notice">
+              <p>What to notice</p>
+              <ul>
+                <li>Which concerns belong inside the harness</li>
+                <li>How tool contracts limit ambiguity</li>
+                <li>What can be swapped without redesigning the system</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card card-violet">
+          <div class="step-rail">
+            <span class="step-number">05</span>
+            <span class="step-phase">Harden</span>
+          </div>
+          <div class="video-content">
+            <div class="video-frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/mR-WAvEPRwE"
+                title="Anthropic Workshop: Build Agents That Run for Hours — Ash Prabaker &amp; Andrew Wilson"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+            </div>
+            <div class="video-heading">
+              <p class="video-meta"><span>AI Engineer</span><span>75:40</span></p>
+              <h3>Anthropic Workshop: Build Agents That Run for Hours — Ash Prabaker &amp; Andrew Wilson</h3>
+              <p>Take the long view. Explore what changes when an agent must survive context limits, recover from errors, and make progress over hours.</p>
+            </div>
+            <div class="notice">
+              <p>What to notice</p>
+              <ul>
+                <li>Durable progress artifacts and clean handoffs</li>
+                <li>Context resets without losing the task</li>
+                <li>Independent checks before work is declared complete</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card card-yellow">
+          <div class="step-rail">
+            <span class="step-number">06</span>
+            <span class="step-phase">Compare</span>
+          </div>
+          <div class="video-content">
+            <div class="video-frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/hcm5zIWASCM"
+                title="What is an Agent Harness? (And How We Built One)"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+            </div>
+            <div class="video-heading">
+              <p class="video-meta"><span>AWS Developers</span><span>5:02</span></p>
+              <h3>What is an Agent Harness? (And How We Built One)</h3>
+              <p>Finish with a concise case study. Compare the implementation choices with the principles you collected from the first five lessons.</p>
+            </div>
+            <div class="notice">
+              <p>What to notice</p>
+              <ul>
+                <li>Which capabilities the implementation packages together</li>
+                <li>Where managed infrastructure removes work</li>
+                <li>What you would keep custom for your own use case</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="build-section" id="build" aria-labelledby="build-heading">
+      <div class="build-intro">
+        <p class="section-kicker">Your capstone</p>
+        <h2 id="build-heading">Build a tiny harness.<br><em>Make every part visible.</em></h2>
+        <p>Keep the first version deliberately small. The goal is not autonomy; it is to understand the control surface well enough to explain every decision.</p>
+        <div class="build-brief">
+          <span>Suggested task</span>
+          <p>Give an agent a folder of notes and ask it to produce a sourced, one-page research brief.</p>
+        </div>
+      </div>
+
+      <ol class="build-list">
+        <li>
+          <span class="check-number">01</span>
+          <div><h3>Define done</h3><p>Write the task, allowed sources, output format, and five acceptance criteria before the first model call.</p></div>
+        </li>
+        <li>
+          <span class="check-number">02</span>
+          <div><h3>Limit the tools</h3><p>Start with one or two clearly described tools. Validate their inputs and return useful errors.</p></div>
+        </li>
+        <li>
+          <span class="check-number">03</span>
+          <div><h3>Persist state</h3><p>Save a small progress file containing completed work, remaining work, decisions, and evidence.</p></div>
+        </li>
+        <li>
+          <span class="check-number">04</span>
+          <div><h3>Run the loop</h3><p>Make plan → act → observe explicit. Log each step so you can explain why the next action happened.</p></div>
+        </li>
+        <li>
+          <span class="check-number">05</span>
+          <div><h3>Design failure</h3><p>Add a time limit, step budget, retry rule, and a useful stop condition before something goes wrong.</p></div>
+        </li>
+        <li>
+          <span class="check-number">06</span>
+          <div><h3>Write five evals</h3><p>Test success, missing data, conflicting evidence, a broken tool, and an instruction the agent must refuse.</p></div>
+        </li>
+        <li>
+          <span class="check-number">07</span>
+          <div><h3>Keep a human gate</h3><p>Require approval before publishing, messaging, spending, deleting, or changing an external system.</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="reading-section" id="read" aria-labelledby="read-heading">
+      <header class="section-head reading-head">
+        <div>
+          <p class="section-kicker">Official reading</p>
+          <h2 id="read-heading">Go to the source.<br><em>Then build.</em></h2>
+        </div>
+        <p>Use these three engineering articles to deepen the operating model, long-running architecture, and evaluation practice behind the videos.</p>
+      </header>
+
+      <div class="reading-grid">
+        <a class="reading-card reading-openai" href="https://openai.com/index/harness-engineering/" target="_blank" rel="noreferrer">
+          <span class="reading-source">OpenAI · Engineering</span>
+          <strong>Harness engineering: leveraging Codex in an agent-first world</strong>
+          <p>How humans steer, agents execute, and the repository becomes part of the product.</p>
+          <span class="reading-action">Read the article <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="reading-card reading-anthropic" href="https://www.anthropic.com/engineering/harness-design-long-running-apps" target="_blank" rel="noreferrer">
+          <span class="reading-source">Anthropic · Engineering</span>
+          <strong>Harness design for long-running application development</strong>
+          <p>Patterns for decomposition, durable artifacts, context boundaries, and independent evaluation.</p>
+          <span class="reading-action">Read the article <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="reading-card reading-evals" href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents" target="_blank" rel="noreferrer">
+          <span class="reading-source">Anthropic · Engineering</span>
+          <strong>Demystifying evals for AI agents</strong>
+          <p>A practical guide to tasks, transcripts, graders, and measuring behavior over time.</p>
+          <span class="reading-action">Read the article <span aria-hidden="true">↗</span></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="final-cta" aria-labelledby="cta-heading">
+      <span class="tape tape-cta" aria-hidden="true"></span>
+      <p class="section-kicker">The field note</p>
+      <h2 id="cta-heading">A stronger model helps.<br><em>A stronger system compounds.</em></h2>
+      <p>Watch one lesson, add one part to your harness, and keep the behavior observable. That is how a clever demo becomes engineering.</p>
+      <div class="hero-actions hero-actions-center">
+        <a class="button button-light" href="#watch">Start with video one <span aria-hidden="true">↑</span></a>
+        <a class="button button-outline" href="/resources">Explore all resources</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/deon">
+      <span class="brand-mark" aria-hidden="true">D</span>
+      <span>Deon Menezes</span>
+    </a>
+    <p>Curated for builders who want the system, not just the demo.</p>
+    <a href="/resources">Resource library <span aria-hidden="true">↗</span></a>
+  </footer>
+</body>
+</html>

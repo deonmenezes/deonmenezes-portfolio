@@ -19,6 +19,9 @@ h1 { margin:16px 0 24px; font:900 clamp(48px,9vw,100px)/.94 "Fraunces",serif; le
 .featured-resource strong { font:600 clamp(22px,2.4vw,31px)/1 "Fraunces",serif; }
 .featured-resource p { margin:0; color:#fff; font-size:14px; line-height:1.55; }
 .featured-arrow { font-size:23px; }
+.featured-resource-harness { margin-top:-12px; background:var(--teal); }
+.featured-resource-harness .featured-label { color:#c8f4e8; }
+.featured-resource-harness:hover { box-shadow:24px 28px 50px -28px rgba(21,82,72,.72); }
 .resource-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
 .resource-card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:26px; box-shadow:14px 18px 34px -26px rgba(60,48,30,.55); transition:transform .2s ease,border-color .2s ease; }
 .resource-card[id] { scroll-margin-top:24px; }
