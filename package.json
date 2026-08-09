@@ -7,6 +7,7 @@
     "node": "24.x"
   },
   "scripts": {
+    "build:resources": "node scripts/build-resource-pages.js",
     "test": "node --test test/*.test.js",
     "migrate": "node scripts/migrate.js",
     "seed:social": "node scripts/seed-social.js",
