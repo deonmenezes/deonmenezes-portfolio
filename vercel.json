@@ -32,6 +32,10 @@
       "destination": "/api/stats?route=backfill-send"
     },
     {
+      "source": "/api/backfill-check",
+      "destination": "/api/stats?route=backfill-check"
+    },
+    {
       "source": "/deon/:path*",
       "destination": "/:path*"
     },
