@@ -6,3 +6,7 @@ node_modules
 .env*
 !.env.example
 .env*.local
+
+# Subscriber addresses. This repository is public; never commit personal data.
+*.csv
+subscribers*.csv
