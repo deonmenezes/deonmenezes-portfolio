@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The AI Drop · Deon Menezes</title>
+  <meta name="description" content="Free AI prompts, tools, and workflows every Wednesday and Sunday. Read past issues, then subscribe.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/newsletter">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The AI Drop">
+  <meta property="og:description" content="Free AI prompts, tools, and workflows every Wednesday and Sunday.">
+  <meta property="og:url" content="https://deonmenezes.com/newsletter">
+  <meta property="og:image" content="https://deonmenezes.com/assets/img/ai-drop-card.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/resources/detail.css">
+  <link rel="stylesheet" href="/newsletter.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the newsletter</a>
+  <header class="site-header">
+    <a class="brand" href="/deon" aria-label="Deon Menezes portfolio">
+      <span class="brand-mark" aria-hidden="true">D</span>
+      <span>Deon Menezes</span>
+    </a>
+    <a class="all-resources" href="/resources">All resources</a>
+  </header>
+
+  <main id="main">
+    <article>
+      <header class="hero">
+        <p class="eyebrow">Free newsletter</p>
+        <h1>The AI Drop</h1>
+        <p class="summary">Free AI stuff every Wednesday and Sunday, straight to your inbox. Prompts, tools, secret codes, all the best stuff.</p>
+        <p class="offer">Two issues a week. No daily noise, and one click to leave whenever you want.</p>
+      </header>
+
+      <section class="signup" aria-labelledby="signup-title">
+        <p class="section-label">Join</p>
+        <h2 id="signup-title">Get the next one</h2>
+
+        <form class="newsletter-form" action="/api/newsletter" method="post" data-newsletter-form>
+          <label for="newsletter-email">Where should I send it?</label>
+          <div class="newsletter-field">
+            <input id="newsletter-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="you@example.com" required>
+            <button class="button newsletter-submit" type="submit" data-newsletter-submit>
+              <span data-newsletter-label>Join the newsletter</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+          <div class="newsletter-trap" aria-hidden="true" inert>
+            <label for="newsletter-company">Company</label>
+            <input id="newsletter-company" name="company" type="text" tabindex="-1" autocomplete="off">
+          </div>
+          <p class="newsletter-consent">By subscribing, you agree to receive Deon’s newsletter. Unsubscribe anytime. <a href="/privacy">Privacy policy</a>.</p>
+          <p class="newsletter-status" role="status" aria-live="polite" aria-atomic="true" data-newsletter-status></p>
+        </form>
+      </section>
+
+      <section class="archive" aria-labelledby="archive-title">
+        <p class="section-label">Archive</p>
+        <h2 id="archive-title">Past issues</h2>
+        <p class="archive-intro">Every issue that has gone out, newest first. Nothing here is gated.</p>
+        <div class="archive-list" data-archive aria-live="polite">
+          <p class="archive-state" data-archive-state>Loading past issues…</p>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <p>Free to read. Unsubscribe in one click.</p>
+    <a href="/resources">Browse the resource library</a>
+  </footer>
+
+  <script src="/newsletter.js" type="module"></script>
+</body>
+</html>

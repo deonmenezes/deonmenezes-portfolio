@@ -16,6 +16,14 @@
       "destination": "/api/stats?route=newsletter"
     },
     {
+      "source": "/api/instantdm-webhook",
+      "destination": "/api/stats?route=instantdm"
+    },
+    {
+      "source": "/api/issues",
+      "destination": "/api/stats?route=issues"
+    },
+    {
       "source": "/deon/:path*",
       "destination": "/:path*"
     },

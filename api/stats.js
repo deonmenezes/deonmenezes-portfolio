@@ -4,6 +4,8 @@
    the site never shows a hole when an upstream blocks a datacenter IP. */
 
 import newsletterHandler from "../lib/newsletter.js";
+import instantDmWebhookHandler from "../lib/instantdm-webhook.js";
+import issuesHandler from "../lib/issues.js";
 
 const FALLBACK = {
   mantishackStars: 363,
@@ -78,7 +80,11 @@ const tasks = {
 };
 
 export default async function handler(req, res) {
+  // Routed through this one function on purpose: the project is close enough to
+  // the Vercel function ceiling that each new endpoint would cost a slot.
   if (req.query?.route === "newsletter") return newsletterHandler(req, res);
+  if (req.query?.route === "instantdm") return instantDmWebhookHandler(req, res);
+  if (req.query?.route === "issues") return issuesHandler(req, res);
 
   const keys = Object.keys(tasks);
   const settled = await Promise.allSettled(keys.map((k) => tasks[k]()));

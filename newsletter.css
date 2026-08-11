@@ -1,0 +1,228 @@
+/* The AI Drop page. Rides on /resources/detail.css for the shell, header,
+   hero, and footer, and only adds the signup form and the issue archive. */
+
+.signup,
+.archive {
+  padding: clamp(2rem, 5vw, 4.5rem);
+  border-top: 1px solid var(--line);
+}
+
+.signup {
+  background: var(--teal-pale);
+}
+
+.signup h2,
+.archive h2 {
+  margin-bottom: 1.75rem;
+}
+
+/* ---------------------------------------------------------------- signup */
+
+.newsletter-form {
+  position: relative;
+  max-width: 34rem;
+}
+
+.newsletter-form > label {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.newsletter-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.newsletter-field input {
+  flex: 1 1 15rem;
+  min-height: 3.25rem;
+  padding: 0 1rem;
+  border: 1.5px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+}
+
+.newsletter-field input::placeholder {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.newsletter-field input:focus-visible {
+  outline: 3px solid var(--teal-dark);
+  outline-offset: 2px;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 3.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0 1.35rem;
+  border: 1.5px solid var(--teal-dark);
+  border-radius: 0.85rem;
+  background: var(--teal);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  transition: transform 160ms ease, box-shadow 200ms ease;
+}
+
+.button:hover:not(:disabled) {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.button:disabled {
+  cursor: progress;
+  opacity: 0.65;
+}
+
+.newsletter-consent {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.newsletter-consent a {
+  border-bottom: 1px solid currentcolor;
+  color: var(--teal-dark);
+  font-weight: 700;
+}
+
+.newsletter-status {
+  min-height: 1.4rem;
+  margin: 0.75rem 0 0;
+  color: var(--teal-dark);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.newsletter-status.is-error {
+  color: #a3282d;
+}
+
+/* The honeypot must stay reachable to bots but never to people or screen
+   readers, so it is moved offscreen rather than hidden with display: none. */
+.newsletter-trap {
+  position: absolute;
+  left: -10000px;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+}
+
+/* --------------------------------------------------------------- archive */
+
+.archive-intro {
+  max-width: 46ch;
+  margin: 0 0 2rem;
+  color: var(--muted);
+}
+
+.archive-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.archive-state {
+  margin: 0;
+  color: var(--muted);
+}
+
+.issue {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--paper);
+}
+
+.issue-summary {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.4rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.issue-summary:hover {
+  background: var(--teal-pale);
+}
+
+.issue-summary:focus-visible {
+  outline: 3px solid var(--teal-dark);
+  outline-offset: -3px;
+}
+
+.issue-heading {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.issue-subject {
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.issue-preview {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.issue-date {
+  flex: none;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.issue-body {
+  border-top: 1px solid var(--line);
+  padding: 1rem 1.4rem 1.4rem;
+}
+
+.issue-body iframe {
+  display: block;
+  width: 100%;
+  min-height: 28rem;
+  border: 0;
+  background: var(--paper);
+}
+
+.issue-body p {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 560px) {
+  .issue-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+
+  .button:hover:not(:disabled) {
+    transform: none;
+  }
+}
