@@ -41,13 +41,18 @@ const RESOURCE_PAGES = Object.freeze({
     summary:
       "The quick context behind the Reel: temporary communities where builders, researchers, artists, and founders live and work together.",
     offer:
-      "Start with the official Edge City site, then read the India announcement for the local format and application context.",
+      "Start with the official Edge City site, read the India announcement for the local format, then apply with code ECI-DEON20 for 20% off.",
     steps: [
       "Read the format and decide whether a temporary builder community fits your goals.",
       "Review the location, dates, residency, and participation details on the announcement.",
-      "Apply only through the official destination and verify any payment or travel request.",
+      "Apply through the official Edge City India page and enter the code ECI-DEON20 for 20% off.",
     ],
     links: [
+      {
+        label: "Apply to Edge City India",
+        url: "https://www.edgecity.live/india26",
+        note: "Use code ECI-DEON20 for 20% off.",
+      },
       {
         label: "Edge City official site",
         url: "https://edgecity.live/",
@@ -57,6 +62,8 @@ const RESOURCE_PAGES = Object.freeze({
         url: "https://edgecityindia2026.substack.com/p/welcome-to-edge-city-india",
       },
     ],
+    note:
+      "There is no direct checkout link. Edge City reviews every application, so apply through the site above and enter ECI-DEON20 at the appropriate step. Ticket prices have already increased once, and the discount applies to the current price rather than an older one.",
   },
   "edge-city-india-application": {
     eyebrow: "India pop-up village",
@@ -64,13 +71,19 @@ const RESOURCE_PAGES = Object.freeze({
     summary:
       "A clean starting page for the Edge City India application offer from the Reel.",
     offer:
-      "Read the current announcement, confirm the dates and eligibility, and follow its official application path.",
+      "Apply directly on the Edge City India page and use the code ECI-DEON20 for 20% off. There is no direct checkout link, because every application is reviewed first.",
     steps: [
       "Read the announcement end to end before applying.",
       "Check dates, location, ticketing, residency, and scholarship details.",
+      "Apply at edgecity.live/india26 and enter the code ECI-DEON20 for 20% off.",
       "Keep a copy of your submission and only use links published by Edge City.",
     ],
     links: [
+      {
+        label: "Apply to Edge City India",
+        url: "https://www.edgecity.live/india26",
+        note: "Use code ECI-DEON20 for 20% off.",
+      },
       {
         label: "Edge City India 2026",
         url: "https://edgecityindia2026.substack.com/p/welcome-to-edge-city-india",
@@ -80,6 +93,8 @@ const RESOURCE_PAGES = Object.freeze({
         url: "https://edgecity.live/",
       },
     ],
+    note:
+      "Edge City filters applications for quality, so there is no shortcut checkout link. Ticket prices have already increased once, and ECI-DEON20 takes 20% off the current price rather than an older one.",
   },
   "claude-start-here": {
     eyebrow: "AI trading workflow",
