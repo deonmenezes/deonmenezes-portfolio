@@ -46,6 +46,8 @@ test("a batch sends one private reply per comment id", async () => {
     ok: true,
     sent: 2,
     failed: 0,
+    replied: 0,
+    reply_failed: 0,
     results: [
       { comment_id: "111", ok: true },
       { comment_id: "222", ok: true },
@@ -109,6 +111,8 @@ test("a valid batch passes validation unchanged", () => {
   assert.deepEqual(validateBatch({ comment_ids: [" 11 ", "22"], message: `  ${MESSAGE}  ` }), {
     ids: ["11", "22"],
     message: MESSAGE,
+    publicOnSent: "",
+    publicOnFailed: "",
   });
 });
 
@@ -119,4 +123,72 @@ test("only POST is accepted", async () => {
   await handler(request({}, { method: "GET" }), res);
 
   assert.equal(res.statusCode, 405);
+});
+
+test("the public reply reflects what actually happened to the DM", async () => {
+  // Posting "sent it to your DMs" under a comment whose DM was refused would
+  // be a false claim, in public, on the user's account.
+  const replies = [];
+  const handler = createBackfillSendHandler({
+    send: async (id) => {
+      if (id === "222") throw new Error("The thread owner has archived or deleted this conversation");
+      return {};
+    },
+    replyPublicly: async (id, text) => replies.push({ id, text }),
+    sleep: async () => {},
+  });
+  const res = response();
+
+  await handler(request({
+    comment_ids: ["111", "222"],
+    message: MESSAGE,
+    public_on_sent: "just sent it to your DMs",
+    public_on_failed: "couldn't DM you, grab it here",
+  }), res);
+
+  assert.deepEqual(replies, [
+    { id: "111", text: "just sent it to your DMs" },
+    { id: "222", text: "couldn't DM you, grab it here" },
+  ]);
+  assert.equal(res.body.replied, 2);
+  assert.equal(res.body.sent, 1);
+  assert.equal(res.body.failed, 1);
+});
+
+test("no public reply is posted when none was supplied", async () => {
+  let replied = false;
+  const handler = createBackfillSendHandler({
+    send: async () => {},
+    replyPublicly: async () => { replied = true; },
+    sleep: async () => {},
+  });
+
+  await handler(request({ comment_ids: ["111"], message: MESSAGE }), response());
+
+  assert.equal(replied, false);
+});
+
+test("a failed public reply is reported without losing the DM result", async () => {
+  const handler = createBackfillSendHandler({
+    send: async () => {},
+    replyPublicly: async () => { throw new Error("rate limited"); },
+    sleep: async () => {},
+  });
+  const res = response();
+
+  await handler(request({
+    comment_ids: ["111"], message: MESSAGE, public_on_sent: "sent it",
+  }), res);
+
+  assert.equal(res.body.sent, 1);
+  assert.equal(res.body.reply_failed, 1);
+  assert.equal(res.body.results[0].ok, true);
+  assert.match(res.body.results[0].reply_error, /rate limited/u);
+});
+
+test("a fallback reply without a success reply is refused", () => {
+  assert.deepEqual(
+    validateBatch({ comment_ids: ["11"], message: MESSAGE, public_on_failed: "only fallback" }),
+    { error: "public_on_sent_required" },
+  );
 });
