@@ -24,6 +24,10 @@
       "destination": "/api/stats?route=issues"
     },
     {
+      "source": "/api/backfill-preview",
+      "destination": "/api/stats?route=backfill-preview"
+    },
+    {
       "source": "/deon/:path*",
       "destination": "/:path*"
     },
