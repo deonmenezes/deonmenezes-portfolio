@@ -7,6 +7,7 @@ import newsletterHandler from "../lib/newsletter.js";
 import instantDmWebhookHandler from "../lib/instantdm-webhook.js";
 import issuesHandler from "../lib/issues.js";
 import backfillPreviewHandler from "../lib/backfill-preview.js";
+import backfillSendHandler from "../lib/backfill-send.js";
 
 const FALLBACK = {
   mantishackStars: 363,
@@ -87,6 +88,7 @@ export default async function handler(req, res) {
   if (req.query?.route === "instantdm") return instantDmWebhookHandler(req, res);
   if (req.query?.route === "issues") return issuesHandler(req, res);
   if (req.query?.route === "backfill-preview") return backfillPreviewHandler(req, res);
+  if (req.query?.route === "backfill-send") return backfillSendHandler(req, res);
 
   const keys = Object.keys(tasks);
   const settled = await Promise.allSettled(keys.map((k) => tasks[k]()));
