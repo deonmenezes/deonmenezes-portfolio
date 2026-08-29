@@ -106,6 +106,10 @@ const expectedPages = Object.freeze({
     title: "Important APIs: official starting list",
     marker: "Pick APIs by the capability your product needs, read the official authentication and limits pages, and test the smallest server-side request before adding a full SDK.",
     link: "https://platform.openai.com/docs/quickstart/make-your-first-api-request",
+  },  "open-source-models": {
+    title: "Best open-source models you can run locally",
+    marker: "only think about H100s if you genuinely need frontier scores on your own metal",
+    link: "https://huggingface.co/Qwen/Qwen3.5-4B",
   },
 });
 
@@ -121,9 +125,9 @@ async function listJavaScriptFiles(directory) {
   return nested.flat();
 }
 
-test("all nineteen resources are deterministic static HTML pages at clean URLs", async () => {
+test("all twenty resources are deterministic static HTML pages at clean URLs", async () => {
   assert.deepEqual(new Set(RESOURCE_SLUGS), new Set(Object.keys(expectedPages)));
-  assert.equal(RESOURCE_SLUGS.length, 19);
+  assert.equal(RESOURCE_SLUGS.length, 20);
 
   for (const [slug, expected] of Object.entries(expectedPages)) {
     const pageUrl = new URL(`resources/${slug}.html`, root);
@@ -211,7 +215,7 @@ test("Higgsfield page is explicit about the unverified offer and uses only offic
   ]);
 });
 
-test("Vercel applies the strict security policy to exactly the nineteen static paths", async () => {
+test("Vercel applies the strict security policy to exactly the twenty static paths", async () => {
   const config = JSON.parse(
     await readFile(new URL("vercel.json", root), "utf8"),
   );
@@ -221,7 +225,7 @@ test("Vercel applies the strict security policy to exactly the nineteen static p
     expectedPathSet.has(source),
   );
 
-  assert.equal(resourceHeaderRules.length, 19);
+  assert.equal(resourceHeaderRules.length, 20);
   assert.deepEqual(
     new Set(resourceHeaderRules.map(({ source }) => source)),
     expectedPathSet,

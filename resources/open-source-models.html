@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Best open-source models you can run locally · Deon Menezes</title>
+  <meta name="description" content="The three tiers from the Reel — an 8 GB laptop, a 24 GB gaming GPU, and your own servers — with the official model cards, the benchmark numbers shown on screen, and the tools that run them.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/open-source-models">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Best open-source models you can run locally">
+  <meta property="og:description" content="The three tiers from the Reel — an 8 GB laptop, a 24 GB gaming GPU, and your own servers — with the official model cards, the benchmark numbers shown on screen, and the tools that run them.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/open-source-models">
+  <meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="/resources/detail.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the resource</a>
+  <header class="site-header">
+    <a class="brand" href="/deon" aria-label="Deon Menezes portfolio">
+      <span class="brand-mark" aria-hidden="true">D</span>
+      <span>Deon Menezes</span>
+    </a>
+    <a class="all-resources" href="/resources">All resources</a>
+  </header>
+
+  <main id="main">
+    <article>
+      <header class="hero">
+        <p class="eyebrow">Run AI locally · from the Reel</p>
+        <h1>Best open-source models you can run locally</h1>
+        <p class="summary">The three tiers from the Reel — an 8 GB laptop, a 24 GB gaming GPU, and your own servers — with the official model cards, the benchmark numbers shown on screen, and the tools that run them.</p>
+        <p class="offer">Match the model to the hardware you already own, install Ollama or LM Studio, pull the official weights, and only think about H100s if you genuinely need frontier scores on your own metal.</p>
+      </header>
+
+      <div class="resource-grid">
+        <section class="checklist" aria-labelledby="checklist-title">
+          <p class="section-label">Use this safely</p>
+          <h2 id="checklist-title">A practical starting checklist</h2>
+          <ol>
+          <li>
+            <span aria-hidden="true">01</span>
+            <p>8 GB RAM laptop, no GPU needed: run Qwen 3.5 4B (MMLU-Pro 79.1, GPQA Diamond 76.2, LiveCodeBench 55.8) or Gemma 4 E4B (69.4 / 58.6 / 52.0). Qwen is the stronger all-rounder; Gemma adds image and audio input.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">02</span>
+            <p>24 GB VRAM card such as an RTX 4090 (an RTX 4080 works with a smaller quantisation): run Qwen 3.5 27B (86.1 / 85.5 / 80.7) or Gemma 4 31B (85.2 / 84.3 / 80.0) for frontier-class scores at home.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">03</span>
+            <p>Your own servers: Kimi K3 is a 2.8-trillion-parameter MoE (104B active, 1M-token context) scoring GPQA Diamond 93.5, BrowseComp 91.2, Terminal-Bench 88.3 and SWE-bench Verified 76.8. Plan on six to eight H100s.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">04</span>
+            <p>Setup: install Ollama and run &quot;ollama run qwen3.5&quot; or &quot;ollama run gemma4&quot;, or use LM Studio&#39;s GUI. Pick a quantisation that fits your RAM or VRAM with headroom, and keep the model card&#39;s recommended sampling settings.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">05</span>
+            <p>The price tag: one H100 80 GB is $25K–$40K, an 8× HGX H100 server $250K–$320K, and cloud rental $2–7 per GPU-hour, versus roughly $20 a month for a hosted subscription. Run small models locally for free; rent GPUs only for bursts.</p>
+          </li>
+          </ol>
+        </section>
+
+        <section class="sources" aria-labelledby="sources-title">
+          <p class="section-label">Source links</p>
+          <h2 id="sources-title">Open the source, not a summary</h2>
+          <ul>
+          <li>
+            <a href="https://huggingface.co/Qwen/Qwen3.5-4B">
+              <span>Qwen 3.5 4B model card</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">The 8 GB laptop pick.</p>
+          </li>
+          <li>
+            <a href="https://huggingface.co/Qwen/Qwen3.5-27B">
+              <span>Qwen 3.5 27B model card</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">The 24 GB VRAM pick; 262K-token context natively.</p>
+          </li>
+          <li>
+            <a href="https://huggingface.co/google/gemma-4-E4B-it">
+              <span>Gemma 4 E4B (instruction-tuned) model card</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">Text, image, and audio input on a laptop.</p>
+          </li>
+          <li>
+            <a href="https://huggingface.co/google/gemma-4-31B-it">
+              <span>Gemma 4 31B (instruction-tuned) model card</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            
+          </li>
+          <li>
+            <a href="https://huggingface.co/moonshotai/Kimi-K3">
+              <span>Kimi K3 model card</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">2.8T total / 104B activated MoE; the server-class option.</p>
+          </li>
+          <li>
+            <a href="https://ollama.com/library/qwen3.5">
+              <span>Ollama: Qwen 3.5</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            
+          </li>
+          <li>
+            <a href="https://ollama.com/library/gemma4">
+              <span>Ollama: Gemma 4</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            
+          </li>
+          <li>
+            <a href="https://ollama.com/library/kimi-k3">
+              <span>Ollama: Kimi K3</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            
+          </li>
+          <li>
+            <a href="https://ollama.com/download">
+              <span>Download Ollama</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            
+          </li>
+          <li>
+            <a href="https://lmstudio.ai/">
+              <span>LM Studio</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            
+          </li>
+          <li>
+            <a href="https://github.com/ggml-org/llama.cpp">
+              <span>llama.cpp on GitHub</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            
+          </li>
+          </ul>
+        </section>
+      </div>
+      
+      
+        <aside class="note" aria-labelledby="note-title">
+          <p class="section-label" id="note-title">Keep in mind</p>
+          <p>Scores are the ones shown in the Reel, taken from each vendor&#39;s official model card at recording time; vendors revise their evals, so re-check the card before quoting a number. Local runs use quantised weights, which trade a little accuracy for fitting in memory.</p>
+        </aside>
+    </article>
+  </main>
+
+  <footer>
+    <p>Free to read. No signup required.</p>
+    <a href="/resources">Browse the resource library</a>
+  </footer>
+</body>
+</html>

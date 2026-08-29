@@ -580,6 +580,69 @@ const RESOURCE_PAGES = Object.freeze({
       },
     ],
     note: "The Reel promises an API list but does not publish an original fixed list in its caption. This page is a maintained official-documentation starting point, not a claim that every product needs every provider.",
+  },  "open-source-models": {
+    eyebrow: "Run AI locally · from the Reel",
+    title: "Best open-source models you can run locally",
+    summary: "The three tiers from the Reel — an 8 GB laptop, a 24 GB gaming GPU, and your own servers — with the official model cards, the benchmark numbers shown on screen, and the tools that run them.",
+    offer: "Match the model to the hardware you already own, install Ollama or LM Studio, pull the official weights, and only think about H100s if you genuinely need frontier scores on your own metal.",
+    steps: [
+      "8 GB RAM laptop, no GPU needed: run Qwen 3.5 4B (MMLU-Pro 79.1, GPQA Diamond 76.2, LiveCodeBench 55.8) or Gemma 4 E4B (69.4 / 58.6 / 52.0). Qwen is the stronger all-rounder; Gemma adds image and audio input.",
+      "24 GB VRAM card such as an RTX 4090 (an RTX 4080 works with a smaller quantisation): run Qwen 3.5 27B (86.1 / 85.5 / 80.7) or Gemma 4 31B (85.2 / 84.3 / 80.0) for frontier-class scores at home.",
+      "Your own servers: Kimi K3 is a 2.8-trillion-parameter MoE (104B active, 1M-token context) scoring GPQA Diamond 93.5, BrowseComp 91.2, Terminal-Bench 88.3 and SWE-bench Verified 76.8. Plan on six to eight H100s.",
+      "Setup: install Ollama and run \"ollama run qwen3.5\" or \"ollama run gemma4\", or use LM Studio's GUI. Pick a quantisation that fits your RAM or VRAM with headroom, and keep the model card's recommended sampling settings.",
+      "The price tag: one H100 80 GB is $25K–$40K, an 8× HGX H100 server $250K–$320K, and cloud rental $2–7 per GPU-hour, versus roughly $20 a month for a hosted subscription. Run small models locally for free; rent GPUs only for bursts.",
+    ],
+    links: [
+      {
+        label: "Qwen 3.5 4B model card",
+        url: "https://huggingface.co/Qwen/Qwen3.5-4B",
+        note: "The 8 GB laptop pick.",
+      },
+      {
+        label: "Qwen 3.5 27B model card",
+        url: "https://huggingface.co/Qwen/Qwen3.5-27B",
+        note: "The 24 GB VRAM pick; 262K-token context natively.",
+      },
+      {
+        label: "Gemma 4 E4B (instruction-tuned) model card",
+        url: "https://huggingface.co/google/gemma-4-E4B-it",
+        note: "Text, image, and audio input on a laptop.",
+      },
+      {
+        label: "Gemma 4 31B (instruction-tuned) model card",
+        url: "https://huggingface.co/google/gemma-4-31B-it",
+      },
+      {
+        label: "Kimi K3 model card",
+        url: "https://huggingface.co/moonshotai/Kimi-K3",
+        note: "2.8T total / 104B activated MoE; the server-class option.",
+      },
+      {
+        label: "Ollama: Qwen 3.5",
+        url: "https://ollama.com/library/qwen3.5",
+      },
+      {
+        label: "Ollama: Gemma 4",
+        url: "https://ollama.com/library/gemma4",
+      },
+      {
+        label: "Ollama: Kimi K3",
+        url: "https://ollama.com/library/kimi-k3",
+      },
+      {
+        label: "Download Ollama",
+        url: "https://ollama.com/download",
+      },
+      {
+        label: "LM Studio",
+        url: "https://lmstudio.ai/",
+      },
+      {
+        label: "llama.cpp on GitHub",
+        url: "https://github.com/ggml-org/llama.cpp",
+      },
+    ],
+    note: "Scores are the ones shown in the Reel, taken from each vendor's official model card at recording time; vendors revise their evals, so re-check the card before quoting a number. Local runs use quantised weights, which trade a little accuracy for fitting in memory.",
   },
 });
 
