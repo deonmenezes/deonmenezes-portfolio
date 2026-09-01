@@ -644,6 +644,90 @@ const RESOURCE_PAGES = Object.freeze({
     ],
     note: "Scores are the ones shown in the Reel, taken from each vendor's official model card at recording time; vendors revise their evals, so re-check the card before quoting a number. Local runs use quantised weights, which trade a little accuracy for fitting in memory.",
   },
+  "make-a-video-game": {
+    eyebrow: "AI game dev · from the Reel",
+    title: "Make a video game with AI: the exact steps",
+    summary:
+      "The full stack from the Reel — Claude Code building the game, Godot or Unreal Engine 5 running it, AI-generated 3D assets, ElevenLabs voices, Suno music, and ChatGPT artwork — in build order.",
+    offer:
+      "Work through the steps in order: Claude Code writes the project one feature at a time, you playtest after every change, and you ship the first version on itch.io.",
+    steps: [
+      "Pick your engine: Godot 4 for 2D or lighter 3D (free, open-source, and the fastest route to a first playable game), or Unreal Engine 5 for AAA-style 3D (free to start; Epic takes a royalty once a game earns over $1M gross).",
+      "Install the engine and Claude Code, create an empty project folder, and run prompt 01 below to turn your one-line idea into a design document with mechanics, scenes, and a milestone build order.",
+      "Let Claude Code build the core loop first — player movement, camera, one level, win and lose — using prompt 02 milestone by milestone. Run the game after every change and paste errors straight back into the chat.",
+      "Generate 3D models with an AI asset generator such as Meshy or Tripo (text-to-3D or image-to-3D), export as .glb or .fbx, and import them into the engine before asking for more detail than the game needs.",
+      "Voice your characters with ElevenLabs: write each line, generate the audio, and drop the files into your engine's audio player nodes.",
+      "Score it with Suno: loopable background tracks per scene, plus short stingers for wins and deaths.",
+      "Create cover art, UI mock-ups, and 2D artwork with ChatGPT image generation, then export and wire them into the project.",
+      "Playtest with three people who have never seen the game, fix what confuses them, and publish: itch.io first (free and live within the hour), then Steam through Steamworks ($100 per app) once strangers actually finish a level.",
+    ],
+    links: [
+      {
+        label: "Claude Code",
+        url: "https://claude.com/claude-code",
+        note: "The AI that builds the game with you, from the terminal or desktop app.",
+      },
+      {
+        label: "Godot 4 download",
+        url: "https://godotengine.org/download",
+        note: "Free and open-source; the fastest first game.",
+      },
+      {
+        label: "Unreal Engine 5 download",
+        url: "https://www.unrealengine.com/en-US/download",
+        note: "AAA 3D visuals; royalty applies after $1M gross revenue.",
+      },
+      {
+        label: "Meshy",
+        url: "https://www.meshy.ai/",
+        note: "Text or image to textured 3D model.",
+      },
+      {
+        label: "Tripo",
+        url: "https://www.tripo3d.ai/",
+      },
+      {
+        label: "ElevenLabs",
+        url: "https://elevenlabs.io/",
+        note: "Character voices from text.",
+      },
+      {
+        label: "Suno",
+        url: "https://suno.com/",
+        note: "Soundtrack and stingers from a text description.",
+      },
+      {
+        label: "ChatGPT image generation",
+        url: "https://chatgpt.com/",
+      },
+      {
+        label: "Publish on itch.io",
+        url: "https://itch.io/docs/creators/getting-started",
+      },
+      {
+        label: "Steamworks onboarding",
+        url: "https://partner.steamgames.com/",
+      },
+    ],
+    prompts: [
+      {
+        title: "01 · Turn the idea into a design doc",
+        when: "Run this in Claude Code inside your empty project folder.",
+        text: "You are my game director and lead programmer. I want to build a [2D / 3D] game in [Godot 4 / Unreal Engine 5]. The idea: [ONE-SENTENCE IDEA]. My experience level: [none / some / experienced].\n\nBefore writing any code, produce a one-page design document with: the core loop in one sentence; the player verbs (move, jump, shoot, …); at most three mechanics for version one; the scenes or levels needed; the win and lose conditions; the assets I will need (models or sprites, sounds, music, UI); and a build order of 8–12 small milestones where every milestone ends with something I can run and feel.\n\nCut everything that is not needed for a first playable version. Ask me up to three questions if the idea is ambiguous, then wait for my answers.",
+      },
+      {
+        title: "02 · Build one milestone at a time",
+        when: "Use this for every milestone in the build order.",
+        text: "Implement milestone [N] from the design document: [MILESTONE]. Work directly in this project folder: create or edit the scene files and scripts yourself, and tell me exactly what to click in the editor when something cannot be done from code.\n\nKeep the code simple enough for me to read, comment the parts a beginner would not understand, and do not refactor or add features beyond this milestone. When you are done, tell me how to run it, what I should see, and one thing to playtest. If I paste an error or say the feel is wrong, fix that before we move on.",
+      },
+      {
+        title: "03 · Debug and polish",
+        when: "Paste this when something breaks or feels bad.",
+        text: "Here is what went wrong: [PASTE THE ERROR OR DESCRIBE THE BAD FEEL]. First explain the cause in two sentences at my level, then fix it in the project.\n\nIf the problem is game feel rather than a bug, propose the smallest tunable change first (numbers, curves, timing), change one variable at a time, and tell me what to test after each change. Never rewrite whole files when a targeted edit will do.",
+      },
+    ],
+    note: "The stack is real but not free end to end: Unreal charges a 5% royalty after $1M gross, and Suno, Meshy, Tripo, and ElevenLabs tie commercial rights to paid tiers — read each tool's current licensing page before selling anything. Asset-generation quality moves fast, so treat the generators here as today's leading options rather than the only ones.",
+  },
 });
 
 export const RESOURCE_SLUGS = Object.freeze(Object.keys(RESOURCE_PAGES));

@@ -111,6 +111,11 @@ const expectedPages = Object.freeze({
     marker: "only think about H100s if you genuinely need frontier scores on your own metal",
     link: "https://huggingface.co/Qwen/Qwen3.5-4B",
   },
+  "make-a-video-game": {
+    title: "Make a video game with AI: the exact steps",
+    marker: "one feature at a time",
+    link: "https://godotengine.org/download",
+  },
 });
 
 async function listJavaScriptFiles(directory) {
@@ -125,9 +130,9 @@ async function listJavaScriptFiles(directory) {
   return nested.flat();
 }
 
-test("all twenty resources are deterministic static HTML pages at clean URLs", async () => {
+test("all twenty-one resources are deterministic static HTML pages at clean URLs", async () => {
   assert.deepEqual(new Set(RESOURCE_SLUGS), new Set(Object.keys(expectedPages)));
-  assert.equal(RESOURCE_SLUGS.length, 20);
+  assert.equal(RESOURCE_SLUGS.length, 21);
 
   for (const [slug, expected] of Object.entries(expectedPages)) {
     const pageUrl = new URL(`resources/${slug}.html`, root);
@@ -225,7 +230,7 @@ test("Vercel applies the strict security policy to exactly the twenty static pat
     expectedPathSet.has(source),
   );
 
-  assert.equal(resourceHeaderRules.length, 20);
+  assert.equal(resourceHeaderRules.length, 21);
   assert.deepEqual(
     new Set(resourceHeaderRules.map(({ source }) => source)),
     expectedPathSet,
