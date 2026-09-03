@@ -121,6 +121,11 @@ const expectedPages = Object.freeze({
     marker: "Keep exactly one client connected",
     link: "https://github.com/ahujasid/blender-mcp",
   },
+  "gpt-6-draw": {
+    title: "GPT-6 lucky draw: entry status",
+    marker: "not sponsored, endorsed, or administered by OpenAI",
+    link: "https://www.instagram.com/reel/Dc1r6hhOorT/",
+  },
 });
 
 async function listJavaScriptFiles(directory) {
@@ -135,9 +140,9 @@ async function listJavaScriptFiles(directory) {
   return nested.flat();
 }
 
-test("all twenty-two resources are deterministic static HTML pages at clean URLs", async () => {
+test("all twenty-three resources are deterministic static HTML pages at clean URLs", async () => {
   assert.deepEqual(new Set(RESOURCE_SLUGS), new Set(Object.keys(expectedPages)));
-  assert.equal(RESOURCE_SLUGS.length, 22);
+  assert.equal(RESOURCE_SLUGS.length, 23);
 
   for (const [slug, expected] of Object.entries(expectedPages)) {
     const pageUrl = new URL(`resources/${slug}.html`, root);
@@ -225,7 +230,7 @@ test("Higgsfield page is explicit about the unverified offer and uses only offic
   ]);
 });
 
-test("Vercel applies the strict security policy to exactly the twenty-two static paths", async () => {
+test("Vercel applies the strict security policy to exactly the twenty-three static paths", async () => {
   const config = JSON.parse(
     await readFile(new URL("vercel.json", root), "utf8"),
   );
@@ -235,7 +240,7 @@ test("Vercel applies the strict security policy to exactly the twenty-two static
     expectedPathSet.has(source),
   );
 
-  assert.equal(resourceHeaderRules.length, 22);
+  assert.equal(resourceHeaderRules.length, 23);
   assert.deepEqual(
     new Set(resourceHeaderRules.map(({ source }) => source)),
     expectedPathSet,

@@ -814,6 +814,37 @@ const RESOURCE_PAGES = Object.freeze({
     ],
     note: "Blender MCP is a third-party community plugin and is not made by the Blender Foundation, nor tied to any one AI company. Two things to know before you start: the add-on's telemetry is on by default and may collect prompts, generated code and screenshots that can be used to train AI models — you can turn it off in the add-on preferences or by setting DISABLE_TELEMETRY to true in your MCP config; and the plugin runs AI-written Python inside Blender without a sandbox, so save your work first. Asset licences differ: Poly Haven is CC0, Sketchfab models generally require credit that travels with the asset into anything you publish, Hyper3D's free tier is best treated as preview-only, and Hunyuan3D's community licence excludes the EU, UK and South Korea.",
   },
+  "gpt-6-draw": {
+    eyebrow: "Giveaway from the Reel",
+    title: "GPT-6 lucky draw: entry status",
+    summary: "How the free GPT-6 giveaway from the Reel works: commenting on the Reel is your entry, one winner is drawn at random, and the winner hears from @deon_tech by DM.",
+    offer: "Comment on the Reel to enter, make sure your DMs can receive a message from @deon_tech, and treat any winner message that asks for payment or card details as fake.",
+    steps: [
+      "Enter: leave a comment on the GPT-6 Astra Reel from @deon_tech. One comment is one entry; commenting again does not add entries.",
+      "Wait: one winner is picked at random from the commenters. The draw date is announced on @deon_tech, so keep an eye on the account.",
+      "Winner contact: the only official contact is a DM from @deon_tech. It will never ask for money, card details, passwords, or a delivery fee — a message that does is a scam, whoever it appears to come from.",
+    ],
+    links: [
+      {
+        label: "The GPT-6 Astra Reel (this is where you enter)",
+        url: "https://www.instagram.com/reel/Dc1r6hhOorT/",
+      },
+      {
+        label: "@deon_tech on Instagram",
+        url: "https://www.instagram.com/deon_tech/",
+        note: "Winner announcements and the only official winner DM come from here.",
+      },
+      {
+        label: "ChatGPT (official)",
+        url: "https://chatgpt.com/",
+      },
+      {
+        label: "OpenAI (official)",
+        url: "https://openai.com/",
+      },
+    ],
+    note: "This giveaway is run independently by Deon and is not sponsored, endorsed, or administered by OpenAI. It is free to enter and no purchase is required. Practical details such as the draw date may be announced or updated on @deon_tech; this page describes how the draw works.",
+  },
 });
 
 export const RESOURCE_SLUGS = Object.freeze(Object.keys(RESOURCE_PAGES));
