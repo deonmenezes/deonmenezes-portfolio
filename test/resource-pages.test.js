@@ -116,6 +116,11 @@ const expectedPages = Object.freeze({
     marker: "one feature at a time",
     link: "https://godotengine.org/download",
   },
+  "blender-mcp": {
+    title: "Control Blender with AI: the full setup",
+    marker: "Keep exactly one client connected",
+    link: "https://github.com/ahujasid/blender-mcp",
+  },
 });
 
 async function listJavaScriptFiles(directory) {
@@ -130,9 +135,9 @@ async function listJavaScriptFiles(directory) {
   return nested.flat();
 }
 
-test("all twenty-one resources are deterministic static HTML pages at clean URLs", async () => {
+test("all twenty-two resources are deterministic static HTML pages at clean URLs", async () => {
   assert.deepEqual(new Set(RESOURCE_SLUGS), new Set(Object.keys(expectedPages)));
-  assert.equal(RESOURCE_SLUGS.length, 21);
+  assert.equal(RESOURCE_SLUGS.length, 22);
 
   for (const [slug, expected] of Object.entries(expectedPages)) {
     const pageUrl = new URL(`resources/${slug}.html`, root);
@@ -220,7 +225,7 @@ test("Higgsfield page is explicit about the unverified offer and uses only offic
   ]);
 });
 
-test("Vercel applies the strict security policy to exactly the twenty static paths", async () => {
+test("Vercel applies the strict security policy to exactly the twenty-two static paths", async () => {
   const config = JSON.parse(
     await readFile(new URL("vercel.json", root), "utf8"),
   );
@@ -230,7 +235,7 @@ test("Vercel applies the strict security policy to exactly the twenty static pat
     expectedPathSet.has(source),
   );
 
-  assert.equal(resourceHeaderRules.length, 21);
+  assert.equal(resourceHeaderRules.length, 22);
   assert.deepEqual(
     new Set(resourceHeaderRules.map(({ source }) => source)),
     expectedPathSet,

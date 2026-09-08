@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control Blender with AI: the full setup · Deon Menezes</title>
+  <meta name="description" content="Blender MCP is a free community plugin that connects any AI assistant to Blender, so you model, texture and light a scene by describing it. The Godzilla in the Reel took about nine minutes and no Blender knowledge.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/blender-mcp">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Control Blender with AI: the full setup">
+  <meta property="og:description" content="Blender MCP is a free community plugin that connects any AI assistant to Blender, so you model, texture and light a scene by describing it. The Godzilla in the Reel took about nine minutes and no Blender knowledge.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/blender-mcp">
+  <meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="/resources/detail.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the resource</a>
+  <header class="site-header">
+    <a class="brand" href="/deon" aria-label="Deon Menezes portfolio">
+      <span class="brand-mark" aria-hidden="true">D</span>
+      <span>Deon Menezes</span>
+    </a>
+    <a class="all-resources" href="/resources">All resources</a>
+  </header>
+
+  <main id="main">
+    <article>
+      <header class="hero">
+        <p class="eyebrow">Blender MCP · from the Reel</p>
+        <h1>Control Blender with AI: the full setup</h1>
+        <p class="summary">Blender MCP is a free community plugin that connects any AI assistant to Blender, so you model, texture and light a scene by describing it. The Godzilla in the Reel took about nine minutes and no Blender knowledge.</p>
+        <p class="offer">Watch the tutorial first, then work through the setup alongside it: install uv, install the add-on, point your AI app at Blender, and connect from inside Blender.</p>
+      </header>
+
+      <div class="resource-grid">
+        <section class="checklist" aria-labelledby="checklist-title">
+          <p class="section-label">Use this safely</p>
+          <h2 id="checklist-title">A practical starting checklist</h2>
+          <ol>
+          <li>
+            <span aria-hidden="true">01</span>
+            <p>Install Blender 3.0 or newer (the current release is 5.2.1 LTS) and check you have Python 3.10 or newer. From Blender 5.0 the macOS build is Apple Silicon only — on an Intel Mac install 4.5 LTS instead.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">02</span>
+            <p>Install the uv package runner with its official installer, never with pip: macOS `brew install uv`; Windows `powershell -ExecutionPolicy ByPass -c &quot;irm https://astral.sh/uv/install.ps1 | iex&quot;`; Linux `curl -LsSf https://astral.sh/uv/install.sh | sh`. On Windows, restart your AI app afterwards so it picks up the new PATH.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">03</span>
+            <p>Install the Blender add-on with one command: `uvx blender-mcp install-addon`. To do it by hand instead, download addon.py from the repository, then in Blender use Edit → Preferences → Add-ons → Install and enable &quot;Interface: MCP for Blender&quot;.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">04</span>
+            <p>Point your AI app at Blender by adding a server named `blender` that runs the command `uvx` with the single argument `blender-mcp`. That goes in claude_desktop_config.json for Claude Desktop, or Settings → MCP in Cursor. On Claude Code you can skip the file: `claude mcp add --scope user blender -- uvx blender-mcp`, where the double dash is required.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">05</span>
+            <p>In VS Code only, the top-level key is `servers`, not `mcpServers`. Pasting the Claude Desktop block unchanged configures nothing at all and shows no error — open the file with the &quot;MCP: Open User Configuration&quot; command and use the right key.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">06</span>
+            <p>Open Blender, press N in the 3D viewport to show the sidebar, find the &quot;MCP for Blender&quot; tab, tick the integrations you want, and press the connect button (currently labelled &quot;Connect to MCP server&quot;). Then prompt from your AI app.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">07</span>
+            <p>Keep exactly one client connected. Everything talks over a single port, so do not run `uvx blender-mcp` yourself in a terminal and do not leave two AI apps connected at once — that is the most common reason it silently does nothing.</p>
+          </li>
+          <li>
+            <span aria-hidden="true">08</span>
+            <p>Work in stages and save first. One instruction per prompt beats one large request, because each operation has a time limit; and the plugin executes AI-written Python inside Blender with your normal permissions, so start in a scratch .blend file rather than a project you care about.</p>
+          </li>
+          </ol>
+        </section>
+
+        <section class="sources" aria-labelledby="sources-title">
+          <p class="section-label">Source links</p>
+          <h2 id="sources-title">Open the source, not a summary</h2>
+          <ul>
+          <li>
+            <a href="https://youtu.be/GuZTPOY6Sww">
+              <span>Watch the tutorial: GPT-6 Astra is Amazing at 3D!</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">The full walkthrough this page accompanies.</p>
+          </li>
+          <li>
+            <a href="https://github.com/ahujasid/blender-mcp">
+              <span>Blender MCP on GitHub</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">The source and the README. A community project by Siddharth Ahuja, MIT licensed.</p>
+          </li>
+          <li>
+            <a href="https://mcp-for-blender.com/">
+              <span>The project&#39;s own documentation</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">Quickstart, per-client setup, and the full troubleshooting reference.</p>
+          </li>
+          <li>
+            <a href="https://discord.gg/SNqPn4TcKQ">
+              <span>Community Discord</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">Usually faster than the issue tracker for setup problems.</p>
+          </li>
+          <li>
+            <a href="https://www.blender.org/download/">
+              <span>Download Blender</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            
+          </li>
+          <li>
+            <a href="https://www.blender.org/download/lts/">
+              <span>Blender 4.5 LTS (Intel Mac fallback)</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            
+          </li>
+          <li>
+            <a href="https://polyhaven.com/">
+              <span>Poly Haven</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">Free CC0 models, textures and HDRIs; the only asset library here that needs no account or key.</p>
+          </li>
+          <li>
+            <a href="https://docs.blender.org/manual/en/latest/getting_started/index.html">
+              <span>Blender Manual: Getting Started</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">Fifteen minutes here and you will direct the AI far better.</p>
+          </li>
+          <li>
+            <a href="https://modelcontextprotocol.io/">
+              <span>What is MCP?</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p class="source-note">The open protocol behind this; the same approach works with many other tools.</p>
+          </li>
+          </ul>
+        </section>
+      </div>
+      
+      <section class="prompts" aria-labelledby="prompts-title">
+        <p class="section-label">Copy these</p>
+        <h2 id="prompts-title">The prompts</h2>
+        <ol class="prompt-list">
+          <li>
+            <p class="prompt-title">01 · Check the connection works</p>
+            <p class="prompt-when">Send this first, before anything creative.</p>
+            <pre class="prompt-text">List every object currently in my Blender scene, then delete the default cube.
+
+If nothing happens, send it a second time — the first command after connecting often fails silently while the server is still starting.</pre>
+          </li>
+          <li>
+            <p class="prompt-title">02 · Block out the model</p>
+            <p class="prompt-when">One stage per prompt. Do not ask for the finished thing in one go.</p>
+            <pre class="prompt-text">Build a low-poly kaiju monster: a big bipedal reptile with a thick heavy tail, jagged spikes down its back, short arms and thick legs. Block the whole thing out with simple shapes first, get the proportions right, and show me before you add any detail.
+
+Then follow up separately with &quot;now refine the head and add the spikes&quot;, and again with &quot;give it a rough grey-green scaly material&quot;.</pre>
+          </li>
+          <li>
+            <p class="prompt-title">03 · Environment and lighting</p>
+            <p class="prompt-when">Switch on Poly Haven in the add-on sidebar first.</p>
+            <pre class="prompt-text">Use Poly Haven. Find an outdoor sunset HDRI and set it as the world background, then add a large ground plane and put a cracked concrete texture on it. Keep the monster where it is.</pre>
+          </li>
+          <li>
+            <p class="prompt-title">04 · Camera and a render you can post</p>
+            <p class="prompt-when">Ask for the render on its own — bundling heavy work is what hits the timeout.</p>
+            <pre class="prompt-text">Add a camera at a low hero angle looking up at the monster so it fills about two-thirds of the frame, add a rim light behind it, set the render to 1920x1080, and render a preview image.</pre>
+          </li>
+        </ol>
+      </section>
+      
+        <aside class="note" aria-labelledby="note-title">
+          <p class="section-label" id="note-title">Keep in mind</p>
+          <p>Blender MCP is a third-party community plugin and is not made by the Blender Foundation, nor tied to any one AI company. Two things to know before you start: the add-on&#39;s telemetry is on by default and may collect prompts, generated code and screenshots that can be used to train AI models — you can turn it off in the add-on preferences or by setting DISABLE_TELEMETRY to true in your MCP config; and the plugin runs AI-written Python inside Blender without a sandbox, so save your work first. Asset licences differ: Poly Haven is CC0, Sketchfab models generally require credit that travels with the asset into anything you publish, Hyper3D&#39;s free tier is best treated as preview-only, and Hunyuan3D&#39;s community licence excludes the EU, UK and South Korea.</p>
+        </aside>
+    </article>
+  </main>
+
+  <footer>
+    <p>Free to read. No signup required.</p>
+    <a href="/resources">Browse the resource library</a>
+  </footer>
+</body>
+</html>

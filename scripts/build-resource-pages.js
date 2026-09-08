@@ -728,6 +728,92 @@ const RESOURCE_PAGES = Object.freeze({
     ],
     note: "The stack is real but not free end to end: Unreal charges a 5% royalty after $1M gross, and Suno, Meshy, Tripo, and ElevenLabs tie commercial rights to paid tiers — read each tool's current licensing page before selling anything. Asset-generation quality moves fast, so treat the generators here as today's leading options rather than the only ones.",
   },
+  "blender-mcp": {
+    eyebrow: "Blender MCP · from the Reel",
+    title: "Control Blender with AI: the full setup",
+    summary:
+      "Blender MCP is a free community plugin that connects any AI assistant to Blender, so you model, texture and light a scene by describing it. The Godzilla in the Reel took about nine minutes and no Blender knowledge.",
+    offer:
+      "Watch the tutorial first, then work through the setup alongside it: install uv, install the add-on, point your AI app at Blender, and connect from inside Blender.",
+    steps: [
+      "Install Blender 3.0 or newer (the current release is 5.2.1 LTS) and check you have Python 3.10 or newer. From Blender 5.0 the macOS build is Apple Silicon only — on an Intel Mac install 4.5 LTS instead.",
+      "Install the uv package runner with its official installer, never with pip: macOS `brew install uv`; Windows `powershell -ExecutionPolicy ByPass -c \"irm https://astral.sh/uv/install.ps1 | iex\"`; Linux `curl -LsSf https://astral.sh/uv/install.sh | sh`. On Windows, restart your AI app afterwards so it picks up the new PATH.",
+      "Install the Blender add-on with one command: `uvx blender-mcp install-addon`. To do it by hand instead, download addon.py from the repository, then in Blender use Edit → Preferences → Add-ons → Install and enable \"Interface: MCP for Blender\".",
+      "Point your AI app at Blender by adding a server named `blender` that runs the command `uvx` with the single argument `blender-mcp`. That goes in claude_desktop_config.json for Claude Desktop, or Settings → MCP in Cursor. On Claude Code you can skip the file: `claude mcp add --scope user blender -- uvx blender-mcp`, where the double dash is required.",
+      "In VS Code only, the top-level key is `servers`, not `mcpServers`. Pasting the Claude Desktop block unchanged configures nothing at all and shows no error — open the file with the \"MCP: Open User Configuration\" command and use the right key.",
+      "Open Blender, press N in the 3D viewport to show the sidebar, find the \"MCP for Blender\" tab, tick the integrations you want, and press the connect button (currently labelled \"Connect to MCP server\"). Then prompt from your AI app.",
+      "Keep exactly one client connected. Everything talks over a single port, so do not run `uvx blender-mcp` yourself in a terminal and do not leave two AI apps connected at once — that is the most common reason it silently does nothing.",
+      "Work in stages and save first. One instruction per prompt beats one large request, because each operation has a time limit; and the plugin executes AI-written Python inside Blender with your normal permissions, so start in a scratch .blend file rather than a project you care about.",
+    ],
+    links: [
+      {
+        label: "Watch the tutorial: GPT-6 Astra is Amazing at 3D!",
+        url: "https://youtu.be/GuZTPOY6Sww",
+        note: "The full walkthrough this page accompanies.",
+      },
+      {
+        label: "Blender MCP on GitHub",
+        url: "https://github.com/ahujasid/blender-mcp",
+        note: "The source and the README. A community project by Siddharth Ahuja, MIT licensed.",
+      },
+      {
+        label: "The project's own documentation",
+        url: "https://mcp-for-blender.com/",
+        note: "Quickstart, per-client setup, and the full troubleshooting reference.",
+      },
+      {
+        label: "Community Discord",
+        url: "https://discord.gg/SNqPn4TcKQ",
+        note: "Usually faster than the issue tracker for setup problems.",
+      },
+      {
+        label: "Download Blender",
+        url: "https://www.blender.org/download/",
+      },
+      {
+        label: "Blender 4.5 LTS (Intel Mac fallback)",
+        url: "https://www.blender.org/download/lts/",
+      },
+      {
+        label: "Poly Haven",
+        url: "https://polyhaven.com/",
+        note: "Free CC0 models, textures and HDRIs; the only asset library here that needs no account or key.",
+      },
+      {
+        label: "Blender Manual: Getting Started",
+        url: "https://docs.blender.org/manual/en/latest/getting_started/index.html",
+        note: "Fifteen minutes here and you will direct the AI far better.",
+      },
+      {
+        label: "What is MCP?",
+        url: "https://modelcontextprotocol.io/",
+        note: "The open protocol behind this; the same approach works with many other tools.",
+      },
+    ],
+    prompts: [
+      {
+        title: "01 · Check the connection works",
+        when: "Send this first, before anything creative.",
+        text: "List every object currently in my Blender scene, then delete the default cube.\n\nIf nothing happens, send it a second time — the first command after connecting often fails silently while the server is still starting.",
+      },
+      {
+        title: "02 · Block out the model",
+        when: "One stage per prompt. Do not ask for the finished thing in one go.",
+        text: "Build a low-poly kaiju monster: a big bipedal reptile with a thick heavy tail, jagged spikes down its back, short arms and thick legs. Block the whole thing out with simple shapes first, get the proportions right, and show me before you add any detail.\n\nThen follow up separately with \"now refine the head and add the spikes\", and again with \"give it a rough grey-green scaly material\".",
+      },
+      {
+        title: "03 · Environment and lighting",
+        when: "Switch on Poly Haven in the add-on sidebar first.",
+        text: "Use Poly Haven. Find an outdoor sunset HDRI and set it as the world background, then add a large ground plane and put a cracked concrete texture on it. Keep the monster where it is.",
+      },
+      {
+        title: "04 · Camera and a render you can post",
+        when: "Ask for the render on its own — bundling heavy work is what hits the timeout.",
+        text: "Add a camera at a low hero angle looking up at the monster so it fills about two-thirds of the frame, add a rim light behind it, set the render to 1920x1080, and render a preview image.",
+      },
+    ],
+    note: "Blender MCP is a third-party community plugin and is not made by the Blender Foundation, nor tied to any one AI company. Two things to know before you start: the add-on's telemetry is on by default and may collect prompts, generated code and screenshots that can be used to train AI models — you can turn it off in the add-on preferences or by setting DISABLE_TELEMETRY to true in your MCP config; and the plugin runs AI-written Python inside Blender without a sandbox, so save your work first. Asset licences differ: Poly Haven is CC0, Sketchfab models generally require credit that travels with the asset into anything you publish, Hyper3D's free tier is best treated as preview-only, and Hunyuan3D's community licence excludes the EU, UK and South Korea.",
+  },
 });
 
 export const RESOURCE_SLUGS = Object.freeze(Object.keys(RESOURCE_PAGES));
