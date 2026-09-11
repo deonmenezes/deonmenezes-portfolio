@@ -3,11 +3,30 @@ import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 import {
+  GA_MEASUREMENT_ID,
   RESOURCE_SLUGS,
   renderResourcePage,
 } from "../scripts/build-resource-pages.js";
 
 const root = new URL("../", import.meta.url);
+
+const GA_TAGS = Object.freeze([
+  `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>`,
+  `<script src="/ga.js"></script>`,
+]);
+
+const PUBLIC_ROOT_PAGES = Object.freeze([
+  "data-deletion.html",
+  "index.html",
+  "linktree.html",
+  "newsletter.html",
+  "privacy.html",
+  "resources.html",
+]);
+
+function countOccurrences(text, needle) {
+  return text.split(needle).length - 1;
+}
 
 const expectedPages = Object.freeze({
   "f1-status-checklist": {
@@ -177,7 +196,12 @@ test("all twenty-three resources are deterministic static HTML pages at clean UR
     assert.match(html, /<section class="checklist"/u, slug);
     assert.match(html, /<section class="sources"/u, slug);
     assert.match(html, /Free to read\. No signup required\./u, slug);
-    assert.doesNotMatch(html, /<script(?:\s|>)/iu, slug);
+    let htmlWithoutAnalytics = html;
+    for (const tag of GA_TAGS) {
+      assert.equal(countOccurrences(html, tag), 1, `${slug}: expected exactly one ${tag}`);
+      htmlWithoutAnalytics = htmlWithoutAnalytics.replace(tag, "");
+    }
+    assert.doesNotMatch(htmlWithoutAnalytics, /<script/iu, slug);
     assert.doesNotMatch(html, /<form(?:\s|>)/iu, slug);
   }
 });
@@ -254,7 +278,38 @@ test("Vercel applies the strict security policy to exactly the twenty-three stat
     const policy = headers["Content-Security-Policy"];
 
     assert.match(policy, /default-src 'none'/u, path);
-    assert.match(policy, /script-src 'none'/u, path);
+    const directives = new Map(
+      policy.split(";").map((directive) => {
+        const [name, ...sources] = directive.trim().split(/\s+/u);
+        return [name, sources];
+      }),
+    );
+    assert.deepEqual(
+      directives.get("script-src"),
+      ["'self'", "https://www.googletagmanager.com"],
+      path,
+    );
+    assert.deepEqual(
+      directives.get("connect-src"),
+      [
+        "https://*.google-analytics.com",
+        "https://*.analytics.google.com",
+        "https://*.googletagmanager.com",
+        "https://*.google.com",
+      ],
+      path,
+    );
+    assert.deepEqual(
+      directives.get("img-src"),
+      [
+        "https://*.google-analytics.com",
+        "https://*.googletagmanager.com",
+        "https://*.google.com",
+      ],
+      path,
+    );
+    assert.doesNotMatch(policy, /'unsafe-inline'/u, path);
+    assert.doesNotMatch(policy, /(?:^|\s)(?:https?:\/\/)?\*(?=\s|;|$)/u, path);
     assert.match(policy, /style-src 'self'/u, path);
     assert.match(policy, /frame-ancestors 'none'/u, path);
     assert.match(policy, /form-action 'none'/u, path);
@@ -271,6 +326,53 @@ test("Vercel applies the strict security policy to exactly the twenty-three stat
       && !expectedPathSet.has(source),
   );
   assert.deepEqual(otherResourceHeaderRules, []);
+});
+
+test("Google Analytics loads once via first-party /ga.js on every public page, never on the private dashboard", async () => {
+  const gaScript = await readFile(new URL("ga.js", root), "utf8");
+  assert.match(GA_MEASUREMENT_ID, /^G-[A-Z0-9]+$/u);
+  assert.ok(
+    gaScript.includes(`gtag("config", "${GA_MEASUREMENT_ID}");`),
+    "ga.js must configure the build-script measurement ID",
+  );
+  assert.doesNotMatch(gaScript, /<script/iu);
+
+  const rootPages = (await readdir(root)).filter((name) => name.endsWith(".html"));
+  assert.deepEqual(
+    new Set(rootPages),
+    new Set([...PUBLIC_ROOT_PAGES, "social.html"]),
+    "classify every new root page as public (tagged) or private",
+  );
+
+  const htmlIn = async (directory) =>
+    (await readdir(new URL(`${directory}/`, root)))
+      .filter((name) => name.endsWith(".html"))
+      .map((name) => `${directory}/${name}`);
+  const handWrittenResourcePages = (await htmlIn("resources")).filter(
+    (page) => !RESOURCE_SLUGS.includes(page.slice("resources/".length, -".html".length)),
+  );
+  assert.ok(handWrittenResourcePages.includes("resources/carousels.html"));
+  assert.ok(handWrittenResourcePages.includes("resources/harnessengineering.html"));
+
+  const publicPages = [
+    ...PUBLIC_ROOT_PAGES,
+    "pdf/chatgptcodes.html",
+    ...(await htmlIn("services")),
+    ...(await htmlIn("resources")),
+  ];
+  assert.equal(publicPages.length, 6 + 1 + 8 + 23 + handWrittenResourcePages.length);
+
+  for (const page of publicPages) {
+    const html = await readFile(new URL(page, root), "utf8");
+    const headEnd = html.indexOf("</head>");
+    for (const tag of GA_TAGS) {
+      assert.equal(countOccurrences(html, tag), 1, `${page}: expected exactly one ${tag}`);
+      assert.ok(html.indexOf(tag) < headEnd, `${page}: ${tag} must be inside <head>`);
+    }
+  }
+
+  const socialHtml = await readFile(new URL("social.html", root), "utf8");
+  assert.doesNotMatch(socialHtml, /googletagmanager|\/ga\.js|gtag/iu);
 });
 
 test("clean URLs expose the static files without rewrites, conflicts, or an unknown catch-all", async () => {

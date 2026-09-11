@@ -134,7 +134,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -167,7 +167,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -200,7 +200,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -233,7 +233,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -266,7 +266,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -299,7 +299,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -332,7 +332,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -365,7 +365,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -398,7 +398,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -431,7 +431,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -464,7 +464,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -497,7 +497,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -564,7 +564,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -597,7 +597,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -630,7 +630,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -663,7 +663,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -696,7 +696,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -729,7 +729,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -762,7 +762,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -795,7 +795,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -828,7 +828,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -861,7 +861,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
@@ -894,7 +894,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'none'; object-src 'none'; script-src 'none'; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",

@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const SITE_ORIGIN = "https://deonmenezes.com";
+export const GA_MEASUREMENT_ID = "G-RE7YD03ZNX";
 const RESOURCE_DIRECTORY = fileURLToPath(
   new URL("../resources/", import.meta.url),
 );
@@ -936,6 +937,8 @@ function renderPage(slug, resource) {
   <meta property="og:url" content="${canonicalUrl}">
   <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/resources/detail.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
+  <script src="/ga.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to the resource</a>
