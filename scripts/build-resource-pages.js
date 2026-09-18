@@ -846,6 +846,62 @@ const RESOURCE_PAGES = Object.freeze({
     ],
     note: "This giveaway is run independently by Deon and is not sponsored, endorsed, or administered by OpenAI. It is free to enter and no purchase is required. Practical details such as the draw date may be announced or updated on @deon_tech; this page describes how the draw works.",
   },
+  ghost: {
+    eyebrow: "Ghost · from the Reel",
+    title: "Ghost: set your phone location anywhere",
+    summary:
+      "Ghost is a free, open-source Mac and Windows app that sets your iPhone or Android's location, or drives it down real roads at 45 mph, over a USB cable or Wi-Fi. No jailbreak, no root, no account.",
+    offer:
+      "Download the installer that matches your computer, get your phone to show Ready in Ghost once, then pick a spot on the map. Restore your real location before you unplug.",
+    steps: [
+      "Download Ghost 0.1.7 from the GitHub release page. Mac with an Apple chip (M1 or newer): Ghost-0.1.7-mac-arm64.dmg. Intel Mac: Ghost-0.1.7-mac-x64.dmg. Windows 64-bit PC: Ghost-0.1.7-win-x64.exe. Everything the phone needs is bundled, so you do not install Python, Xcode or Android Studio. Windows on ARM and Linux are not supported yet.",
+      "Mac: open the DMG, drag Ghost into Applications and open it from there. The app is not signed yet, so if macOS blocks it go to System Settings → Privacy & Security → Open Anyway. If macOS says it is damaged, compare the file with SHA256SUMS.txt on the release page; if it matches and you trust it, run `xattr -dr com.apple.quarantine /Applications/Ghost.app`.",
+      "Windows: run the EXE. If SmartScreen says \"Windows protected your PC\", choose More info → Run anyway only if you trust the download. School and work laptops may block unsigned apps entirely.",
+      "iPhone (iOS 17.4 or newer): plug in with a cable that carries data, not just charge, unlock the phone and tap Trust. Then turn on Settings → Privacy & Security → Developer Mode, let it restart and confirm with your passcode. On Windows, first install Apple Devices from the Microsoft Store and open it once so Windows has Apple's USB drivers.",
+      "Android (8 or newer): open Settings → About phone and tap Build number seven times. In Developer options switch on USB debugging, plug in with a data cable and tap Allow on the pop-up. If Windows cannot find the phone, install your phone maker's official ADB USB driver.",
+      "In Ghost, choose your computer and phone, select the phone and click Prepare if it says Setup needed. Keep the computer online. Wait until the phone shows Ready. On Android, if asked, go to Developer options → Select mock location app → Appium Settings.",
+      "Fixed location: search a place, tap the map or type coordinates, then click Set location. Picking a pin only previews it; nothing reaches the phone until you click Set location. To move, pick a new spot and click Update location.",
+      "Route: drop a pin, click Add selected pin to route, and repeat for up to 12 stops in order. Click Plan road route, then Start route. The phone follows real roads at a constant 45 mph with an update every second. Keep Ghost open, the cable in and the computer awake.",
+      "When you are done, click Restore real location, give the phone's map a moment to refresh, then unplug. Unplugging does not reset it: if you pulled the cable first, plug the same phone back in and click Restore, and restart an iPhone that stays stuck.",
+      "Optional: once the phone works over USB, Ghost offers Switch to Wi-Fi. Keep both devices on the same network and leave the cable in until Ghost says you can unplug. Android 11 and newer can also pair without a cable from the connection panel.",
+    ],
+    links: [
+      {
+        label: "Download Ghost 0.1.7",
+        url: "https://github.com/Blueturboguy07/ghost-location/releases/tag/v0.1.7",
+        note: "Mac (Apple chip or Intel) and Windows installers, plus SHA256SUMS.txt.",
+      },
+      {
+        label: "Ghost on GitHub",
+        url: "https://github.com/Blueturboguy07/ghost-location",
+        note: "The source code, README and changelog. Free and open source.",
+      },
+      {
+        label: "Full setup guide",
+        url: "https://github.com/Blueturboguy07/ghost-location/blob/main/SETUP.md",
+        note: "Every computer and phone combination, Wi-Fi pairing and the complete troubleshooting table.",
+      },
+      {
+        label: "Report a problem",
+        url: "https://github.com/Blueturboguy07/ghost-location/issues",
+        note: "Include your Ghost version, computer, phone OS and the exact error. Remove private locations first.",
+      },
+      {
+        label: "Apple: turn on Developer Mode",
+        url: "https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device",
+      },
+      {
+        label: "Android: Developer options and USB debugging",
+        url: "https://developer.android.com/studio/debug/dev-options",
+      },
+      {
+        label: "Android: official OEM USB drivers",
+        url: "https://developer.android.com/studio/run/oem-usb",
+        note: "For Windows PCs that cannot see an Android phone.",
+      },
+    ],
+    note: "Ghost has no account, analytics or tracking; your saved places stay on your computer. Map search, map tiles and route planning use free public OpenStreetMap services that can be slow or unavailable. Mac to iPhone over USB has been tested end to end on a real phone; the other combinations and Wi-Fi mode are built and tested in software but not yet all on physical phones. Some apps cache or reject simulated locations, and many apps' terms forbid it, so use Ghost on your own devices and at your own risk.",
+  },
 });
 
 export const RESOURCE_SLUGS = Object.freeze(Object.keys(RESOURCE_PAGES));

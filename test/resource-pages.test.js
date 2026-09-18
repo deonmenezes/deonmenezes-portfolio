@@ -145,6 +145,11 @@ const expectedPages = Object.freeze({
     marker: "not sponsored, endorsed, or administered by OpenAI",
     link: "https://www.instagram.com/reel/Dc1r6hhOorT/",
   },
+  ghost: {
+    title: "Ghost: set your phone location anywhere",
+    marker: "Unplugging does not reset it",
+    link: "https://github.com/Blueturboguy07/ghost-location/releases/tag/v0.1.7",
+  },
 });
 
 async function listJavaScriptFiles(directory) {
@@ -159,9 +164,9 @@ async function listJavaScriptFiles(directory) {
   return nested.flat();
 }
 
-test("all twenty-three resources are deterministic static HTML pages at clean URLs", async () => {
+test("all twenty-four resources are deterministic static HTML pages at clean URLs", async () => {
   assert.deepEqual(new Set(RESOURCE_SLUGS), new Set(Object.keys(expectedPages)));
-  assert.equal(RESOURCE_SLUGS.length, 23);
+  assert.equal(RESOURCE_SLUGS.length, 24);
 
   for (const [slug, expected] of Object.entries(expectedPages)) {
     const pageUrl = new URL(`resources/${slug}.html`, root);
@@ -254,7 +259,7 @@ test("Higgsfield page is explicit about the unverified offer and uses only offic
   ]);
 });
 
-test("Vercel applies the strict security policy to exactly the twenty-three static paths", async () => {
+test("Vercel applies the strict security policy to exactly the twenty-four static paths", async () => {
   const config = JSON.parse(
     await readFile(new URL("vercel.json", root), "utf8"),
   );
@@ -264,7 +269,7 @@ test("Vercel applies the strict security policy to exactly the twenty-three stat
     expectedPathSet.has(source),
   );
 
-  assert.equal(resourceHeaderRules.length, 23);
+  assert.equal(resourceHeaderRules.length, 24);
   assert.deepEqual(
     new Set(resourceHeaderRules.map(({ source }) => source)),
     expectedPathSet,
@@ -360,7 +365,7 @@ test("Google Analytics loads once via first-party /ga.js on every public page, n
     ...(await htmlIn("services")),
     ...(await htmlIn("resources")),
   ];
-  assert.equal(publicPages.length, 6 + 1 + 8 + 23 + handWrittenResourcePages.length);
+  assert.equal(publicPages.length, 6 + 1 + 8 + 24 + handWrittenResourcePages.length);
 
   for (const page of publicPages) {
     const html = await readFile(new URL(page, root), "utf8");
