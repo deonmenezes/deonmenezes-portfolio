@@ -228,6 +228,26 @@ test("optional hero actions link the repository prominently, only where declared
   assert.doesNotMatch(blenderMcp, /class="actions"/u);
 });
 
+test("every resource page and the hub carry the site navbar in the home theme", async () => {
+  const pages = [
+    "resources.html",
+    ...RESOURCE_SLUGS.map((slug) => `resources/${slug}.html`),
+  ];
+  for (const page of pages) {
+    const html = await readFile(new URL(page, root), "utf8");
+    assert.equal(countOccurrences(html, '<header class="nav">'), 1, page);
+    assert.ok(html.includes('<span class="brand-name">Deon Menezes</span>'), page);
+    assert.ok(html.includes('<a href="/resources" aria-current="page">Resources</a>'), page);
+    assert.ok(html.includes('<a href="/deon#work">Work</a>'), page);
+    assert.ok(html.includes('<link rel="stylesheet" href="/resources/site-nav.css">'), page);
+  }
+  await access(new URL("resources/site-nav.css", root));
+  const detail = await readFile(new URL("resources/detail.css", root), "utf8");
+  for (const token of ["--paper: #f1eadd", "--accent: #e0502d", '"Fraunces"', '"Hanken Grotesk"']) {
+    assert.ok(detail.includes(token), `detail.css is missing the home-theme token ${token}`);
+  }
+});
+
 test("external links open in a new tab and internal links stay in the same tab", async () => {
   const pages = [
     "resources.html",
@@ -249,7 +269,7 @@ test("external links open in a new tab and internal links stay in the same tab",
 
 test("a resource with a preview image publishes large-card tags that point at a real file", async () => {
   const ghost = await readFile(new URL("resources/ghost.html", root), "utf8");
-  const imagePath = "/assets/img/og/ghost-2026-09-19.png";
+  const imagePath = "/assets/img/og/ghost-2026-09-19-v2.png";
   assert.ok(ghost.includes(`<meta property="og:image" content="https://deonmenezes.com${imagePath}">`));
   assert.ok(ghost.includes(`<meta name="twitter:image" content="https://deonmenezes.com${imagePath}">`));
   assert.ok(ghost.includes('<meta name="twitter:card" content="summary_large_image">'));
@@ -307,6 +327,7 @@ test("Higgsfield page is explicit about the unverified offer and uses only offic
   ].map((match) => match[1]);
   assert.deepEqual(absoluteLinks, [
     "https://deonmenezes.com/resources/higgsfield-offer-status",
+    "https://virelity.com",
     "https://higgsfield.ai/",
     "https://higgsfield.ai/pricing",
     "https://higgsfield.ai/terms-of-use-agreement",
@@ -492,11 +513,11 @@ test("shared detail stylesheet is responsive, accessible, and script-free", asyn
     "utf8",
   );
 
-  assert.match(css, /--teal:\s*#087f75/u);
-  assert.match(css, /--paper:\s*#ffffff/u);
+  assert.match(css, /--accent:\s*#e0502d/u);
+  assert.match(css, /--paper:\s*#f1eadd/u);
   assert.match(css, /a:focus-visible/u);
-  assert.match(css, /outline:\s*3px solid #075f58/u);
-  assert.match(css, /@media \(max-width: 760px\)/u);
+  assert.match(css, /outline:\s*3px solid var\(--accent\)/u);
+  assert.match(css, /@media \(max-width: 880px\)/u);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/u);
   assert.doesNotMatch(css, /javascript:|expression\s*\(/iu);
 });

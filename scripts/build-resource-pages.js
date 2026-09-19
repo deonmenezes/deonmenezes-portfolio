@@ -8,6 +8,28 @@ const RESOURCE_DIRECTORY = fileURLToPath(
   new URL("../resources/", import.meta.url),
 );
 
+
+// The deonmenezes.com navbar. Keep in sync with the <header class="nav"> in index.html
+// and resources.html; the shared styles live in resources/site-nav.css.
+export const SITE_NAV = `  <header class="nav">
+    <a class="brand" href="/deon">
+      <span class="brand-pin" aria-hidden="true"></span>
+      <span class="brand-name">Deon Menezes</span>
+      <span class="brand-tag">AI Harness Engineer</span>
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href="/deon#work">Work</a>
+      <a href="/deon#built">Projects</a>
+      <a href="/deon#apps">Apps</a>
+      <a href="/resources" aria-current="page">Resources</a>
+      <a href="/deon#connect">Connect</a>
+      <a href="https://virelity.com" target="_blank" rel="noopener noreferrer" class="nav-virelity">Virelity ↗</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="chip chip-ink" href="/resources">All resources</a>
+    </div>
+  </header>`;
+
 const RESOURCE_PAGES = Object.freeze({
   "f1-status-checklist": {
     eyebrow: "International-student rule update",
@@ -854,7 +876,7 @@ const RESOURCE_PAGES = Object.freeze({
     offer:
       "Everything is in the GitHub repo: the download, the setup guide and the fixes. Start there.",
     image: {
-      path: "/assets/img/og/ghost-2026-09-19.png",
+      path: "/assets/img/og/ghost-2026-09-19-v2.png",
       alt: "Ghost: set your phone location anywhere. Free and open source on GitHub.",
     },
     actions: [
@@ -1050,19 +1072,16 @@ function renderPage(slug, resource) {
   <meta property="og:title" content="${escapeHtml(resource.title)}">
   <meta property="og:description" content="${escapeHtml(resource.summary)}">
   <meta property="og:url" content="${canonicalUrl}">${preview}
+  <link rel="stylesheet" href="/assets/fonts/fonts.css">
+  <link rel="stylesheet" href="/resources/site-nav.css">
   <link rel="stylesheet" href="/resources/detail.css">
   <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
   <script src="/ga.js"></script>
 </head>
 <body>
+  <div class="paper" aria-hidden="true"></div>
   <a class="skip-link" href="#main">Skip to the resource</a>
-  <header class="site-header">
-    <a class="brand" href="/deon" aria-label="Deon Menezes portfolio">
-      <span class="brand-mark" aria-hidden="true">D</span>
-      <span>Deon Menezes</span>
-    </a>
-    <a class="all-resources" href="/resources">All resources</a>
-  </header>
+${SITE_NAV}
 
   <main id="main">
     <article>
@@ -1093,8 +1112,8 @@ function renderPage(slug, resource) {
   </main>
 
   <footer>
-    <p>Free to read. No signup required.</p>
-    <a href="/resources">Browse the resource library</a>
+    <p>Free to read. No signup required. Curated by Deon Menezes.</p>
+    <a href="/resources">Browse all resources →</a>
   </footer>
 </body>
 </html>`;

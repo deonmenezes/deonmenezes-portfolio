@@ -7,7 +7,7 @@ Usage:
         --out assets/img/og/ghost-2026-09-19.png
 
 Only Pillow and the Windows system fonts (Georgia, Segoe UI) are needed.
-The palette mirrors resources/detail.css so the card matches the page.
+The palette mirrors the home page (styles.css) so the card matches the site.
 """
 
 import argparse
@@ -16,13 +16,14 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1200, 630
-INK = (16, 47, 45)
-MUTED = (75, 108, 105)
-TEAL = (8, 127, 117)
-TEAL_PALE = (233, 247, 244)
-PAPER = (255, 255, 255)
-WASH = (244, 250, 248)
-LINE = (201, 223, 219)
+INK = (33, 29, 24)
+MUTED = (108, 100, 87)
+TEAL = (224, 80, 45)          # tomato accent, the page's --accent
+TEAL_PALE = (241, 234, 221)   # paper
+PAPER = (255, 253, 247)
+WASH = (241, 234, 221)
+LINE = (217, 207, 186)
+GLOW = (233, 224, 207)
 
 FONT_DIR = Path("C:/Windows/Fonts")
 
@@ -58,7 +59,7 @@ def draw_phone(img, x, y, scale=1.0):
         fill=TEAL_PALE,
     )
     # map roads
-    road = (201, 223, 219)
+    road = LINE
     for i in range(1, 5):
         yy = y + inset + int(i * (ph - 2 * inset) / 5)
         d.line([x + inset, yy, x + pw - inset, yy], fill=road, width=int(6 * scale))
@@ -97,7 +98,7 @@ def main():
     # soft teal glow top-right, like the page hero
     glow = Image.new("RGB", (W, H), WASH)
     gd = ImageDraw.Draw(glow)
-    gd.ellipse([W - 520, -260, W + 200, 420], fill=(214, 243, 236))
+    gd.ellipse([W - 520, -260, W + 200, 420], fill=GLOW)
     img = Image.blend(img, glow, 0.85)
     d = ImageDraw.Draw(img)
 
