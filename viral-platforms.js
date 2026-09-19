@@ -56,6 +56,8 @@ export const PLATFORMS = {
       negative: { weight: -43.2, ceiling: 0.004, label: "Not interested / mute / block", ask: 'Would a typical X user tap "not interested", mute, or block because of this post?', tip: { above: 0.3, text: "A lot of readers would tap \"not interested\". That is weighted -43.2, and a mute -58.8." } },
       report: { weight: -234, ceiling: 0.0006, label: "Report", ask: "Does this post break platform rules such that users would report it (spam, harassment, hate, scams)?", tip: { above: 0.3, text: "This reads like spam or a rule break. A report carries X's heaviest weight, -234." } },
     },
+    // What a creator might be after besides reach, and the signals that show it.
+    goals: { conversation: { label: "Start a conversation", actions: ["reply", "quote"] }, followers: { label: "Grow followers", actions: ["follow"] }, shares: { label: "Get shared", actions: ["shareLink", "repost"] } },
     hook: hook("How strong is the opening hook of this post?"),
     emotion: emotion("post"),
     hookTip: "The first line doesn't stop the scroll. Lead with the most surprising or specific thing you have.",
@@ -93,6 +95,8 @@ export const PLATFORMS = {
       timely: { weight: 4, ceiling: 0.08, label: "Taps into the moment", ask: "Does this tap into something people are talking about or care about right now?", tip: { below: 0.3, text: "Nothing ties this to what people are paying attention to right now. A timely angle gives it a reason to travel today." } },
       negative: { weight: -60, ceiling: 0.004, label: "Not interested", ask: 'Would a typical Instagram user tap "not interested" or hide this?', tip: { above: 0.3, text: "A lot of viewers would hide this. That actively tells Instagram to stop showing it." } },
     },
+    // What a creator might be after besides reach, and the signals that show it.
+    goals: { shares: { label: "Get sent to friends", actions: ["send"] }, saves: { label: "Get saved", actions: ["save"] }, conversation: { label: "Start a conversation", actions: ["comment"] } },
     hook: hook("How strong is the opening, the first three seconds or the first line, at stopping someone mid-scroll?"),
     emotion: emotion("post"),
     hookTip: "The opening doesn't stop the scroll. On Reels most people decide in the first three seconds.",
@@ -130,6 +134,8 @@ export const PLATFORMS = {
       trend: { weight: 3, ceiling: 0.08, label: "Rides a trend or search", ask: "Does this ride a current trend, sound, or something people are searching for on TikTok right now?" },
       negative: { weight: -60, ceiling: 0.004, label: "Not interested", ask: 'Would a typical TikTok user long-press and tap "not interested" on this?', tip: { above: 0.3, text: "A lot of viewers would tap \"not interested\", which tells TikTok to stop showing it to people like them." } },
     },
+    // What a creator might be after besides reach, and the signals that show it.
+    goals: { retention: { label: "Hold attention", actions: ["finish", "rewatch"] }, shares: { label: "Get shared", actions: ["share"] }, conversation: { label: "Start a conversation", actions: ["comment"] } },
     hook: hook("How strong is the first two seconds of this video at stopping someone from swiping?"),
     emotion: emotion("video"),
     hookTip: "The first two seconds don't stop the swipe. Open on the payoff, the conflict, or the question.",
@@ -167,6 +173,8 @@ export const PLATFORMS = {
       subscribe: { weight: 5, ceiling: 0.004, label: "Subscribes", ask: "Would a typical viewer who isn't subscribed subscribe to the channel after this video?" },
       negative: { weight: -60, ceiling: 0.004, label: "Not interested", ask: 'Would a typical YouTube viewer choose "not interested" or "don\'t recommend channel" for this?', tip: { above: 0.3, text: "Many viewers would pick \"not interested\", one of the few explicit signals YouTube says it listens to." } },
     },
+    // What a creator might be after besides reach, and the signals that show it.
+    goals: { clicks: { label: "Earn the click", actions: ["click"] }, retention: { label: "Hold attention", actions: ["watch", "satisfied"] }, followers: { label: "Gain subscribers", actions: ["subscribe"] } },
     hook: hook("How strong is this title and opening at making someone choose this video over the ones around it?"),
     emotion: emotion("video"),
     hookTip: "The title and opening don't make a case for this video over the ones next to it.",

@@ -14,6 +14,7 @@ import viralHandler from "../lib/viral.js";
 import viralProfileHandler, { viralSearchHandler } from "../lib/viral-profile.js";
 import { viralFeedHandler } from "../lib/viral-store.js";
 import { viralAvatarHandler } from "../lib/viral-social.js";
+import { viralIdeasHandler } from "../lib/viral-ideas.js";
 
 const FALLBACK = {
   mantishackStars: 363,
@@ -103,6 +104,7 @@ export default async function handler(req, res) {
   if (req.query?.route === "viral-search") return viralSearchHandler(req, res);
   if (req.query?.route === "viral-feed") return viralFeedHandler(req, res);
   if (req.query?.route === "viral-avatar") return viralAvatarHandler(req, res);
+  if (req.query?.route === "viral-ideas") return viralIdeasHandler(req, res);
 
   const keys = Object.keys(tasks);
   const settled = await Promise.allSettled(keys.map((k) => tasks[k]()));

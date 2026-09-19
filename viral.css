@@ -1254,6 +1254,93 @@ svg.verified {
   flex-basis: 100%;
 }
 
+.why-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin: 8px 0;
+}
+
+.why-stats div { display: flex; gap: 6px; }
+.why-stats dt { color: var(--muted); }
+.why-stats dd { margin: 0; font-weight: 700; }
+.why-stats .is-good { color: var(--green); }
+.why-stats .is-warn { color: var(--amber); }
+.why-stats .is-bad { color: var(--red); }
+
+.why-goal,
+.why-actual {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 10px 0;
+  color: var(--muted);
+}
+
+.why-goal select,
+.why-actual input {
+  padding: 3px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.why-actual input { width: 9rem; }
+.why-goal span { color: var(--ink); }
+
+/* Rewrites and imagined reactions take the full width under the tools. */
+.ideas {
+  order: 3;
+  flex-basis: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.ideas h3 { margin: 0 0 8px; font-size: 14px; font-weight: 800; }
+.ideas h3:not(:first-child) { margin-top: 16px; }
+.ideas ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.ideas-tag { color: var(--muted); font-size: 12px; font-weight: 700; }
+.ideas-text { margin: 2px 0 6px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.ideas-action { color: var(--muted); }
+.ideas-quiet { color: var(--muted); font-style: italic; }
+.ideas-note { margin: 14px 0 0; color: var(--muted); font-size: 12px; line-height: 16px; }
+
+.history { padding-bottom: 14px; }
+
+.history-line {
+  display: block;
+  width: calc(100% - 32px);
+  height: 60px;
+  margin: 0 16px;
+  stroke: var(--accent);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.history-line polyline { vector-effect: non-scaling-stroke; }
+
+.history-summary,
+.history-reality {
+  margin: 8px 16px 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 17px;
+}
+
+.history-export { margin: 10px 16px 0; font-size: 13px; }
+
+[data-platform="instagram"] .history-line,
+[data-platform="instagram"] .history-summary,
+[data-platform="instagram"] .history-reality,
+[data-platform="instagram"] .history-export { width: 100%; margin-right: 0; margin-left: 0; }
+[data-platform="instagram"] .history-export { width: auto; }
+
 .post-tool {
   padding: 4px 12px;
   border: 1px solid var(--line-strong);

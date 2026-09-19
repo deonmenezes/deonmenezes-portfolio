@@ -181,6 +181,13 @@
         <ol class="leaderboard" data-leaderboard></ol>
         <p class="leaderboard-empty" data-leaderboard-empty hidden>Nothing here yet. Simulate something to take the top spot.</p>
       </section>
+      <section class="card history" aria-labelledby="history-title" data-history hidden>
+        <header class="card-head"><h2 id="history-title">Your history</h2></header>
+        <svg class="history-line" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="Your recent scores"><polyline data-history-points points=""/></svg>
+        <p class="history-summary" data-history-summary></p>
+        <p class="history-reality" data-history-reality hidden></p>
+        <button class="post-tool history-export" type="button" data-history-export>Export CSV</button>
+      </section>
       <p class="side-foot">A fan-made simulator by <a href="/deon">Deon Menezes</a>. Not affiliated with X, Instagram, TikTok, or YouTube.</p>
     </aside>
   </div>
@@ -242,11 +249,21 @@
           <summary><span class="why-show">Advanced view</span><span class="why-hide">Hide advanced view</span></summary>
           <p class="why-score">Viral score <strong data-score></strong></p>
           <p class="why-line" data-summary></p>
+          <dl class="why-stats" data-stats></dl>
+          <p class="why-goal">
+            <label>Your goal <select data-goal></select></label>
+            <span data-goal-readout></span>
+          </p>
           <div class="why-bars" data-bars></div>
           <ul class="why-tips" data-tips></ul>
+          <label class="why-actual">What it really got, once you post it
+            <input type="number" min="0" max="10000000000" step="1" inputmode="numeric" placeholder="real views" data-actual>
+          </label>
         </details>
         <button class="post-tool" type="button" aria-pressed="false" data-compare hidden>Compare</button>
         <button class="post-tool" type="button" data-save-image hidden>Save image</button>
+        <button class="post-tool" type="button" data-ideas hidden>Ideas</button>
+        <section class="ideas" aria-label="Ideas" data-ideas-panel hidden></section>
         </div>
       </div>
     </article>

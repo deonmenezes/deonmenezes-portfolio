@@ -60,6 +60,10 @@
       "destination": "/api/stats?route=viral-avatar"
     },
     {
+      "source": "/api/viral/ideas",
+      "destination": "/api/stats?route=viral-ideas"
+    },
+    {
       "source": "/api/viral",
       "destination": "/api/stats?route=viral"
     },

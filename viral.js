@@ -481,6 +481,19 @@ function fillAnalysis(node, post) {
     return row;
   }));
 
+  fillStats(node, post);
+  fillGoal(node, post);
+  const actual = find("[data-actual]");
+  actual.closest("label").hidden = !posts.includes(post);
+  actual.value = post.actualViews ?? "";
+  actual.onchange = () => {
+    const views = Math.floor(Number(actual.value));
+    if (actual.value !== "" && Number.isFinite(views) && views >= 0) post.actualViews = views;
+    else delete post.actualViews;
+    storePosts();
+    renderHistory();
+  };
+
   find("[data-tips]").replaceChildren(...(post.tips || []).map((tip) => {
     const item = document.createElement("li");
     item.textContent = tip;
@@ -624,6 +637,222 @@ async function saveImage(post) {
   return showToast("Image saved.");
 }
 
+function storePosts() {
+  save(STORAGE_POSTS, posts.map(({ state, followers, ...stored }) => stored));
+}
+
+/* ------------------------------------------------- hook, risk, reach, goal */
+
+const STORAGE_GOALS = "viral_goals";
+let goals = load(STORAGE_GOALS, {});
+
+function stat(label, value, tone) {
+  const row = document.createElement("div");
+  const term = document.createElement("dt");
+  term.textContent = label;
+  const detail = document.createElement("dd");
+  detail.textContent = value;
+  if (tone) detail.className = `is-${tone}`;
+  row.append(term, detail);
+  return row;
+}
+
+// Three quick reads of the same Jev answers: the opening, the odds of putting
+// people off, and where the views would come from.
+function fillStats(node, post) {
+  const hook = Number(post.hook) || 0;
+  const rows = [stat("Hook", `${hook.toFixed(1)} / 3`, hook >= 2 ? "good" : hook >= 1 ? "warn" : "bad")];
+  const risky = post.breakdown.filter((item) => item.weight < 0);
+  if (risky.length) {
+    const worst = Math.max(...risky.map((item) => item.probability));
+    rows.push(stat("Risk of putting people off", worst >= 0.4 ? "High" : worst >= 0.25 ? "Medium" : "Low", worst >= 0.4 ? "bad" : worst >= 0.25 ? "warn" : "good"));
+  }
+  if (post.reach) rows.push(stat("Views from", `${compact(post.reach.followers)} followers · ${compact(post.reach.discovery)} discovery`));
+  node.querySelector("[data-stats]").replaceChildren(...rows);
+}
+
+// The score is about reach. A goal reads the same answers for something narrower.
+function fillGoal(node, post) {
+  const available = PLATFORMS[post.platform].goals || {};
+  const select = node.querySelector("[data-goal]");
+  const readout = node.querySelector("[data-goal-readout]");
+  select.replaceChildren(new Option("Reach", "reach"), ...Object.entries(available).map(([id, goal]) => new Option(goal.label, id)));
+  const paint = () => {
+    const goal = available[select.value];
+    if (!goal) {
+      readout.textContent = "The viral score above is the measure.";
+      return;
+    }
+    const parts = post.breakdown.filter((item) => goal.actions.includes(item.action));
+    if (!parts.length) {
+      readout.textContent = "This post was scored before that signal was asked about.";
+      return;
+    }
+    const average = parts.reduce((sum, item) => sum + item.probability, 0) / parts.length;
+    const grade = average >= 0.5 ? "Strong" : average >= 0.3 ? "Fair" : "Weak";
+    readout.textContent = `${grade}. ${parts.map((item) => `${item.label} ${percent(item.probability)}`).join(", ")}.`;
+  };
+  select.value = available[goals[post.platform]] ? goals[post.platform] : "reach";
+  select.onchange = () => {
+    goals = { ...goals, [post.platform]: select.value };
+    save(STORAGE_GOALS, goals);
+    paint();
+  };
+  paint();
+}
+
+/* ---------------------------------------------------------------- ideas */
+
+// Which posts have their ideas showing, so a live feed refresh neither closes nor reopens them.
+const openIdeas = new Set();
+
+function renderIdeas(panel, post) {
+  const { rewrites = [], reactions = [] } = post.ideas;
+  const children = [];
+  const heading = (text) => {
+    const node = document.createElement("h3");
+    node.textContent = text;
+    return node;
+  };
+  if (rewrites.length) {
+    const list = document.createElement("ul");
+    list.append(...rewrites.map((rewrite) => {
+      const item = document.createElement("li");
+      const tag = document.createElement("span");
+      tag.className = "ideas-tag";
+      tag.textContent = rewrite.angle;
+      const text = document.createElement("p");
+      text.className = "ideas-text";
+      text.textContent = rewrite.text;
+      const use = document.createElement("button");
+      use.type = "button";
+      use.className = "post-tool";
+      use.textContent = "Try this";
+      use.addEventListener("click", () => {
+        textarea.value = rewrite.text;
+        syncComposer();
+        textarea.focus();
+        textarea.scrollIntoView({ block: "center", behavior: reducedMotion.matches ? "auto" : "smooth" });
+        showToast("Loaded into the composer. Simulate it to see how it scores.");
+      });
+      item.append(tag, text, use);
+      return item;
+    }));
+    children.push(heading("Three ways to rewrite it"), list);
+  }
+  if (reactions.length) {
+    const list = document.createElement("ul");
+    list.append(...reactions.map((reaction) => {
+      const item = document.createElement("li");
+      const who = document.createElement("strong");
+      who.textContent = reaction.persona;
+      const action = document.createElement("span");
+      action.className = "ideas-action";
+      action.textContent = ` ${reaction.action}`;
+      const comment = document.createElement("p");
+      comment.className = reaction.comment ? "ideas-text" : "ideas-text ideas-quiet";
+      comment.textContent = reaction.comment || "Says nothing. Most people do.";
+      item.append(who, action, comment);
+      return item;
+    }));
+    children.push(heading("How five readers might react"), list);
+  }
+  const note = document.createElement("p");
+  note.className = "ideas-note";
+  note.textContent = "Written by a text model (DeepSeek), not by Jev, and shaped by Jev's estimates for this post. The reactions are imagined, not predictions. A rewrite has no score until you simulate it.";
+  children.push(note);
+  panel.replaceChildren(...children);
+  panel.hidden = false;
+}
+
+async function showIdeas(node, post) {
+  const panel = node.querySelector("[data-ideas-panel]");
+  const button = node.querySelector("[data-ideas]");
+  if (post.ideas) {
+    if (panel.hidden) {
+      openIdeas.add(post.id);
+      renderIdeas(panel, post);
+    } else {
+      openIdeas.delete(post.id);
+      panel.hidden = true;
+    }
+    return;
+  }
+  button.disabled = true;
+  button.textContent = "Thinking…";
+  try {
+    const response = await fetch("/api/viral/ideas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        platform: post.platform,
+        text: post.text,
+        extra: post.extra,
+        format: post.format,
+        estimates: Object.fromEntries(post.breakdown.map((item) => [item.action, item.probability])),
+      }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.message || "Couldn't get ideas. Try again.");
+    post.ideas = { rewrites: result.rewrites || [], reactions: result.reactions || [] };
+    openIdeas.add(post.id);
+    storePosts();
+    // The feed may have re-rendered while this was in flight.
+    const current = feed.querySelector(`[data-post-id="${CSS.escape(post.id)}"]`) || node;
+    renderIdeas(current.querySelector("[data-ideas-panel]"), post);
+    showToast(`${result.remainingToday} more sets of ideas today.`);
+  } catch (error) {
+    showToast(error.message || "Couldn't get ideas. Try again.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Ideas";
+  }
+}
+
+/* -------------------------------------------------------------- history */
+
+const historyCard = document.querySelector("[data-history]");
+
+function myScoredPosts() {
+  return posts.filter((post) => post.platform === platformId && Number.isFinite(post.viralScore)).sort((a, b2) => (a.createdAt || 0) - (b2.createdAt || 0));
+}
+
+// Your own scores over time, and how far the predictions were from what you
+// later logged as the real result.
+function renderHistory() {
+  const mine = myScoredPosts().slice(-20);
+  historyCard.hidden = mine.length < 2;
+  if (historyCard.hidden) return;
+  const step = 300 / (mine.length - 1);
+  historyCard.querySelector("[data-history-points]").setAttribute("points", mine.map((post, index) => `${(index * step).toFixed(1)},${(56 - post.viralScore * 0.52).toFixed(1)}`).join(" "));
+  const scores = mine.map((post) => post.viralScore);
+  const average = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
+  historyCard.querySelector("[data-history-summary]").textContent = `Last ${mine.length} on ${platform().name}: average ${average}, best ${Math.max(...scores)}, latest ${scores.at(-1)}.`;
+
+  const logged = myScoredPosts().filter((post) => post.actualViews > 0 && post.metrics?.views > 0);
+  const reality = historyCard.querySelector("[data-history-reality]");
+  reality.hidden = logged.length === 0;
+  if (logged.length) {
+    const ratios = logged.map((post) => Math.max(post.metrics.views / post.actualViews, post.actualViews / post.metrics.views)).sort((a, b2) => a - b2);
+    const median = ratios[Math.floor(ratios.length / 2)];
+    reality.textContent = `${logged.length} real ${logged.length === 1 ? "result" : "results"} logged. Predicted views were off by a median of ${median.toFixed(1)}×.`;
+  }
+}
+
+document.querySelector("[data-history-export]").addEventListener("click", () => {
+  // A leading =, +, - or @ would run as a formula in a spreadsheet, so it is defused.
+  const cell = (value) => `"${String(value ?? "").replace(/^[=+\-@]/u, "'$&").replaceAll('"', '""')}"`;
+  const lines = [["date", "platform", "text", "score", "verdict", "predicted_views", "actual_views"].join(",")];
+  for (const post of posts.filter((entry) => Number.isFinite(entry.viralScore))) {
+    lines.push([new Date(post.createdAt || Date.now()).toISOString(), post.platform, post.text, post.viralScore, post.verdict, post.metrics?.views, post.actualViews].map(cell).join(","));
+  }
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv" }));
+  link.download = "will-it-go-viral-history.csv";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 10_000);
+});
+
 // Both tools need a finished score; comparing also needs the breakdown, which
 // only this browser's own posts and the samples carry.
 function armTools(node, post) {
@@ -634,6 +863,12 @@ function armTools(node, post) {
   const image = node.querySelector("[data-save-image]");
   image.hidden = false;
   image.onclick = () => saveImage(post);
+  // Ideas cost money, so they are for posts this browser wrote, not samples or the shared feed.
+  const mine = posts.includes(post);
+  const ideas = node.querySelector("[data-ideas]");
+  ideas.hidden = !mine || !Array.isArray(post.breakdown);
+  ideas.onclick = () => showIdeas(node, post);
+  if (post.ideas && mine && openIdeas.has(post.id)) renderIdeas(node.querySelector("[data-ideas-panel]"), post);
 }
 
 function renderPost(post) {
@@ -832,7 +1067,7 @@ async function simulate(post) {
   delete post.error;
   pending = pending.filter((entry) => entry.id !== post.id);
   posts = [post, ...posts].slice(0, MAX_STORED_POSTS);
-  save(STORAGE_POSTS, posts.map(({ state, followers, ...stored }) => stored));
+  storePosts();
 
   // Animate in place rather than re-rendering, so the numbers visibly climb.
   const node = feed.querySelector(`[data-post-id="${CSS.escape(post.id)}"]`);
@@ -855,6 +1090,7 @@ async function simulate(post) {
   armTools(node, post);
   node.classList.remove("is-live");
   renderLeaderboard();
+  renderHistory();
   if (published) refreshLive();
   showToast(post.private ? `${post.verdict}: ${compact(post.metrics.views)} views. Private, only you can see it.` : `${post.verdict}: ${compact(post.metrics.views)} views. ${remainingToday} simulations left today.`);
 }
@@ -1486,6 +1722,7 @@ function setPlatform(id, { persist = true } = {}) {
   renderAbout();
   renderFeed();
   renderLeaderboard();
+  renderHistory();
   syncComposer();
   refreshLive();
 }
