@@ -227,6 +227,25 @@ test("optional hero actions link the repository prominently, only where declared
   assert.doesNotMatch(blenderMcp, /class="actions"/u);
 });
 
+test("external links open in a new tab and internal links stay in the same tab", async () => {
+  const pages = [
+    "resources.html",
+    ...RESOURCE_SLUGS.map((slug) => `resources/${slug}.html`),
+  ];
+  for (const page of pages) {
+    const html = await readFile(new URL(page, root), "utf8");
+    for (const [anchor, href] of html.matchAll(/<a [^>]*?href="([^"]+)"[^>]*>/gu)) {
+      const external = /^https?:\/\//u.test(href);
+      assert.equal(
+        anchor.includes('target="_blank"'),
+        external,
+        `${page}: ${anchor}`,
+      );
+      if (external) assert.ok(anchor.includes('rel="noopener'), `${page}: ${anchor}`);
+    }
+  }
+});
+
 test("a resource with a preview image publishes large-card tags that point at a real file", async () => {
   const ghost = await readFile(new URL("resources/ghost.html", root), "utf8");
   const imagePath = "/assets/img/og/ghost-2026-09-19.png";

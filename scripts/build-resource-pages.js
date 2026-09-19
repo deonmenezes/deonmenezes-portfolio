@@ -939,12 +939,16 @@ function renderSteps(steps) {
     .join("");
 }
 
+function externalAttributes(url) {
+  return /^https?:\/\//u.test(url) ? ' target="_blank" rel="noopener noreferrer"' : "";
+}
+
 function renderLinks(links) {
   return links
     .map(
       (link) => `
           <li>
-            <a href="${escapeHtml(link.url)}">
+            <a href="${escapeHtml(link.url)}"${externalAttributes(link.url)}>
               <span>${escapeHtml(link.label)}</span>
               <span aria-hidden="true">↗</span>
             </a>
@@ -965,7 +969,7 @@ function renderActions(actions) {
       (action, index) =>
         `<a class="button button-${
           index === 0 ? "primary" : "secondary"
-        }" href="${escapeHtml(action.url)}" rel="noopener">${escapeHtml(
+        }" href="${escapeHtml(action.url)}"${externalAttributes(action.url)}>${escapeHtml(
           action.label,
         )}</a>`,
     )
