@@ -1830,13 +1830,6 @@ svg.verified {
 
 /* ------------------------------------------------------ platform accents */
 
-[data-platform="instagram"] .post > .avatar {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  background-clip: padding-box;
-  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #dc2743;
-}
-
 [data-platform="youtube"] .simulate,
 [data-platform="youtube"] .rail-post {
   border-radius: 18px;
@@ -1886,34 +1879,192 @@ svg.verified {
 
 /* ------------------------------------------------------------- Instagram */
 
-[data-platform="instagram"] .post {
+/* The sidebar is pinned to the window's left edge; the feed and the side
+   column are centred in what remains. */
+[data-platform="instagram"] .shell {
+  grid-template-columns: 244px minmax(0, 1fr) minmax(0, 630px) 384px minmax(0, 1fr);
+  gap: 0;
+  justify-content: stretch;
+}
+
+[data-platform="instagram"] .rail { grid-column: 1; }
+[data-platform="instagram"] .timeline { grid-column: 3; border: 0; }
+[data-platform="instagram"] .side { grid-column: 4; padding: 36px 0 48px 64px; }
+
+[data-platform="instagram"] .rail {
+  align-items: stretch;
+  padding: 8px 12px 20px;
+  border-right: 1px solid var(--line);
+}
+
+[data-platform="instagram"] .rail-brand {
+  place-items: center start;
+  width: auto;
+  height: auto;
+  padding: 28px 12px 20px;
+  border-radius: 8px;
+  color: var(--ink);
+}
+
+[data-platform="instagram"] .rail-brand:hover { background: transparent; }
+[data-platform="instagram"] .rail-brand svg { width: 28px; height: 28px; }
+
+[data-platform="instagram"] .rail-link,
+[data-platform="instagram"] .rail-post {
+  gap: 16px;
+  margin: 2px 0;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+[data-platform="instagram"] .rail-link svg { width: 24px; height: 24px; stroke-width: 2; }
+[data-platform="instagram"] .rail-link:hover svg { transform: scale(1.05); }
+
+.rail-alt { display: none; }
+[data-platform="instagram"] .rail-alt-instagram { display: block; }
+[data-platform="instagram"] .rail-link:has(.rail-alt-instagram) > svg:not(.rail-alt) { display: none; }
+
+/* Create is an ordinary sidebar row above Profile, led by a plus in a square. */
+[data-platform="instagram"] .rail-post {
+  display: flex;
+  order: 1;
+  align-items: center;
+  width: auto;
+  min-height: 0;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 400;
+  text-align: left;
+}
+
+[data-platform="instagram"] .rail-post:hover { background: var(--press); }
+[data-platform="instagram"] .rail-link[data-open-onboarding] { order: 2; }
+
+[data-platform="instagram"] .rail-post::before {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid currentcolor;
+  border-radius: 7px;
+  background:
+    linear-gradient(currentcolor, currentcolor) center / 10px 2px no-repeat,
+    linear-gradient(currentcolor, currentcolor) center / 2px 10px no-repeat;
+  content: "";
+}
+
+/* Instagram's feed switch is two quiet words, not underlined tabs. */
+[data-platform="instagram"] .tabs {
+  gap: 20px;
+  max-width: 470px;
+  height: 52px;
+  margin: 0 auto;
+  border-bottom: 0;
+}
+
+[data-platform="instagram"] .tab {
+  flex: none;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+[data-platform="instagram"] .tab:hover { background: transparent; color: var(--ink); }
+[data-platform="instagram"] .tab.is-active span::after { display: none; }
+
+[data-platform="instagram"] .composer {
   grid-template-columns: 32px minmax(0, 1fr);
-  gap: 0 10px;
+  max-width: 470px;
+  margin: 4px auto 0;
+  padding: 12px 0 8px;
+}
+
+[data-platform="instagram"] .composer .avatar { width: 32px; height: 32px; font-size: 13px; }
+[data-platform="instagram"] .composer textarea { min-height: 44px; padding: 6px 0; font-size: 16px; line-height: 20px; }
+[data-platform="instagram"] .composer-extra input { font-size: 14px; }
+[data-platform="instagram"] .tool { color: var(--ink); }
+[data-platform="instagram"] .tool:hover:not(:disabled) { background: var(--press); }
+
+[data-platform="instagram"] .composer-format,
+[data-platform="instagram"] .visibility,
+[data-platform="instagram"] .simulate,
+[data-platform="instagram"] .onboarding-lookup,
+[data-platform="instagram"] .onboarding-continue,
+[data-platform="instagram"] .why summary,
+[data-platform="instagram"] .post-failed button {
+  border-radius: 8px;
+}
+
+[data-platform="instagram"] .visibility { color: var(--ink); font-weight: 600; }
+[data-platform="instagram"] .visibility:hover { background: var(--press); }
+[data-platform="instagram"] .simulate { min-height: 32px; font-size: 14px; font-weight: 600; }
+
+[data-platform="instagram"] .new-posts { max-width: 470px; margin: 0 auto; font-size: 14px; font-weight: 600; }
+
+[data-platform="instagram"] .post {
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 0 8px;
   align-items: center;
   max-width: 470px;
   margin: 0 auto;
-  padding: 12px 0 16px;
+  padding: 16px 0 16px;
+  font-size: 14px;
+  line-height: 18px;
 }
 
+/* The story ring: a gradient disc around the avatar, masked down to its outer
+   two pixels so page colour shows between the ring and the picture. */
 [data-platform="instagram"] .post > .avatar {
+  position: relative;
+  justify-self: center;
+  overflow: visible;
   width: 32px;
   height: 32px;
   font-size: 13px;
 }
 
+[data-platform="instagram"] .post > .avatar::before {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #f9ce34, #ee2a7b 50%, #6228d7);
+  content: "";
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+}
+
+[data-platform="instagram"] .post > .avatar img { border-radius: 50%; }
+
 [data-platform="instagram"] .post-head { grid-column: 2; order: 1; }
 [data-platform="instagram"] .post-cover,
-[data-platform="instagram"] .post .media-grid { grid-column: 1 / -1; order: 2; margin-top: 12px; border-radius: 4px; }
+[data-platform="instagram"] .post .media-grid { grid-column: 1 / -1; order: 2; margin-top: 12px; border: 1px solid var(--line); border-radius: 4px; }
 [data-platform="instagram"] .metrics { grid-column: 1 / -1; order: 3; }
-[data-platform="instagram"] .post-text { grid-column: 1 / -1; order: 4; margin-top: 8px; }
+[data-platform="instagram"] .post-text { grid-column: 1 / -1; order: 4; margin-top: 10px; }
 [data-platform="instagram"] .poll,
 [data-platform="instagram"] .post-failed { grid-column: 1 / -1; order: 5; }
-[data-platform="instagram"] .why { grid-column: 1 / -1; order: 6; }
+[data-platform="instagram"] .why { grid-column: 1 / -1; order: 7; margin-top: 10px; }
 
-[data-platform="instagram"] .post-cover { aspect-ratio: 1; }
+/* The comment prompt that closes every feed post. */
+[data-platform="instagram"] .post::after {
+  grid-column: 1 / -1;
+  order: 6;
+  margin-top: 8px;
+  color: var(--muted);
+  content: "Add a comment…";
+}
+
+/* Reels sit in the feed at 4:5; photos and carousels are square. */
+[data-platform="instagram"] .post-cover { aspect-ratio: 4 / 5; }
+[data-platform="instagram"] .post-cover.is-still { aspect-ratio: 1; }
+[data-platform="instagram"] .post .media-1 .media-cell img,
+[data-platform="instagram"] .post .media-1 .media-cell video { max-height: 585px; }
+[data-platform="instagram"] .cover-format { top: 12px; right: 12px; left: auto; border-radius: 999px; font-weight: 600; }
+
 [data-platform="instagram"] .post-name { font-weight: 600; font-size: 14px; }
 [data-platform="instagram"] .post-handle { display: none; }
 [data-platform="instagram"] .post-head .post-dot:nth-of-type(1) { display: inline; }
+[data-platform="instagram"] .post-more { width: 24px; height: 24px; color: var(--ink); }
+[data-platform="instagram"] .verified { width: 12px; height: 12px; margin-left: 2px; }
 
 [data-platform="instagram"] .caption-handle {
   display: inline;
@@ -1923,9 +2074,9 @@ svg.verified {
 
 [data-platform="instagram"] .metrics {
   justify-content: flex-start;
-  gap: 16px;
+  gap: 14px;
   max-width: none;
-  margin-top: 12px;
+  margin-top: 10px;
   color: var(--ink);
   font-size: 14px;
   font-weight: 600;
@@ -1933,8 +2084,77 @@ svg.verified {
 
 [data-platform="instagram"] .metrics li { min-width: 0; gap: 6px; }
 [data-platform="instagram"] .metrics svg { width: 24px; height: 24px; stroke-width: 2; }
+[data-platform="instagram"] .metrics li:hover { color: var(--muted); }
+[data-platform="instagram"] .is-live .tone-pink.is-active { color: var(--pink); }
 /* Save sits alone on the right, as it does in the app. */
-[data-platform="instagram"] .metrics li:nth-child(4) { order: 9; margin-left: auto; }
+[data-platform="instagram"] .metrics li:nth-child(4) { flex-direction: row-reverse; order: 9; margin-left: auto; }
+/* Views aren't part of Instagram's action row, so they read as a quiet aside. */
+[data-platform="instagram"] .metrics li:nth-child(5) { color: var(--muted); font-weight: 400; }
+[data-platform="instagram"] .metrics li:nth-child(5) svg { width: 18px; height: 18px; }
+
+[data-platform="instagram"] .feed-empty,
+[data-platform="instagram"] .feed-end { font-size: 14px; }
+
+/* The side column reads like "Suggested for you": no box, a muted heading. */
+[data-platform="instagram"] .card { border: 0; border-radius: 0; }
+[data-platform="instagram"] .card-head { padding: 4px 0 8px; }
+[data-platform="instagram"] .card-head h2 { color: var(--muted); font-size: 14px; font-weight: 600; line-height: 18px; }
+[data-platform="instagram"] .rank { padding: 8px 0; font-size: 14px; line-height: 18px; }
+[data-platform="instagram"] .rank:hover { background: transparent; }
+[data-platform="instagram"] .rank-text { font-weight: 600; }
+[data-platform="instagram"] .rank-label,
+[data-platform="instagram"] .rank-meta { font-size: 12px; }
+[data-platform="instagram"] .leaderboard-empty { padding: 4px 0 16px; font-size: 14px; }
+[data-platform="instagram"] .side-foot { padding: 0; color: var(--line-strong); font-size: 12px; }
+
+[data-platform="instagram"] .onboarding { border-radius: 12px; }
+[data-platform="instagram"] .onboarding h2 { font-size: 20px; font-weight: 600; }
+
+@media (max-width: 1500px) {
+  [data-platform="instagram"] .side { padding-top: 64px; }
+}
+
+/* Instagram folds its sidebar to icons at about this width. */
+@media (max-width: 1280px) {
+  [data-platform="instagram"] .shell { grid-template-columns: 73px minmax(0, 1fr) minmax(0, 630px) 352px minmax(0, 1fr); }
+  [data-platform="instagram"] .side { padding-left: 32px; }
+  [data-platform="instagram"] .rail { align-items: center; }
+  [data-platform="instagram"] .rail-brand { padding: 28px 12px 20px; }
+  [data-platform="instagram"] .rail-post { width: 48px; overflow: visible; font-size: 0; }
+}
+
+@media (max-width: 1000px) {
+  [data-platform="instagram"] .shell { grid-template-columns: 73px minmax(0, 1fr) minmax(0, 630px) minmax(0, 1fr); }
+  [data-platform="instagram"] .side { grid-column: 3; width: 100%; max-width: 470px; margin: 0 auto; padding: 16px 0; border: 0; }
+}
+
+@media (max-width: 700px) {
+  [data-platform="instagram"] .shell { grid-template-columns: minmax(0, 1fr); }
+  [data-platform="instagram"] .rail,
+  [data-platform="instagram"] .timeline,
+  [data-platform="instagram"] .side { grid-column: 1; }
+  [data-platform="instagram"] .rail { flex-direction: row; align-items: center; padding: 0; border-right: 0; }
+  [data-platform="instagram"] .rail-link { margin: 0; }
+  [data-platform="instagram"] .rail-link[data-open-onboarding] { order: 0; }
+  [data-platform="instagram"] .side { padding: 16px 16px 80px; }
+}
+
+/* On a phone the photo runs edge to edge and only the words are inset. */
+@media (max-width: 500px) {
+  [data-platform="instagram"] .tabs,
+  [data-platform="instagram"] .composer { padding-right: 12px; padding-left: 12px; }
+  [data-platform="instagram"] .composer-foot { flex-wrap: wrap; row-gap: 8px; }
+  [data-platform="instagram"] .post > .avatar { margin-left: 12px; }
+  [data-platform="instagram"] .post-head { padding-right: 12px; }
+  [data-platform="instagram"] .metrics,
+  [data-platform="instagram"] .post-text,
+  [data-platform="instagram"] .poll,
+  [data-platform="instagram"] .post-failed,
+  [data-platform="instagram"] .why { padding-right: 12px; padding-left: 12px; }
+  [data-platform="instagram"] .post::after { margin-left: 12px; }
+  [data-platform="instagram"] .post-cover,
+  [data-platform="instagram"] .post .media-grid { border-right: 0; border-left: 0; border-radius: 0; }
+}
 
 /* ---------------------------------------------------------------- TikTok */
 
