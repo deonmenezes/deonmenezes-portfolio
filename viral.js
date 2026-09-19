@@ -14,7 +14,7 @@ const b = (action, label, weight, probability, contribution) => ({ action, label
 // Real Jev output for two posts, so the feed isn't empty on a first visit.
 const EXAMPLES = [
   {
-    id: "example-banger", example: true, name: "Sample post", handle: "sample", createdAt: null,
+    id: "example-banger", example: true, name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
     text: "I quit my $400k job at Google to build a startup. 18 months later I am broke, divorced, and happier than I have ever been. Here is what nobody tells you:",
     viralScore: 63, verdict: "Banger", hook: 2.75, emotion: "awe",
     metrics: { views: 42508, likes: 563, replies: 229, reposts: 112, bookmarks: 141 },
@@ -26,7 +26,7 @@ const EXAMPLES = [
     tips: ["A lot of readers would tap \"not interested\". That signal weighs -74, about 150 likes' worth of damage each."],
   },
   {
-    id: "example-mid", example: true, name: "Sample post", handle: "sample", createdAt: null,
+    id: "example-mid", example: true, name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
     text: "good morning everyone have a nice day",
     viralScore: 15, verdict: "Mid", hook: 0, emotion: "nothing",
     metrics: { views: 215, likes: 0, replies: 0, reposts: 0, bookmarks: 0 },
@@ -54,7 +54,7 @@ const simulateButton = document.querySelector("[data-simulate]");
 const statusLine = document.querySelector("[data-status]");
 const feed = document.querySelector("[data-feed]");
 const leaderboard = document.querySelector("[data-leaderboard]");
-const leaderboardEmpty = document.querySelector("[data-leaderboard-empty]");
+const rankTemplate = document.querySelector("#leaderboard-template");
 const composerAvatar = document.querySelector("[data-composer-avatar]");
 const template = document.querySelector("#post-template");
 
@@ -120,6 +120,14 @@ function countUp(node, target) {
   requestAnimationFrame(tick);
 }
 
+const VERDICTS = new Set(["banger", "solid", "mid", "flop"]);
+
+function paintVerdict(node, verdict) {
+  const key = String(verdict).toLowerCase();
+  node.textContent = verdict;
+  node.className = `verdict verdict-${VERDICTS.has(key) ? key : "mid"}`;
+}
+
 function renderPost(post, { animate = false } = {}) {
   const node = template.content.firstElementChild.cloneNode(true);
   const find = (selector) => node.querySelector(selector);
@@ -131,9 +139,7 @@ function renderPost(post, { animate = false } = {}) {
   find("[data-time]").textContent = timeAgo(post.createdAt);
   find("[data-text]").textContent = post.text;
 
-  const badge = find("[data-verdict]");
-  badge.textContent = post.verdict;
-  badge.classList.add(`badge-${post.verdict.toLowerCase()}`);
+  paintVerdict(find("[data-verdict]"), post.verdict);
 
   for (const metric of node.querySelectorAll("[data-metric]")) {
     const value = post.metrics[metric.dataset.metric];
@@ -177,21 +183,19 @@ function renderFeed(newestId) {
 }
 
 function renderLeaderboard() {
-  const ranked = [...posts].sort((a, b2) => b2.viralScore - a.viralScore).slice(0, 8);
-  leaderboardEmpty.hidden = ranked.length > 0;
-  leaderboard.replaceChildren(...ranked.map((post) => {
-    const item = document.createElement("li");
-    const text = document.createElement("p");
-    text.className = "leaderboard-text";
-    text.textContent = post.text;
-    const meta = document.createElement("p");
-    meta.className = "leaderboard-meta";
-    const verdict = document.createElement("span");
-    verdict.className = `badge badge-${post.verdict.toLowerCase()}`;
-    verdict.textContent = post.verdict;
-    meta.append(`${post.viralScore}/100 · ${compact(post.metrics.views)} views · `, verdict);
-    item.append(text, meta);
-    return item;
+  const ranked = [...(posts.length ? posts : EXAMPLES)].sort((a, b2) => b2.viralScore - a.viralScore).slice(0, 8);
+  leaderboard.replaceChildren(...ranked.map((post, index) => {
+    const node = rankTemplate.content.firstElementChild.cloneNode(true);
+    const find = (selector) => node.querySelector(selector);
+    find("[data-rank]").textContent = String(index + 1);
+    find("[data-text]").textContent = post.text;
+    paintAvatar(find("[data-avatar]"), post.name, post.avatarUrl);
+    find("[data-avatar]").classList.add("avatar-mini");
+    find("[data-handle]").textContent = `@${post.handle || "anonymous"}`;
+    find("[data-time]").textContent = timeAgo(post.createdAt);
+    paintVerdict(find("[data-verdict]"), post.verdict);
+    find("[data-views]").textContent = `${compact(post.metrics.views)} views`;
+    return node;
   }));
 }
 
@@ -218,18 +222,9 @@ function cleanProfile(value) {
 
 let me = cleanProfile(load(STORAGE_PROFILE, null));
 
-const meName = document.querySelector("[data-me-name]");
-const meHandle = document.querySelector("[data-me-handle]");
-const meFollowers = document.querySelector("[data-me-followers]");
-const meVerified = document.querySelector("[data-me-verified]");
-
 function renderMe() {
   const profile = me || ANONYMOUS;
   paintAvatar(composerAvatar, profile.name, profile.avatarUrl);
-  meName.textContent = profile.name;
-  meHandle.textContent = `@${profile.handle}`;
-  meFollowers.textContent = `· ${compact(profile.followers)} followers`;
-  meVerified.toggleAttribute("hidden", !profile.verified);
 }
 
 /* ---------------------------------------------------------- onboarding */
@@ -320,17 +315,51 @@ onboardingForm.addEventListener("submit", (event) => {
 // Escape closes the dialog without saving a choice, so the question comes back
 // on the next visit; until then the composer posts as Anonymous.
 onboarding.addEventListener("close", () => textarea.focus());
-document.querySelector("[data-open-onboarding]").addEventListener("click", openOnboarding);
+for (const trigger of document.querySelectorAll("[data-open-onboarding]")) trigger.addEventListener("click", openOnboarding);
 
 /* ------------------------------------------------------------ composer */
 
-textarea.addEventListener("input", () => {
+function syncComposer() {
   const length = textarea.value.length;
   counter.textContent = `${length} / ${X_LIMIT}`;
+  counter.hidden = length === 0;
   counter.classList.toggle("is-over", length > X_LIMIT);
+  simulateButton.disabled = !textarea.value.trim();
+  // Grow with the text, like the box it imitates.
+  textarea.rows = Math.min(12, Math.max(2, textarea.value.split("\n").length + Math.floor(length / 55)));
+}
+
+textarea.addEventListener("input", syncComposer);
+
+/* ---------------------------------------------------------------- tabs */
+
+const tabs = [...document.querySelectorAll("[data-tab]")];
+
+function showTab(name) {
+  for (const tab of tabs) {
+    const active = tab.dataset.tab === name;
+    tab.classList.toggle("is-active", active);
+    tab.setAttribute("aria-selected", String(active));
+  }
+  for (const panel of document.querySelectorAll("[data-panel]")) panel.hidden = panel.dataset.panel !== name;
+}
+
+for (const tab of tabs) tab.addEventListener("click", () => showTab(tab.dataset.tab));
+for (const jump of document.querySelectorAll("[data-tab-jump]")) {
+  jump.addEventListener("click", () => {
+    showTab(jump.dataset.tabJump);
+    scrollTo({ top: 0 });
+  });
+}
+
+document.querySelector("[data-leaderboard-close]")?.addEventListener("click", () => {
+  document.querySelector("[data-leaderboard-card]").hidden = true;
 });
 
-document.querySelector("[data-focus-composer]")?.addEventListener("click", () => textarea.focus());
+document.querySelector("[data-focus-composer]")?.addEventListener("click", () => {
+  showTab("foryou");
+  textarea.focus();
+});
 
 composer.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -369,14 +398,14 @@ composer.addEventListener("submit", async (event) => {
     save(STORAGE_POSTS, posts);
 
     textarea.value = "";
-    counter.textContent = `0 / ${X_LIMIT}`;
+    syncComposer();
     renderFeed(post.id);
     renderLeaderboard();
     setStatus(`${post.verdict}. ${result.remainingToday} simulations left today.`);
   } catch (error) {
     setStatus(error.message, true);
   } finally {
-    simulateButton.disabled = false;
+    syncComposer();
   }
 });
 

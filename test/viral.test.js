@@ -170,7 +170,7 @@ test("the /viral page respects its CSP and doesn't pose as X", async () => {
   assert.ok(html.includes("Not affiliated with X"));
   assert.ok(html.includes("github.com/twitter/the-algorithm-ml"));
   for (const verdict of ["banger", "solid", "mid", "flop"]) {
-    assert.ok((await readFile(new URL("../viral.css", import.meta.url), "utf8")).includes(`.badge-${verdict}`));
+    assert.ok((await readFile(new URL("../viral.css", import.meta.url), "utf8")).includes(`.verdict-${verdict}`));
   }
 
   assert.equal(vercel.rewrites.find((rule) => rule.source === "/api/viral").destination, "/api/stats?route=viral");
