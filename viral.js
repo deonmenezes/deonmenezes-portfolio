@@ -1294,6 +1294,9 @@ function setPlatform(id, { persist = true } = {}) {
   if (persist) save(STORAGE_PLATFORM, platformId);
   document.documentElement.dataset.platform = platformId;
   document.querySelector("[data-switcher-name]").textContent = platform().name;
+  // The rail and the switcher carry the mark of the app being simulated.
+  document.querySelector("[data-brand-logo]").setAttribute("href", `#i-logo-${platformId}`);
+  document.querySelector("[data-switcher-logo]").setAttribute("href", `#i-logo-${platformId === "instagram" ? "instagram-color" : platformId}`);
   for (const option of platformOptions) option.setAttribute("aria-pressed", String(option.dataset.platformOption === platformId));
 
   // The rail and tabs use each app's own words for the same places.

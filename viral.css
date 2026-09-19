@@ -201,20 +201,16 @@ svg.verified {
   transition: transform 0.2s;
 }
 
-.switcher-dot,
-.platform-swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--brand);
+.switcher-logo,
+.platform-logo {
+  flex: none;
+  width: 16px;
+  height: 16px;
 }
 
-.swatch-x { background: #0f1419; }
-.swatch-instagram { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); }
-.swatch-tiktok { background: linear-gradient(135deg, #25f4ee, #fe2c55); }
-.swatch-youtube { background: #ff0000; }
-[data-platform="instagram"] .switcher-dot { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); }
-[data-platform="tiktok"] .switcher-dot { background: linear-gradient(135deg, #25f4ee, #fe2c55); }
+.platform-logo { width: 18px; height: 18px; }
+.logo-youtube,
+[data-platform="youtube"] .switcher-logo { color: #ff0000; }
 
 .switcher-panel {
   position: absolute;
@@ -254,8 +250,8 @@ svg.verified {
   transform: none;
 }
 
-.switcher:hover .switcher-trigger svg,
-.switcher.is-open .switcher-trigger svg {
+.switcher:hover .switcher-trigger svg:not(.switcher-logo),
+.switcher.is-open .switcher-trigger svg:not(.switcher-logo) {
   transform: rotate(180deg);
 }
 
@@ -1879,6 +1875,8 @@ svg.verified {
   font-weight: 500;
 }
 
+[data-platform="tiktok"] .rail-brand { color: var(--ink); }
+
 [data-platform="tiktok"] .verified {
   color: #20d5ec;
 }
@@ -1947,7 +1945,7 @@ svg.verified {
 }
 
 [data-platform="instagram"] .rail-brand:hover { background: transparent; }
-[data-platform="instagram"] .rail-brand svg { width: 28px; height: 28px; }
+[data-platform="instagram"] .rail-brand svg { width: 26px; height: 26px; }
 
 [data-platform="instagram"] .rail-link,
 [data-platform="instagram"] .rail-post {
