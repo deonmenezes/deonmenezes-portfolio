@@ -204,8 +204,9 @@ export const PLATFORMS = {
     scoreRange: { floor: 0.135, top: 0.535 },
     check: "Checked in September 2026 against 20 real videos with known views and subscribers. Judged on the title alone, the score did not track real results at all. Once Jev was given a dated list of what is new, it did (rank correlation 0.74): 7 of the 8 videos that out-drew their subscribers scored Banger, and none of the other 12 did. The list came from the same month's videos, so expect less on anything outside tech and AI, and nothing once the list goes stale.",
     // Fitted to 20 real videos (Sep 2026): under-performers drew 2-3% of subscribers, typical ones
-    // 10-40%, and channels of 2-9K subscribers broke out to 200-370K views.
-    reach: { base: 0.02, boost: 2, boostPower: 4, discovery: 2_500_000, discoveryPower: 8 },
+    // 10-40%, and channels of 2-9K subscribers broke out to 200-370K views. Those breakouts were
+    // found by sorting search by views, so they are the luckiest cases; the ceiling sits below them.
+    reach: { base: 0.02, boost: 2, boostPower: 4, discovery: 1_500_000, discoveryPower: 8 },
     metrics: [
       { key: "views", label: "Views", from: "views", icon: "play" },
       { key: "likes", label: "Likes", from: "like", icon: "thumb" },
