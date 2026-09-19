@@ -87,6 +87,8 @@ export const PLATFORMS = {
     hook: hook("How strong is the opening, the first three seconds or the first line, at stopping someone mid-scroll?"),
     emotion: emotion("post"),
     hookTip: "The opening doesn't stop the scroll. On Reels most people decide in the first three seconds.",
+    // Share of a perfect post that scores 100. Set from live Jev output: a strong Reel idea scored 73 at the default scale and a bland photo 26.
+    scoreShare: 0.48,
     reach: { base: 0.12, boost: 3, discovery: 350_000 },
     metrics: [
       { key: "likes", label: "Likes", from: "like", icon: "heart", tone: "pink" },
@@ -120,6 +122,8 @@ export const PLATFORMS = {
     hook: hook("How strong is the first two seconds of this video at stopping someone from swiping?"),
     emotion: emotion("video"),
     hookTip: "The first two seconds don't stop the swipe. Open on the payoff, the conflict, or the question.",
+    // Share of a perfect post that scores 100. Set from live Jev output: a strong idea maxed out at the default scale while a bland one scored 6.
+    scoreShare: 0.62,
     reach: { base: 0.04, boost: 2, discovery: 700_000 },
     metrics: [
       { key: "likes", label: "Likes", from: "like", icon: "heart", tone: "pink" },
@@ -153,6 +157,8 @@ export const PLATFORMS = {
     hook: hook("How strong is this title and opening at making someone choose this video over the ones around it?"),
     emotion: emotion("video"),
     hookTip: "The title and opening don't make a case for this video over the ones next to it.",
+    // Share of a perfect post that scores 100. Set from live Jev output: a strong title scored 91 at the default scale.
+    scoreShare: 0.55,
     reach: { base: 0.06, boost: 3, discovery: 450_000 },
     metrics: [
       { key: "views", label: "Views", from: "views", icon: "play" },
