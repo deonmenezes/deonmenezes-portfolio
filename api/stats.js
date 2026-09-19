@@ -12,6 +12,7 @@ import backfillCheckHandler from "../lib/backfill-check.js";
 import jevHandler, { jevKeyHandler } from "../lib/jev.js";
 import viralHandler from "../lib/viral.js";
 import viralProfileHandler, { viralSearchHandler } from "../lib/viral-profile.js";
+import { viralFeedHandler } from "../lib/viral-store.js";
 
 const FALLBACK = {
   mantishackStars: 363,
@@ -99,6 +100,7 @@ export default async function handler(req, res) {
   if (req.query?.route === "viral") return viralHandler(req, res);
   if (req.query?.route === "viral-profile") return viralProfileHandler(req, res);
   if (req.query?.route === "viral-search") return viralSearchHandler(req, res);
+  if (req.query?.route === "viral-feed") return viralFeedHandler(req, res);
 
   const keys = Object.keys(tasks);
   const settled = await Promise.allSettled(keys.map((k) => tasks[k]()));

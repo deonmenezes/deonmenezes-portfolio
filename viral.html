@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-platform="x">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Will It Go Viral? · Deon X Jev</title>
-  <meta name="description" content="Write a post and simulate how it would do on X. Jev predicts every engagement, scored with the weights from X's open-source algorithm.">
+  <meta name="description" content="Simulate a post before you publish it on X, Instagram, TikTok, or YouTube. Jev predicts every engagement, scored the way each platform says it ranks.">
   <meta name="author" content="Deon Menezes">
   <link rel="canonical" href="https://deonmenezes.com/viral">
   <meta property="og:type" content="website">
@@ -18,6 +18,41 @@
 </head>
 <body>
   <a class="skip-link" href="#composer-text">Skip to the composer</a>
+
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-comment" viewBox="0 0 24 24"><path d="M4 11.500a7.500 7.500 0 0 1 7.500-7.500h1a7.500 7.500 0 0 1 3.400 14.200L12 20.500V19h-.500A7.500 7.500 0 0 1 4 11.500z"/></symbol>
+    <symbol id="i-repost" viewBox="0 0 24 24"><path d="M4.500 8 7.500 5l3 3M7.500 5v10a2 2 0 0 0 2 2H13M19.500 16l-3 3-3-3M16.500 19V9a2 2 0 0 0-2-2H11"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.500-4.500-7.500-10A4.300 4.300 0 0 1 12 7.500 4.300 4.300 0 0 1 19.500 10c0 5.500-7.500 10-7.500 10z"/></symbol>
+    <symbol id="i-bars" viewBox="0 0 24 24"><path d="M5 20V11M10 20V4M15 20v-7M20 20V8"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6.500 4h11v16.500L12 17l-5.500 3.500z"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M13 5.500 20 12l-7 6.500V14.500c-4.500 0-7.500 1.200-9.500 4 .500-5.500 3.500-9 9.500-9.500z"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3.500 10.500 14M21 3.500l-6.500 17-4-6.500-6.500-4z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.500v15l12-7.500z"/></symbol>
+    <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7.500 10.500 11 4c1.500 0 2.500 1 2.500 2.500V9.500H18a2 2 0 0 1 2 2.300l-1 6A2 2 0 0 1 17 19.500H7.500zM7.500 10.500H4v9h3.500"/></symbol>
+    <symbol id="i-userplus" viewBox="0 0 24 24"><path d="M10 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM3 20.500c.700-3.500 3.500-5.500 7-5.500 1.500 0 2.800.300 3.900 1M18 13v6M15 16h6"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m0 0L8 8m4-4 4 4M5 14v5.500h14V14"/></symbol>
+  </svg>
+
+  <header class="switcher" data-switcher>
+    <button class="switcher-trigger" type="button" aria-expanded="false" aria-controls="switcher-panel" data-switcher-trigger>
+      <span class="switcher-dot" aria-hidden="true"></span>
+      <span data-switcher-name>X</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="switcher-panel" id="switcher-panel" data-switcher-panel>
+      <div class="switcher-platforms" role="group" aria-label="Choose a platform">
+        <button class="platform-option" type="button" data-platform-option="x"><span class="platform-swatch swatch-x" aria-hidden="true"></span>X</button>
+        <button class="platform-option" type="button" data-platform-option="instagram"><span class="platform-swatch swatch-instagram" aria-hidden="true"></span>Instagram</button>
+        <button class="platform-option" type="button" data-platform-option="tiktok"><span class="platform-swatch swatch-tiktok" aria-hidden="true"></span>TikTok</button>
+        <button class="platform-option" type="button" data-platform-option="youtube"><span class="platform-swatch swatch-youtube" aria-hidden="true"></span>YouTube</button>
+      </div>
+      <div class="switcher-practices">
+        <p class="practices-title">Best practices for <span data-practices-name>X</span></p>
+        <p class="practices-intro" data-practices-intro></p>
+        <ol class="practices" data-practices></ol>
+      </div>
+    </div>
+  </header>
   <div class="shell">
     <nav class="rail" aria-label="Primary">
       <a class="rail-brand" href="/viral" aria-label="Will It Go Viral home">
@@ -57,6 +92,10 @@
           <div class="composer-body">
             <label class="sr-only" for="composer-text">Your post</label>
             <textarea id="composer-text" name="text" rows="2" maxlength="1000" placeholder="Will you go viral?" required></textarea>
+            <div class="composer-extra" data-composer-extra hidden>
+              <label for="composer-extra-text" data-extra-label>Hook</label>
+              <input id="composer-extra-text" name="extra" type="text" maxlength="300" autocomplete="off">
+            </div>
             <div class="media-grid" data-composer-media hidden></div>
             <fieldset class="poll-editor" data-poll-editor hidden>
               <legend class="sr-only">Poll options</legend>
@@ -84,6 +123,8 @@
               </div>
               <input class="sr-only" type="file" accept="image/*,video/*" multiple tabindex="-1" aria-hidden="true" data-file-media>
               <input class="sr-only" type="file" accept="image/gif" tabindex="-1" aria-hidden="true" data-file-gif>
+              <label class="sr-only" for="composer-format">Format</label>
+              <select class="composer-format" id="composer-format" name="format" data-format hidden></select>
               <span class="composer-count" data-count hidden>0 / 280</span>
               <button class="simulate" type="submit" data-simulate disabled>Simulate</button>
             </div>
@@ -92,7 +133,8 @@
         </form>
 
         <div class="feed" data-feed aria-live="polite"></div>
-        <p class="feed-end">Posts live only in this browser. Nothing is published anywhere.</p>
+        <p class="feed-empty" data-feed-empty hidden></p>
+        <p class="feed-end" data-feed-end>Posts live only in this browser. Nothing is published anywhere.</p>
       </section>
 
       <section class="empty-tab" data-panel="following" hidden>
@@ -102,18 +144,10 @@
 
       <section class="about" id="how" data-panel="jev" hidden>
         <h2>How it works</h2>
-        <p>Jev, TypeSafe AI's decision model, reads your post and estimates how likely a typical reader is to like it, reply, repost, open your profile, stick around, hit "not interested", or report it.</p>
-        <p>Those estimates are scored with the weights X published in its <a href="https://github.com/twitter/the-algorithm-ml/tree/main/projects/home/recap" target="_blank" rel="noopener noreferrer">open-source ranking algorithm ↗</a>:</p>
-        <dl class="weights">
-          <div><dt>Reply</dt><dd>+13.5</dd></div>
-          <div><dt>Profile click</dt><dd>+12</dd></div>
-          <div><dt>Opens and stays 2+ min</dt><dd>+10</dd></div>
-          <div><dt>Repost</dt><dd>+1</dd></div>
-          <div><dt>Like</dt><dd>+0.5</dd></div>
-          <div><dt>Not interested / block</dt><dd class="is-negative">−74</dd></div>
-          <div><dt>Report</dt><dd class="is-negative">−369</dd></div>
-        </dl>
-        <p class="about-note">The weights are real. The views and likes are a simulation for fun, not a promise. Your follower count comes from your public profile. This site is a fan-made simulator, not affiliated with X, TypeSafe AI, or Vercel.</p>
+        <p>Jev, TypeSafe AI's decision model, reads what you wrote and estimates how likely a typical viewer is to take each action <span data-about-platform>X</span> cares about.</p>
+        <p data-about-weights></p>
+        <dl class="weights" data-weights></dl>
+        <p class="about-note">The views and engagement numbers are a simulation for fun, not a promise. This site is a fan-made simulator, not affiliated with X, Instagram, TikTok, YouTube, TypeSafe AI, or Vercel.</p>
       </section>
     </main>
 
@@ -126,8 +160,9 @@
           </button>
         </header>
         <ol class="leaderboard" data-leaderboard></ol>
+        <p class="leaderboard-empty" data-leaderboard-empty hidden>Nothing here yet. Simulate something to take the top spot.</p>
       </section>
-      <p class="side-foot">A fan-made simulator by <a href="/deon">Deon Menezes</a>. Not affiliated with X.</p>
+      <p class="side-foot">A fan-made simulator by <a href="/deon">Deon Menezes</a>. Not affiliated with X, Instagram, TikTok, or YouTube.</p>
     </aside>
   </div>
 
@@ -135,7 +170,7 @@
     <form method="dialog" class="onboarding-form" data-onboarding-form>
       <svg class="onboarding-mark solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
       <h2 id="onboarding-title">What's your X handle?</h2>
-      <p class="onboarding-lead">We'll grab your profile pic so your posts look like yours</p>
+      <p class="onboarding-lead" data-onboarding-lead>We'll grab your profile pic so your posts look like yours</p>
       <label class="onboarding-field" for="onboarding-handle">
         <span aria-hidden="true">@</span>
         <input id="onboarding-handle" name="handle" type="text" maxlength="50" placeholder="name or handle" role="combobox" aria-expanded="false" aria-controls="onboarding-results" autocomplete="off" autocapitalize="none" spellcheck="false">
@@ -144,6 +179,10 @@
         <p class="onboarding-hint" role="status" data-preview-hint>Type a name or handle to search…</p>
         <ul class="onboarding-results" id="onboarding-results" role="listbox" aria-label="Matching profiles" data-results hidden></ul>
       </div>
+      <label class="onboarding-audience" data-audience hidden>
+        <span>Your <span data-audience-platform>Instagram</span> followers</span>
+        <input type="number" name="audience" min="0" max="500000000" step="1" inputmode="numeric" placeholder="1000" data-audience-input>
+      </label>
       <button class="onboarding-continue" type="submit" value="continue" data-onboarding-continue disabled>Continue</button>
       <button class="onboarding-skip" type="submit" value="skip">Skip — post anonymously</button>
     </form>
@@ -171,14 +210,7 @@
           <button type="button" data-retry>Retry</button>
           <button type="button" data-discard>Discard</button>
         </p>
-        <ul class="metrics" aria-label="Simulated engagement">
-          <li class="metric-reply" title="Replies"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.500a7.500 7.500 0 0 1 7.500-7.500h1a7.500 7.500 0 0 1 3.400 14.200L12 20.500V19h-.500A7.500 7.500 0 0 1 4 11.500z"/></svg><span data-metric="replies">0</span></li>
-          <li class="metric-repost" title="Reposts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.500 8 7.500 5l3 3M7.500 5v10a2 2 0 0 0 2 2H13M19.500 16l-3 3-3-3M16.500 19V9a2 2 0 0 0-2-2H11"/></svg><span data-metric="reposts">0</span></li>
-          <li class="metric-like" title="Likes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.500-4.500-7.500-10A4.300 4.300 0 0 1 12 7.500 4.300 4.300 0 0 1 19.500 10c0 5.500-7.500 10-7.500 10z"/></svg><span data-metric="likes">0</span></li>
-          <li class="metric-views" title="Views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M10 20V4M15 20v-7M20 20V8"/></svg><span data-metric="views">0</span></li>
-          <li class="metric-bookmark" title="Bookmarks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.500 4h11v16.500L12 17l-5.500 3.500z"/></svg><span data-metric="bookmarks">0</span></li>
-          <li class="metric-share" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V4m0 0L8 8m4-4 4 4M5 14v5.500h14V14"/></svg></li>
-        </ul>
+        <ul class="metrics" aria-label="Simulated engagement" data-metrics></ul>
         <details class="why">
           <summary><span class="why-show">Advanced view</span><span class="why-hide">Hide advanced view</span></summary>
           <p class="why-score">Viral score <strong data-score></strong></p>

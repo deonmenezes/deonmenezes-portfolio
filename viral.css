@@ -4,18 +4,93 @@
 :root {
   color-scheme: light;
   --bg: #ffffff;
+  --surface: #ffffff;
+  --bg-blur: rgb(255 255 255 / 85%);
   --ink: #0f1419;
   --muted: #536471;
   --line: #eff3f4;
   --line-strong: #cfd9de;
   --hover: rgb(15 20 25 / 3%);
-  --blue: #1d9bf0;
-  --blue-dark: #1a8cd8;
+  --press: var(--press);
+  --accent: #1d9bf0;
+  --accent-strong: #1a8cd8;
+  --on-accent: #ffffff;
+  --tab-accent: var(--accent);
+  --button-bg: #0f1419;
+  --button-ink: #ffffff;
+  --button-hover: #272c30;
+  --brand: #0f1419;
   --green: #00ba7c;
   --pink: #f91880;
   --amber: #b7791f;
   --red: #f4212e;
+  --radius: 16px;
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
+  --accent-faint: color-mix(in srgb, var(--accent) 4%, transparent);
+  --accent-mid: color-mix(in srgb, var(--accent) 58%, transparent);
   font-family: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Each platform keeps the same layout and wears its own colours. */
+[data-platform="instagram"] {
+  --ink: #000000;
+  --muted: #737373;
+  --line: #dbdbdb;
+  --line-strong: #c7c7c7;
+  --hover: rgb(0 0 0 / 3%);
+  --press: rgb(0 0 0 / 8%);
+  --accent: #0095f6;
+  --accent-strong: #1877f2;
+  --tab-accent: #000000;
+  --button-bg: #0095f6;
+  --button-hover: #1877f2;
+  --brand: #dd2a7b;
+  --pink: #ff3040;
+  --radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+[data-platform="tiktok"] {
+  color-scheme: dark;
+  --bg: #000000;
+  --surface: #121212;
+  --bg-blur: rgb(0 0 0 / 85%);
+  --ink: rgb(255 255 255 / 92%);
+  --muted: rgb(255 255 255 / 55%);
+  --line: rgb(255 255 255 / 12%);
+  --line-strong: rgb(255 255 255 / 22%);
+  --hover: rgb(255 255 255 / 4%);
+  --press: rgb(255 255 255 / 10%);
+  --accent: #fe2c55;
+  --accent-strong: #ea284e;
+  --tab-accent: #ffffff;
+  --button-bg: #fe2c55;
+  --button-hover: #ea284e;
+  --brand: #25f4ee;
+  --green: #25f4ee;
+  --pink: #fe2c55;
+  --amber: #face15;
+  --radius: 8px;
+  font-family: "TikTokFont", "Proxima Nova", Arial, Tahoma, "PingFang SC", sans-serif;
+}
+
+[data-platform="youtube"] {
+  --ink: #0f0f0f;
+  --muted: #606060;
+  --line: #e5e5e5;
+  --line-strong: #cccccc;
+  --hover: rgb(0 0 0 / 4%);
+  --press: rgb(0 0 0 / 10%);
+  --accent: #065fd4;
+  --accent-strong: #0556bf;
+  --tab-accent: #0f0f0f;
+  --button-bg: #0f0f0f;
+  --button-hover: #272727;
+  --brand: #ff0000;
+  --pink: #0f0f0f;
+  --red: #ff0000;
+  --radius: 12px;
+  font-family: Roboto, Arial, sans-serif;
 }
 
 * {
@@ -32,7 +107,7 @@ body {
 }
 
 a {
-  color: var(--blue);
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -82,14 +157,209 @@ svg.verified {
   left: 0.5rem;
   padding: 0.6rem 1rem;
   border-radius: 999px;
-  background: var(--blue);
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 :focus-visible {
-  outline: 2px solid var(--blue);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* --------------------------------------------------------------- switcher */
+
+.switcher {
+  position: fixed;
+  z-index: 6;
+  top: 8px;
+  right: 16px;
+}
+
+.switcher-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
+}
+
+.switcher-trigger svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+}
+
+.switcher-dot,
+.platform-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.swatch-x { background: #0f1419; }
+.swatch-instagram { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); }
+.swatch-tiktok { background: linear-gradient(135deg, #25f4ee, #fe2c55); }
+.swatch-youtube { background: #ff0000; }
+[data-platform="instagram"] .switcher-dot { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); }
+[data-platform="tiktok"] .switcher-dot { background: linear-gradient(135deg, #25f4ee, #fe2c55); }
+
+.switcher-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  display: grid;
+  visibility: hidden;
+  grid-template-columns: 170px minmax(0, 1fr);
+  width: min(620px, calc(100vw - 32px));
+  max-height: min(560px, calc(100vh - 72px));
+  margin-top: 8px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 36px rgb(0 0 0 / 22%);
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.16s, transform 0.16s, visibility 0.16s;
+}
+
+/* An invisible bridge, so moving from the button to the panel keeps it open. */
+.switcher-panel::before {
+  position: absolute;
+  top: -12px;
+  right: 0;
+  left: 0;
+  height: 12px;
+  content: "";
+}
+
+.switcher:hover .switcher-panel,
+.switcher:focus-within .switcher-panel,
+.switcher.is-open .switcher-panel {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+.switcher:hover .switcher-trigger svg,
+.switcher.is-open .switcher-trigger svg {
+  transform: rotate(180deg);
+}
+
+.switcher-platforms {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 8px;
+  border-right: 1px solid var(--line);
+}
+
+.platform-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+  text-align: left;
+}
+
+.platform-option:hover {
+  background: var(--press);
+}
+
+.platform-option[aria-pressed="true"] {
+  background: var(--accent-soft);
+}
+
+.switcher-practices {
+  min-height: 0;
+  padding: 14px 16px 16px;
+  overflow-y: auto;
+}
+
+.practices-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.practices-intro {
+  margin: 4px 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.practices {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: practice;
+}
+
+.practice {
+  position: relative;
+  padding-left: 26px;
+  counter-increment: practice;
+}
+
+.practice::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--muted);
+  font-weight: 700;
+  content: counter(practice);
+}
+
+.practice-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.practice-body {
+  margin: 2px 0;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.practice-source {
+  font-size: 13px;
+}
+
+.basis {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  vertical-align: 1px;
+}
+
+.basis-official { background: color-mix(in srgb, var(--green) 16%, transparent); color: var(--green); }
+.basis-reported { background: color-mix(in srgb, var(--amber) 18%, transparent); color: var(--amber); }
+.basis-unconfirmed { background: var(--press); color: var(--muted); }
 
 .shell {
   display: grid;
@@ -117,7 +387,7 @@ svg.verified {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  color: var(--ink);
+  color: var(--brand);
 }
 
 .rail-brand svg {
@@ -154,7 +424,7 @@ svg.verified {
 
 .rail-brand:hover,
 .rail-link:hover {
-  background: rgb(15 20 25 / 10%);
+  background: var(--press);
   text-decoration: none;
 }
 
@@ -164,15 +434,15 @@ svg.verified {
   margin-top: 16px;
   border: 0;
   border-radius: 999px;
-  background: var(--ink);
-  color: #fff;
+  background: var(--button-bg);
+  color: var(--button-ink);
   cursor: pointer;
   font-size: 17px;
   font-weight: 700;
 }
 
 .rail-post:hover {
-  background: #272c30;
+  background: var(--button-hover);
 }
 
 /* -------------------------------------------------------------- timeline */
@@ -190,7 +460,7 @@ svg.verified {
   display: flex;
   height: 53px;
   border-bottom: 1px solid var(--line);
-  background: rgb(255 255 255 / 85%);
+  background: var(--bg-blur);
   backdrop-filter: blur(12px);
 }
 
@@ -206,7 +476,7 @@ svg.verified {
 }
 
 .tab:hover {
-  background: rgb(15 20 25 / 10%);
+  background: var(--press);
 }
 
 .tab span {
@@ -228,7 +498,7 @@ svg.verified {
   left: 0;
   height: 4px;
   border-radius: 999px;
-  background: var(--blue);
+  background: var(--tab-accent);
   content: "";
 }
 
@@ -295,7 +565,7 @@ svg.verified {
   flex: none;
   width: 18px;
   height: 18px;
-  color: var(--blue);
+  color: var(--accent);
 }
 
 .composer textarea {
@@ -315,6 +585,42 @@ svg.verified {
 
 .composer textarea::placeholder {
   color: var(--muted);
+}
+
+.composer-extra {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0 4px;
+  border-top: 1px solid var(--line);
+}
+
+.composer-extra label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.composer-extra input {
+  min-width: 0;
+  padding: 6px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.composer-format {
+  padding: 6px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .composer-foot {
@@ -341,12 +647,12 @@ svg.verified {
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: var(--blue);
+  color: var(--accent);
   cursor: pointer;
 }
 
 .tool:hover:not(:disabled) {
-  background: rgb(29 155 240 / 10%);
+  background: var(--accent-soft);
 }
 
 .tool:disabled {
@@ -363,8 +669,8 @@ svg.verified {
   grid-template-columns: repeat(8, 36px);
   gap: 2px;
   padding: 8px;
-  border-radius: 16px;
-  background: #fff;
+  border-radius: var(--radius);
+  background: var(--surface);
   box-shadow: 0 0 15px rgb(101 119 134 / 20%), 0 0 3px 1px rgb(101 119 134 / 15%);
 }
 
@@ -380,7 +686,7 @@ svg.verified {
 }
 
 .emoji:hover {
-  background: rgb(15 20 25 / 10%);
+  background: var(--press);
 }
 
 /* ----------------------------------------------------------------- media */
@@ -391,7 +697,7 @@ svg.verified {
   gap: 2px;
   margin-top: 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 16px;
+  border-radius: var(--radius);
 }
 
 .media-2,
@@ -462,7 +768,7 @@ svg.verified {
   margin: 12px 0 0;
   padding: 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 16px;
+  border-radius: var(--radius);
 }
 
 .poll-editor input {
@@ -474,8 +780,8 @@ svg.verified {
 }
 
 .poll-editor input:focus {
-  border-color: var(--blue);
-  outline: 1px solid var(--blue);
+  border-color: var(--accent);
+  outline: 1px solid var(--accent);
 }
 
 .poll-remove {
@@ -533,11 +839,11 @@ svg.verified {
 }
 
 .poll-row.is-winner progress::-webkit-progress-value {
-  background: rgb(29 155 240 / 58%);
+  background: var(--accent-mid);
 }
 
 .poll-row.is-winner progress::-moz-progress-bar {
-  background: rgb(29 155 240 / 58%);
+  background: var(--accent-mid);
 }
 
 .poll-label,
@@ -571,14 +877,14 @@ svg.verified {
   padding: 0 16px;
   border: 0;
   border-radius: 999px;
-  background: var(--blue);
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
   cursor: pointer;
   font-weight: 700;
 }
 
 .simulate:hover:not(:disabled) {
-  background: var(--blue-dark);
+  background: var(--accent-strong);
 }
 
 .simulate:disabled {
@@ -646,7 +952,7 @@ svg.verified {
 }
 
 .verdict-banger { color: var(--green); }
-.verdict-solid { color: var(--blue); }
+.verdict-solid { color: var(--accent); }
 .verdict-mid { color: var(--amber); }
 .verdict-flop { color: var(--red); }
 
@@ -685,12 +991,11 @@ svg.verified {
   position: relative;
 }
 
-.metric-reply.is-active:hover,
-.metric-views:hover,
-.metric-bookmark:hover,
-.metric-share:hover { color: var(--blue); }
-.metric-repost:hover { color: var(--green); }
-.metric-like:hover { color: var(--pink); }
+.tone-accent:hover { color: var(--accent); }
+.tone-green:hover { color: var(--green); }
+.tone-pink:hover { color: var(--pink); }
+.tone-amber:hover { color: var(--amber); }
+.tone-red:hover { color: var(--red); }
 
 /* A post that has just been sent: numbers at zero, verdict still to come. */
 .is-pending .metrics,
@@ -727,7 +1032,7 @@ svg.verified {
   padding: 2px 12px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
   cursor: pointer;
   font-weight: 700;
@@ -738,17 +1043,16 @@ svg.verified {
 }
 
 .post.is-live {
-  background: rgb(29 155 240 / 4%);
+  background: var(--accent-faint);
 }
 
-.is-live .metric-like.is-active,
-.metric-like.is-active:hover { color: var(--pink); }
-.is-live .metric-repost.is-active { color: var(--green); }
-.is-live .metric-reply.is-active,
-.is-live .metric-bookmark.is-active,
-.is-live .metric-views.is-active { color: var(--blue); }
+.is-live .tone-accent.is-active { color: var(--accent); }
+.is-live .tone-green.is-active { color: var(--green); }
+.is-live .tone-pink.is-active { color: var(--pink); }
+.is-live .tone-amber.is-active { color: var(--amber); }
+.is-live .tone-red.is-active { color: var(--red); }
 
-.is-live .metric-like.is-active svg {
+.is-live .tone-pink.is-active svg {
   fill: currentcolor;
 }
 
@@ -799,8 +1103,8 @@ svg.verified {
   left: 50%;
   padding: 12px 16px;
   border-radius: 4px;
-  background: var(--blue);
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
   transform: translateX(-50%);
   animation: toast-in 0.25s ease-out;
 }
@@ -834,7 +1138,7 @@ svg.verified {
   padding: 4px 12px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
-  color: var(--blue);
+  color: var(--accent);
   cursor: pointer;
   font-weight: 700;
   list-style: none;
@@ -854,7 +1158,7 @@ svg.verified {
 }
 
 .why summary:hover {
-  background: rgb(29 155 240 / 10%);
+  background: var(--accent-soft);
 }
 
 .why-line {
@@ -886,6 +1190,19 @@ svg.verified {
   gap: 6px;
   margin: 12px 0 4px;
   padding-left: 18px;
+}
+
+.feed-empty,
+.leaderboard-empty {
+  margin: 0;
+  padding: 32px 16px 8px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.leaderboard-empty {
+  padding: 4px 16px 16px;
+  text-align: left;
 }
 
 .feed-end {
@@ -931,7 +1248,7 @@ svg.verified {
   margin: 0 0 20px;
   padding: 12px 16px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius);
 }
 
 .weights div {
@@ -967,7 +1284,7 @@ svg.verified {
 .card {
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius);
 }
 
 .card-head {
@@ -998,7 +1315,7 @@ svg.verified {
 }
 
 .card-close:hover {
-  background: rgb(15 20 25 / 10%);
+  background: var(--press);
 }
 
 .card-close svg {
@@ -1065,8 +1382,9 @@ svg.verified {
   width: min(440px, calc(100vw - 32px));
   padding: 0;
   border: 0;
+  border: 1px solid var(--line);
   border-radius: 16px;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
   box-shadow: 0 8px 28px rgb(0 0 0 / 28%);
 }
@@ -1112,8 +1430,8 @@ svg.verified {
 }
 
 .onboarding-field:focus-within {
-  border-color: var(--blue);
-  box-shadow: 0 0 0 1px var(--blue);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .onboarding-field input {
@@ -1172,8 +1490,8 @@ svg.verified {
 }
 
 .result.is-selected {
-  background: rgb(29 155 240 / 10%);
-  box-shadow: inset 3px 0 0 var(--blue);
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .result .avatar {
@@ -1203,20 +1521,44 @@ svg.verified {
   color: var(--muted);
 }
 
+.onboarding-audience {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: left;
+}
+
+.onboarding-audience input {
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 17px;
+}
+
+.onboarding-audience input:focus {
+  border-color: var(--accent);
+  outline: 1px solid var(--accent);
+}
+
 .onboarding-continue {
   min-height: 48px;
   margin-top: 24px;
   border: 0;
   border-radius: 999px;
-  background: var(--ink);
-  color: #fff;
+  background: var(--button-bg);
+  color: var(--button-ink);
   cursor: pointer;
   font-size: 16px;
   font-weight: 700;
 }
 
 .onboarding-continue:hover:not(:disabled) {
-  background: #272c30;
+  background: var(--button-hover);
 }
 
 .onboarding-continue:disabled {
@@ -1239,6 +1581,13 @@ svg.verified {
 }
 
 /* ------------------------------------------------------------ responsive */
+
+/* Below this width the switcher would sit on top of the side column. */
+@media (max-width: 1500px) {
+  .side {
+    padding-top: 56px;
+  }
+}
 
 @media (max-width: 1280px) {
   .shell {
@@ -1299,7 +1648,7 @@ svg.verified {
     height: 53px;
     padding: 0;
     border-top: 1px solid var(--line);
-    background: #fff;
+    background: var(--surface);
   }
 
   .rail-brand,
@@ -1328,5 +1677,44 @@ svg.verified {
   .bar-row meter {
     grid-column: 1 / -1;
     order: 3;
+  }
+}
+
+/* ------------------------------------------------------ platform accents */
+
+[data-platform="instagram"] .post > .avatar {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  background-clip: padding-box;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #dc2743;
+}
+
+[data-platform="youtube"] .simulate,
+[data-platform="youtube"] .rail-post {
+  border-radius: 18px;
+}
+
+[data-platform="youtube"] .tab {
+  font-weight: 500;
+}
+
+[data-platform="tiktok"] .verified {
+  color: #20d5ec;
+}
+
+@media (max-width: 700px) {
+  .switcher {
+    top: 6px;
+    right: 8px;
+  }
+
+  .switcher-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .switcher-platforms {
+    grid-template-columns: repeat(4, auto);
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
   }
 }

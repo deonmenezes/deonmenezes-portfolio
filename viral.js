@@ -4,10 +4,15 @@
    in localStorage, attached media in IndexedDB. The page CSP forbids inline
    styles, so layout variants are classes and bars are <meter>/<progress>. */
 
+import { DEFAULT_PLATFORM, PLATFORMS } from "/viral-platforms.js";
+import { BASIS_LABELS, PRACTICES } from "/viral-practices.js";
+
 const STORAGE_POSTS = "viral_posts";
+const STORAGE_PLATFORM = "viral_platform";
+// How much of the box each platform really gives you, capped at what the API takes.
+const TEXT_LIMITS = { x: 280, instagram: 1000, tiktok: 1000, youtube: 100 };
 const STORAGE_PROFILE = "viral_profile";
 const MAX_STORED_POSTS = 50;
-const X_LIMIT = 280;
 const DEFAULT_FOLLOWERS = 1000;
 const AVATAR_PATTERN = /^https:\/\/(?:pbs|abs)\.twimg\.com\/[\w\-./]+$/u;
 const HANDLE_PATTERN = /^[A-Za-z0-9_]{1,15}$/u;
@@ -21,7 +26,7 @@ const b = (action, label, weight, probability, contribution) => ({ action, label
 // Real Jev output for two posts, so the feed isn't empty on a first visit.
 const EXAMPLES = [
   {
-    id: "example-banger", example: true, name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
+    id: "example-banger", example: true, platform: "x", name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
     text: "I quit my $400k job at Google to build a startup. 18 months later I am broke, divorced, and happier than I have ever been. Here is what nobody tells you:",
     viralScore: 63, verdict: "Banger", hook: 2.75, emotion: "awe",
     metrics: { views: 42508, likes: 563, replies: 229, reposts: 112, bookmarks: 141 },
@@ -33,7 +38,7 @@ const EXAMPLES = [
     tips: ["A lot of readers would tap \"not interested\". That signal weighs -74, about 150 likes' worth of damage each."],
   },
   {
-    id: "example-mid", example: true, name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
+    id: "example-mid", example: true, platform: "x", name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
     text: "good morning everyone have a nice day",
     viralScore: 15, verdict: "Mid", hook: 0, emotion: "nothing",
     metrics: { views: 215, likes: 0, replies: 0, reposts: 0, bookmarks: 0 },
@@ -85,7 +90,14 @@ const isPost = (post) => post && typeof post.text === "string" && typeof post.ve
   && Number.isFinite(post.viralScore) && post.metrics && Array.isArray(post.breakdown);
 
 let posts = load(STORAGE_POSTS, []);
-posts = Array.isArray(posts) ? posts.filter(isPost) : [];
+posts = (Array.isArray(posts) ? posts.filter(isPost) : []).map((post) => ({ ...post, platform: PLATFORMS[post.platform] ? post.platform : DEFAULT_PLATFORM }));
+
+const requestedPlatform = new URLSearchParams(location.search).get("p") || load(STORAGE_PLATFORM, DEFAULT_PLATFORM);
+let platformId = PLATFORMS[requestedPlatform] ? requestedPlatform : DEFAULT_PLATFORM;
+const platform = () => PLATFORMS[platformId];
+
+// The shared feed and leaderboard, when the site has a database behind it.
+let remote = { enabled: false, posts: [], leaderboard: [] };
 // Posts being simulated right now. They are never written to storage.
 let pending = [];
 
@@ -280,17 +292,49 @@ function renderPoll(container, post, revealed) {
 
 /* ---------------------------------------------------------------- posts */
 
-const METRICS = ["replies", "reposts", "likes", "views", "bookmarks"];
-// When each counter starts moving, as a fraction of the animation. Views lead,
-// the rest follow, the way a real post picks up.
-const METRIC_DELAY = { views: 0, likes: 0.08, replies: 0.16, reposts: 0.22, bookmarks: 0.3 };
+// Views lead and the rest follow, the way a real post picks up.
+function metricDelay(metric, index, metrics) {
+  if (metric.from === "views") return 0;
+  const others = metrics.filter((entry) => entry.from !== "views");
+  return 0.08 + 0.22 * (others.indexOf(metric) / Math.max(1, others.length - 1));
+}
+
+function icon(name) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+  use.setAttribute("href", `#i-${name}`);
+  svg.append(use);
+  return svg;
+}
+
+function buildMetrics(list, post) {
+  const metrics = PLATFORMS[post.platform].metrics;
+  list.replaceChildren(...metrics.map((metric) => {
+    const item = document.createElement("li");
+    item.className = `metric tone-${metric.tone || "accent"}`;
+    item.title = metric.label;
+    const value = document.createElement("span");
+    value.dataset.metric = metric.key;
+    value.textContent = "0";
+    item.append(icon(metric.icon), value);
+    return item;
+  }));
+  if (post.platform === "x") {
+    const share = document.createElement("li");
+    share.className = "metric tone-accent";
+    share.setAttribute("aria-hidden", "true");
+    share.append(icon("upload"));
+    list.append(share);
+  }
+}
 
 function easeOut(progress) {
   return 1 - (1 - progress) ** 3;
 }
 
-function metricAt(target, metric, progress) {
-  const delay = METRIC_DELAY[metric];
+function metricAt(target, delay, progress) {
   const local = Math.min(1, Math.max(0, (progress - delay) / (1 - delay)));
   return Math.round(target * easeOut(local));
 }
@@ -310,18 +354,19 @@ function spawnFloater(item, amount) {
   item.append(floater);
 }
 
-function animateMetrics(node, metrics) {
+function animateMetrics(node, post) {
+  const definitions = PLATFORMS[post.platform].metrics;
   return new Promise((resolve) => {
-    const cells = Object.fromEntries(METRICS.map((metric) => {
-      const value = node.querySelector(`[data-metric="${metric}"]`);
-      return [metric, { value, item: value.closest("li"), shown: 0, lastFloater: 0 }];
-    }));
+    const cells = definitions.map((metric, index) => {
+      const value = node.querySelector(`[data-metric="${metric.key}"]`);
+      return { metric, value, item: value.closest("li"), target: post.metrics[metric.key] || 0, delay: metricDelay(metric, index, definitions), shown: 0, lastFloater: 0 };
+    });
     // Browsers pause requestAnimationFrame in a background tab, which would leave
     // the post stuck mid-count, so a hidden page gets the final numbers at once.
     if (reducedMotion.matches || document.hidden) {
-      for (const metric of METRICS) {
-        cells[metric].value.textContent = compact(metrics[metric]);
-        cells[metric].item.classList.toggle("is-active", metrics[metric] > 0);
+      for (const cell of cells) {
+        cell.value.textContent = compact(cell.target);
+        cell.item.classList.toggle("is-active", cell.target > 0);
       }
       resolve();
       return;
@@ -330,15 +375,14 @@ function animateMetrics(node, metrics) {
     const started = performance.now();
     const tick = (now) => {
       const progress = Math.min(1, (now - started) / ANIMATION_MS);
-      for (const metric of METRICS) {
-        const cell = cells[metric];
-        const next = metricAt(metrics[metric], metric, progress);
+      for (const cell of cells) {
+        const next = metricAt(cell.target, cell.delay, progress);
         if (next === cell.shown) continue;
         const gained = next - cell.shown;
         cell.shown = next;
         cell.value.textContent = compact(next);
         cell.item.classList.add("is-active");
-        if (metric !== "views" && now - cell.lastFloater > 420) {
+        if (cell.metric.from !== "views" && now - cell.lastFloater > 420) {
           cell.lastFloater = now;
           pulse(cell.item);
           spawnFloater(cell.item, gained);
@@ -352,6 +396,8 @@ function animateMetrics(node, metrics) {
 
 function fillAnalysis(node, post) {
   const find = (selector) => node.querySelector(selector);
+  find("details").hidden = !Array.isArray(post.breakdown);
+  if (!Array.isArray(post.breakdown)) return;
   find("[data-score]").textContent = `${post.viralScore}/100`;
   find("[data-summary]").textContent = `Jev thinks ${EMOTIONS[post.emotion] || EMOTIONS.nothing}, with a hook of ${Number(post.hook).toFixed(1)} out of 3.`;
 
@@ -389,6 +435,7 @@ function renderPost(post) {
   find("[data-handle]").textContent = `@${post.handle || "anonymous"}`;
   find("[data-time]").textContent = timeAgo(post.createdAt);
   find("[data-text]").textContent = post.text;
+  buildMetrics(find("[data-metrics]"), post);
 
   if (post.mediaCount) getMedia(post.id).then((files) => renderMedia(find("[data-media]"), files));
 
@@ -411,22 +458,44 @@ function renderPost(post) {
 
   paintVerdict(verdict, post.verdict);
   renderPoll(find("[data-poll]"), post, true);
-  for (const metric of METRICS) {
-    const value = find(`[data-metric="${metric}"]`);
-    value.textContent = compact(post.metrics[metric]);
-    value.closest("li").classList.toggle("is-active", post.metrics[metric] > 0);
+  for (const { key } of PLATFORMS[post.platform].metrics) {
+    const value = find(`[data-metric="${key}"]`);
+    value.textContent = compact(post.metrics[key] || 0);
+    value.closest("li").classList.toggle("is-active", post.metrics[key] > 0);
   }
   fillAnalysis(node, post);
   return node;
 }
 
+// This browser's copy of a post wins over the shared one: it has the score
+// breakdown and knows where its attached media lives.
+function visiblePosts() {
+  const mine = posts.filter((post) => post.platform === platformId);
+  if (!remote.enabled) return mine;
+  const byId = new Map(mine.map((post) => [post.id, post]));
+  const shared = remote.posts.map((post) => byId.get(post.id) || post);
+  const unshared = mine.filter((post) => !remote.posts.some((entry) => entry.id === post.id));
+  return [...shared, ...unshared].sort((a, b2) => (b2.createdAt || 0) - (a.createdAt || 0));
+}
+
 function renderFeed() {
-  const visible = pending.length || posts.length ? [...pending, ...posts] : EXAMPLES;
+  const waiting = pending.filter((post) => post.platform === platformId);
+  const real = visiblePosts();
+  const samples = EXAMPLES.filter((post) => post.platform === platformId);
+  const visible = waiting.length || real.length ? [...waiting, ...real] : samples;
   feed.replaceChildren(...visible.map(renderPost));
+  feedEmpty.hidden = visible.length > 0;
+  feedEmpty.textContent = `Nothing simulated on ${platform().name} yet. Write the first one.`;
+  feedEnd.textContent = remote.enabled
+    ? "Simulated posts are shared on the public feed. Attached media stays in your browser."
+    : "Posts live only in this browser. Nothing is published anywhere.";
 }
 
 function renderLeaderboard() {
-  const ranked = [...(posts.length ? posts : EXAMPLES)].sort((a, b2) => b2.viralScore - a.viralScore).slice(0, 8);
+  const pool = remote.enabled ? remote.leaderboard : visiblePosts();
+  const candidates = pool.length ? pool : EXAMPLES.filter((post) => post.platform === platformId);
+  const ranked = [...candidates].sort((a, b2) => b2.viralScore - a.viralScore).slice(0, 8);
+  leaderboardEmpty.hidden = ranked.length > 0;
   leaderboard.replaceChildren(...ranked.map((post, index) => {
     const node = rankTemplate.content.firstElementChild.cloneNode(true);
     const find = (selector) => node.querySelector(selector);
@@ -439,6 +508,26 @@ function renderLeaderboard() {
     find("[data-views]").textContent = `${compact(post.metrics.views)} views`;
     return node;
   }));
+}
+
+let feedSequence = 0;
+async function refreshRemote() {
+  const sequence = ++feedSequence;
+  try {
+    const response = await fetch(`/api/viral/feed?platform=${encodeURIComponent(platformId)}`);
+    if (!response.ok) throw new Error("feed unavailable");
+    const body = await response.json();
+    if (sequence !== feedSequence) return;
+    const clean = (list) => (Array.isArray(list) ? list : []).filter((post) => post && typeof post.text === "string"
+      && typeof post.verdict === "string" && Number.isFinite(post.viralScore) && post.metrics && PLATFORMS[post.platform]);
+    remote = { enabled: Boolean(body.enabled), posts: clean(body.posts), leaderboard: clean(body.leaderboard) };
+  } catch {
+    if (sequence !== feedSequence) return;
+    remote = { enabled: false, posts: [], leaderboard: [] };
+  }
+  // Leave a post alone while its numbers are climbing.
+  if (!feed.querySelector(".is-live")) renderFeed();
+  renderLeaderboard();
 }
 
 /* ----------------------------------------------------------- simulation */
@@ -459,7 +548,17 @@ async function simulate(post) {
     const response = await fetch("/api/viral", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: post.text, followers: post.followers, attachments: post.attachments, poll: post.poll }),
+      body: JSON.stringify({
+        id: post.id,
+        platform: post.platform,
+        text: post.text,
+        extra: post.extra,
+        format: post.format,
+        followers: post.followers,
+        attachments: post.attachments,
+        poll: post.poll,
+        author: { handle: post.handle, name: post.name, avatarUrl: post.avatarUrl, verified: post.verified },
+      }),
     });
     result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.message || "Something went wrong. Try again.");
@@ -470,7 +569,7 @@ async function simulate(post) {
     return;
   }
 
-  const { remainingToday, ...scored } = result;
+  const { remainingToday, published, ...scored } = result;
   Object.assign(post, scored, { state: "done" });
   delete post.error;
   pending = pending.filter((entry) => entry.id !== post.id);
@@ -486,7 +585,7 @@ async function simulate(post) {
   }
   node.classList.remove("is-pending");
   node.classList.add("is-live");
-  await animateMetrics(node, post.metrics);
+  await animateMetrics(node, post);
 
   const verdict = node.querySelector("[data-verdict]");
   paintVerdict(verdict, post.verdict);
@@ -497,12 +596,13 @@ async function simulate(post) {
   node.querySelector("details").hidden = false;
   node.classList.remove("is-live");
   renderLeaderboard();
+  if (published) refreshRemote();
   showToast(`${post.verdict}: ${compact(post.metrics.views)} views. ${remainingToday} simulations left today.`);
 }
 
 /* ------------------------------------------------------------- profile */
 
-const ANONYMOUS = Object.freeze({ handle: "anonymous", name: "Anonymous", avatarUrl: null, verified: false, followers: DEFAULT_FOLLOWERS, followersKnown: false });
+const ANONYMOUS = Object.freeze({ handle: "anonymous", name: "Anonymous", avatarUrl: null, verified: false, followers: DEFAULT_FOLLOWERS, followersKnown: false, audiences: {} });
 
 function cleanProfile(value) {
   if (!value || typeof value.handle !== "string") return null;
@@ -515,7 +615,23 @@ function cleanProfile(value) {
     verified: Boolean(value.verified),
     followers: known ? followers : DEFAULT_FOLLOWERS,
     followersKnown: known,
+    audiences: cleanAudiences(value.audiences),
   };
+}
+
+// X's follower count says nothing about someone's Instagram. Other platforms
+// use a number the visitor gives, kept per platform.
+function cleanAudiences(value) {
+  const audiences = {};
+  for (const id of Object.keys(PLATFORMS)) {
+    const count = Math.floor(Number(value?.[id]));
+    if (id !== "x" && value?.[id] != null && Number.isFinite(count) && count >= 0) audiences[id] = Math.min(count, 500_000_000);
+  }
+  return audiences;
+}
+
+function followersFor(profile, id) {
+  return id === "x" ? profile.followers : profile.audiences?.[id] ?? DEFAULT_FOLLOWERS;
 }
 
 let me = cleanProfile(load(STORAGE_PROFILE, null));
@@ -533,6 +649,8 @@ const searchInput = document.querySelector("#onboarding-handle");
 const continueButton = document.querySelector("[data-onboarding-continue]");
 const previewHint = document.querySelector("[data-preview-hint]");
 const resultsList = document.querySelector("[data-results]");
+const audienceField = document.querySelector("[data-audience]");
+const audienceInput = document.querySelector("[data-audience-input]");
 
 let results = [];
 let selected = null;
@@ -545,7 +663,8 @@ function typedHandle() {
 }
 
 function syncContinue() {
-  continueButton.disabled = !selected && !typedHandle();
+  const audienceOnly = platformId !== "x" && audienceInput.value !== "" && Boolean(me);
+  continueButton.disabled = !selected && !typedHandle() && !audienceOnly;
 }
 
 function showHint(message) {
@@ -653,22 +772,31 @@ function openOnboarding() {
   syncContinue();
   showHint("Type a name or handle to search…");
   if (searchInput.value) search(searchInput.value);
+  audienceField.hidden = platformId === "x";
+  document.querySelector("[data-audience-platform]").textContent = platform().name;
+  audienceInput.value = me?.audiences?.[platformId] ?? "";
+  document.querySelector("[data-onboarding-lead]").textContent = platformId === "x"
+    ? "We'll grab your profile pic so your posts look like yours"
+    : `We'll use your X profile pic. Tell us your ${platform().name} audience below.`;
   onboarding.showModal();
 }
 
 onboardingForm.addEventListener("submit", (event) => {
+  const audiences = { ...(me?.audiences || {}) };
+  if (platformId !== "x" && audienceInput.value !== "") Object.assign(audiences, cleanAudiences({ [platformId]: audienceInput.value }));
   if (event.submitter?.value !== "continue") {
-    me = { ...ANONYMOUS };
+    me = { ...ANONYMOUS, audiences };
   } else {
     // Enter with a list showing and nothing picked takes the top result.
-    const choice = selected || (typedHandle() ? null : results[0]);
-    me = choice || cleanProfile({ handle: typedHandle() || ANONYMOUS.handle, name: typedHandle() });
+    const keepMe = !selected && !typedHandle() && !results.length && me ? me : null;
+    const choice = selected || keepMe || (typedHandle() ? null : results[0]);
+    me = { ...(choice || cleanProfile({ handle: typedHandle() || ANONYMOUS.handle, name: typedHandle() })), audiences };
     // Typeahead results carry no follower count; fetch it so reach is real.
     if (!me.followersKnown && me.handle !== ANONYMOUS.handle) {
       const handle = me.handle;
       fetchProfile(handle).then((profile) => {
         if (!profile || me?.handle !== handle) return;
-        me = profile;
+        me = { ...profile, audiences: me.audiences };
         save(STORAGE_PROFILE, me);
         renderMe();
       }).catch(() => {});
@@ -694,6 +822,12 @@ const fileMedia = document.querySelector("[data-file-media]");
 const fileGif = document.querySelector("[data-file-gif]");
 const mediaTools = [document.querySelector('[data-tool="media"]'), document.querySelector('[data-tool="gif"]')];
 const pollTool = document.querySelector('[data-tool="poll"]');
+const extraField = document.querySelector("[data-composer-extra]");
+const extraInput = document.querySelector("#composer-extra-text");
+const formatSelect = document.querySelector("[data-format]");
+const feedEmpty = document.querySelector("[data-feed-empty]");
+const feedEnd = document.querySelector("[data-feed-end]");
+const leaderboardEmpty = document.querySelector("[data-leaderboard-empty]");
 
 let attached = [];
 
@@ -703,9 +837,10 @@ function pollOptions() {
 
 function syncComposer() {
   const length = textarea.value.length;
-  counter.textContent = `${length} / ${X_LIMIT}`;
+  const limit = TEXT_LIMITS[platformId];
+  counter.textContent = `${length} / ${limit}`;
   counter.hidden = length === 0;
-  counter.classList.toggle("is-over", length > X_LIMIT);
+  counter.classList.toggle("is-over", length > limit);
   const pollReady = pollEditor.hidden || pollOptions().length >= 2;
   simulateButton.disabled = !textarea.value.trim() || !pollReady;
   // Grow with the text, like the box it imitates.
@@ -830,7 +965,10 @@ composer.addEventListener("submit", (event) => {
     handle: author.handle,
     avatarUrl: author.avatarUrl,
     verified: author.verified,
-    followers: author.followers,
+    followers: followersFor(author, platformId),
+    platform: platformId,
+    ...(extraInput.value.trim() && !extraField.hidden ? { extra: extraInput.value.trim() } : {}),
+    ...(formatSelect.hidden ? {} : { format: formatSelect.value }),
     createdAt: Date.now(),
     attachments: attached.map((file) => file.kind),
     mediaCount: attached.length,
@@ -844,6 +982,7 @@ composer.addEventListener("submit", (event) => {
   if (attached.length) putMedia(post.id, attached);
   pending = [post, ...pending];
   textarea.value = "";
+  extraInput.value = "";
   attached = [];
   pollEditor.hidden = true;
   for (const input of pollInputs) input.value = "";
@@ -883,8 +1022,135 @@ document.querySelector("[data-focus-composer]")?.addEventListener("click", () =>
   textarea.focus();
 });
 
+/* ------------------------------------------------------------ platforms */
+
+const switcher = document.querySelector("[data-switcher]");
+const switcherTrigger = document.querySelector("[data-switcher-trigger]");
+const platformOptions = [...document.querySelectorAll("[data-platform-option]")];
+
+function renderPractices(id) {
+  const { intro, items } = PRACTICES[id];
+  document.querySelector("[data-practices-name]").textContent = PLATFORMS[id].name;
+  document.querySelector("[data-practices-intro]").textContent = intro;
+  document.querySelector("[data-practices]").replaceChildren(...items.map((item) => {
+    const row = document.createElement("li");
+    row.className = "practice";
+    const title = document.createElement("p");
+    title.className = "practice-title";
+    title.textContent = item.title;
+    const basis = document.createElement("span");
+    basis.className = `basis basis-${item.basis}`;
+    basis.textContent = BASIS_LABELS[item.basis];
+    title.append(" ", basis);
+    const body = document.createElement("p");
+    body.className = "practice-body";
+    body.textContent = item.body;
+    row.append(title, body);
+    if (item.source) {
+      const link = document.createElement("a");
+      link.className = "practice-source";
+      link.href = item.source.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = `${item.source.label} ↗`;
+      row.append(link);
+    }
+    return row;
+  }));
+}
+
+function renderAbout() {
+  const current = platform();
+  document.querySelector("[data-about-platform]").textContent = current.name;
+  const note = document.querySelector("[data-about-weights]");
+  if (current.weightsArePublished) {
+    const link = document.createElement("a");
+    link.href = current.weightsSource.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = `${current.weightsSource.label} ↗`;
+    note.replaceChildren("Those estimates are scored with the weights X published in ", link, ":");
+  } else {
+    note.textContent = `${current.name} publishes no numbers. These weights are estimates of relative importance, ordered by what ${current.name} has said matters most. See the best practices for the sources.`;
+  }
+  document.querySelector("[data-weights]").replaceChildren(...Object.values(current.actions)
+    .sort((a, b2) => b2.weight - a.weight)
+    .map(({ label, weight }) => {
+      const row = document.createElement("div");
+      const term = document.createElement("dt");
+      term.textContent = label;
+      const value = document.createElement("dd");
+      value.textContent = `${weight > 0 ? "+" : "−"}${Math.abs(weight)}`;
+      if (weight < 0) value.className = "is-negative";
+      row.append(term, value);
+      return row;
+    }));
+}
+
+function setPlatform(id, { persist = true } = {}) {
+  platformId = PLATFORMS[id] ? id : DEFAULT_PLATFORM;
+  if (persist) save(STORAGE_PLATFORM, platformId);
+  document.documentElement.dataset.platform = platformId;
+  document.querySelector("[data-switcher-name]").textContent = platform().name;
+  for (const option of platformOptions) option.setAttribute("aria-pressed", String(option.dataset.platformOption === platformId));
+
+  const { placeholder, extra, formats } = platform().composer;
+  textarea.placeholder = placeholder;
+  textarea.maxLength = Math.min(1000, TEXT_LIMITS[platformId]);
+  extraField.hidden = !extra;
+  if (extra) {
+    document.querySelector("[data-extra-label]").textContent = extra.label;
+    extraInput.placeholder = extra.placeholder;
+  }
+  formatSelect.hidden = !formats;
+  formatSelect.replaceChildren(...(formats || []).map((format) => new Option(format, format)));
+  // Polls and GIFs are an X thing; the other three take photos and video.
+  pollTool.hidden = platformId !== "x";
+  mediaTools[1].hidden = platformId !== "x";
+  if (platformId !== "x" && !pollEditor.hidden) document.querySelector("[data-poll-remove]").click();
+
+  remote = { enabled: false, posts: [], leaderboard: [] };
+  renderPractices(platformId);
+  renderAbout();
+  renderFeed();
+  renderLeaderboard();
+  syncComposer();
+  refreshRemote();
+}
+
+// Hovering a platform previews its best practices; clicking switches to it.
+for (const option of platformOptions) {
+  option.addEventListener("mouseenter", () => renderPractices(option.dataset.platformOption));
+  option.addEventListener("focus", () => renderPractices(option.dataset.platformOption));
+  option.addEventListener("click", () => {
+    setPlatform(option.dataset.platformOption);
+    // Drop focus too, or :focus-within keeps the panel open after the choice.
+    option.blur();
+    closeSwitcher();
+  });
+}
+
+function closeSwitcher() {
+  switcher.classList.remove("is-open");
+  switcherTrigger.setAttribute("aria-expanded", "false");
+  renderPractices(platformId);
+}
+
+// The panel opens on hover through CSS. The button covers touch and keyboards.
+switcherTrigger.addEventListener("click", () => {
+  const open = !switcher.classList.contains("is-open");
+  switcher.classList.toggle("is-open", open);
+  switcherTrigger.setAttribute("aria-expanded", String(open));
+});
+switcher.addEventListener("mouseleave", () => renderPractices(platformId));
+document.addEventListener("click", (event) => {
+  if (!event.target.closest("[data-switcher]")) closeSwitcher();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeSwitcher();
+});
+audienceInput.addEventListener("input", syncContinue);
+
 renderMe();
-renderFeed();
-renderLeaderboard();
-syncComposer();
+setPlatform(platformId, { persist: false });
 if (!me) openOnboarding();

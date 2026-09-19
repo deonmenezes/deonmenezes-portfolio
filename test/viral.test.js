@@ -190,7 +190,8 @@ test("the /viral page respects its CSP and doesn't pose as X", async () => {
   assert.doesNotMatch(script, /innerHTML|\.style\./u);
   assert.doesNotMatch(html, /<title>[^<]*\/ X<\/title>/u);
   assert.ok(html.includes("Not affiliated with X"));
-  assert.ok(html.includes("github.com/twitter/the-algorithm-ml"));
+  const platforms = await readFile(new URL("../viral-platforms.js", import.meta.url), "utf8");
+  assert.ok(platforms.includes("github.com/twitter/the-algorithm-ml"), "the X weights link to their source");
   assert.doesNotMatch(html, /href="\/jev"|Free Jev API/u, "the simulator doesn't advertise the API");
   assert.match(script, /pending = \[post, \.\.\.pending\]/u, "the post goes on screen before Jev answers");
   assert.match(script, /prefers-reduced-motion/u);

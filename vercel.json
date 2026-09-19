@@ -52,6 +52,10 @@
       "destination": "/api/stats?route=viral-search"
     },
     {
+      "source": "/api/viral/feed",
+      "destination": "/api/stats?route=viral-feed"
+    },
+    {
       "source": "/api/viral",
       "destination": "/api/stats?route=viral"
     },
