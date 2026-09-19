@@ -7,6 +7,7 @@
 import { draftChecks } from "/viral-checks.js";
 import { DEFAULT_PLATFORM, PLATFORMS } from "/viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "/viral-practices.js";
+import { TRENDS_AS_OF, TRENDS_SCOPE, trendsFor } from "/viral-trends.js";
 
 const STORAGE_POSTS = "viral_posts";
 const STORAGE_PLATFORM = "viral_platform";
@@ -807,6 +808,35 @@ async function showIdeas(node, post) {
     button.disabled = false;
     button.textContent = "Ideas";
   }
+}
+
+/* --------------------------------------------------------------- trends */
+
+const TREND_BASIS = { measured: "Measured", reported: "Reported", inferred: "Our read" };
+const trendsCard = document.querySelector("[data-trends]");
+
+// The same dated list Jev is given. Shown so a low timeliness score has an answer.
+function renderTrends() {
+  const trends = trendsFor(platformId);
+  trendsCard.hidden = !trends;
+  if (!trends) return;
+  const asOf = new Date(`${TRENDS_AS_OF}T00:00:00Z`).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  trendsCard.querySelector("[data-trends-scope]").textContent = `In ${TRENDS_SCOPE}, as of ${asOf}. Jev is given this list with every ${platform().noun}, so it can tell what is new.`;
+  const items = (list) => list.map((entry) => {
+    const item = document.createElement("li");
+    item.textContent = typeof entry === "string" ? entry : entry.text;
+    if (entry.basis) {
+      const tag = document.createElement("span");
+      tag.className = `basis basis-${entry.basis === "measured" ? "official" : entry.basis === "reported" ? "reported" : "unconfirmed"}`;
+      tag.textContent = TREND_BASIS[entry.basis];
+      item.append(tag);
+    }
+    return item;
+  });
+  trendsCard.querySelector("[data-trends-topics]").replaceChildren(...items(trends.topics));
+  trendsCard.querySelector("[data-trends-formats]").replaceChildren(...items(trends.formats));
+  trendsCard.querySelector("[data-trends-gaps]").replaceChildren(...items(trends.gaps));
+  trendsCard.querySelector("[data-trends-source]").textContent = `Source: ${trends.source.label}.`;
 }
 
 /* -------------------------------------------------------------- history */
@@ -1671,6 +1701,7 @@ function renderAbout() {
   } else {
     note.textContent = `${current.name} publishes no numbers. These weights are estimates of relative importance, ordered by what ${current.name} has said matters most. See the best practices for the sources.`;
   }
+  document.querySelector("[data-about-check]").textContent = current.check || "";
   document.querySelector("[data-weights]").replaceChildren(...Object.values(current.actions)
     .sort((a, b2) => b2.weight - a.weight)
     .map(({ label, weight }) => {
@@ -1722,6 +1753,7 @@ function setPlatform(id, { persist = true } = {}) {
   renderAbout();
   renderFeed();
   renderLeaderboard();
+  renderTrends();
   renderHistory();
   syncComposer();
   refreshLive();

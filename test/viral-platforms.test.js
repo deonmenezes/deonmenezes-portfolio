@@ -5,6 +5,7 @@ import { createViralHandler, scorePost } from "../lib/viral.js";
 import { cleanAuthor, createViralFeedHandler, savePost } from "../lib/viral-store.js";
 import { PLATFORM_IDS, PLATFORMS, questionsFor } from "../viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "../viral-practices.js";
+import { TRENDS, TRENDS_AS_OF, TRENDS_MAX_AGE_DAYS, trendContext, trendsFor } from "../viral-trends.js";
 
 const saved = { gateway: process.env.AI_GATEWAY_API_KEY, secret: process.env.JEV_HASH_SECRET, mongo: process.env.MONGODB_URI };
 
@@ -87,13 +88,39 @@ test("other platforms describe the format and the hook to Jev and ask their own 
 
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.platform, "instagram");
-  assert.deepEqual(upstream.state, { platform: "Instagram", format: "Carousel", caption: "3 things I wish I knew", hook: "I open on the mistake", attachments: ["image", "image"] });
+  assert.deepEqual(upstream.state, { platform: "Instagram", format: "Carousel", caption: "3 things I wish I knew", hook: "I open on the mistake", attachments: ["image", "image"], ...trendContext("instagram") });
   assert.deepEqual(upstream.questions, questionsFor("instagram"));
   assert.ok("sends" in res.body.metrics && !("reposts" in res.body.metrics));
 
   const youtube = createViralHandler({ queryFn: async () => claimed(), fetchFn: async (_url, options) => { upstream = JSON.parse(options.body); return gateway(everyAction("youtube", 0.5)); } });
   await youtube(request({ platform: "youtube", text: "I built a robot", format: "Podcast" }), response());
-  assert.deepEqual(upstream.state, { platform: "YouTube", format: "Video", title: "I built a robot" }, "an unknown format falls back to the first");
+  assert.deepEqual(upstream.state, { platform: "YouTube", format: "Video", title: "I built a robot", ...trendContext("youtube") }, "an unknown format falls back to the first");
+});
+
+test("Jev is told what is new only while the list is fresh, and never for X", () => {
+  const asOf = Date.parse(`${TRENDS_AS_OF}T00:00:00Z`);
+  const day = 86_400_000;
+  const fresh = trendContext("youtube", asOf + 5 * day);
+  assert.equal(fresh.today, new Date(asOf + 5 * day).toISOString().slice(0, 10));
+  assert.deepEqual(fresh.trendingNow, TRENDS.youtube.topics);
+  assert.deepEqual(trendContext("youtube", asOf + (TRENDS_MAX_AGE_DAYS + 1) * day), {}, "a stale list is not sent");
+  assert.equal(trendsFor("tiktok", asOf + (TRENDS_MAX_AGE_DAYS + 1) * day), null, "and not shown");
+  assert.deepEqual(trendContext("x", asOf), {});
+  assert.deepEqual(trendContext("__proto__", asOf), {});
+  for (const [id, trends] of Object.entries(TRENDS)) {
+    assert.ok(trends.topics.length <= 16 && trends.topics.every((topic) => topic.length <= 90), `${id}: the list rides along with every request, so it stays short`);
+    assert.ok(trends.gaps.every((gap) => ["measured", "reported", "inferred"].includes(gap.basis)), `${id}: every gap says how we know`);
+    assert.ok(PLATFORMS[id].check, `${id}: says how it was checked`);
+  }
+});
+
+test("bigger accounts reach a smaller share of their followers where the data shows it", () => {
+  const flat = Object.fromEntries(Object.keys(PLATFORMS.instagram.actions).map((action) => [action, { probability: 0 }]));
+  const small = scorePost(flat, { platform: "instagram", followers: 3000 });
+  const large = scorePost(flat, { platform: "instagram", followers: 500_000 });
+  assert.ok(small.reach.followers / 3000 > 0.15 && small.reach.followers / 3000 <= 0.25);
+  assert.ok(large.reach.followers / 500_000 >= 0.04 && large.reach.followers / 500_000 < 0.06);
+  assert.equal(scorePost(flat, { platform: "instagram", followers: 0 }).metrics.views, 0);
 });
 
 test("an unknown platform is rejected before anything is spent", async () => {
