@@ -211,6 +211,22 @@ test("all twenty-four resources are deterministic static HTML pages at clean URL
   }
 });
 
+test("optional hero actions link the repository prominently, only where declared", async () => {
+  const ghost = await readFile(new URL("resources/ghost.html", root), "utf8");
+  assert.ok(
+    ghost.includes(
+      'class="button button-primary" href="https://github.com/Blueturboguy07/ghost-location"',
+    ),
+    "ghost: missing the primary GitHub repository button",
+  );
+
+  const blenderMcp = await readFile(
+    new URL("resources/blender-mcp.html", root),
+    "utf8",
+  );
+  assert.doesNotMatch(blenderMcp, /class="actions"/u);
+});
+
 test("TradingView resources accurately limit the MCP to analysis and replay practice", async () => {
   const tradingSlugs = [
     "claude-start-here",

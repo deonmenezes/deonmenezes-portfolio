@@ -175,6 +175,40 @@ h1 {
   line-height: 1.55;
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 2rem 0 0;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.9rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.button-primary {
+  background: var(--teal);
+  color: #fff;
+}
+
+.button-primary:hover {
+  background: var(--teal-dark);
+}
+
+.button-secondary {
+  border: 2px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+}
+
+.button-secondary:hover {
+  border-color: var(--teal);
+}
+
 .offer {
   max-width: 50rem;
   margin: 2.25rem 0 0;
@@ -365,6 +399,11 @@ footer a {
   .checklist,
   .sources {
     padding-inline: 1.2rem;
+  }
+
+  .actions .button {
+    flex: 1 1 100%;
+    text-align: center;
   }
 }
 
