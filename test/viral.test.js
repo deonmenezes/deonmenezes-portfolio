@@ -39,15 +39,15 @@ function response() {
 const p = (probability) => ({ type: "boolean", probability });
 
 // Recorded Jev output for two real posts.
-const BLAND = { like: p(0.18), reply: p(0.17), repost: p(0.11), profileClick: p(0.12), dwell: p(0.34), negative: p(0.12), report: p(0.03), hook: { type: "score", score: 0 }, emotion: { type: "choice", choice: "nothing" } };
-const STRONG = { like: p(0.47), reply: p(0.67), repost: p(0.42), profileClick: p(0.5), dwell: p(0.56), negative: p(0.39), report: p(0.1), hook: { type: "score", score: 2.75 }, emotion: { type: "choice", choice: "awe" } };
+const BLAND = { like: p(0.19), repost: p(0.12), reply: p(0.18), quote: p(0.16), shareLink: p(0.09), follow: p(0.06), negative: p(0.13), report: p(0.02), hook: { type: "score", score: 0 }, emotion: { type: "choice", choice: "nothing" } };
+const STRONG = { like: p(0.63), repost: p(0.56), reply: p(0.74), quote: p(0.71), shareLink: p(0.47), follow: p(0.37), negative: p(0.22), report: p(0.06), hook: { type: "score", score: 2.72 }, emotion: { type: "choice", choice: "awe" } };
 
 const gateway = (answers) => new Response(JSON.stringify({ answers, usage: { inputTokens: 620, outputTokens: 90 }, providerMetadata: { gateway: { cost: "0" } } }), { status: 200 });
 const claimed = (status = "ok", keyRequests = 0) => [{ status, key_requests: keyRequests, day: "2026-09-19" }];
 
-test("the action weights are the ones X published for its heavy ranker", () => {
+test("the action weights are the ones X publishes for its For You ranker", () => {
   const weights = Object.fromEntries(Object.entries(ACTIONS).map(([action, { weight }]) => [action, weight]));
-  assert.deepEqual(weights, { like: 0.5, repost: 1, reply: 13.5, profileClick: 12, dwell: 10, negative: -74, report: -369 });
+  assert.deepEqual(weights, { like: 0.5, repost: 1, reply: 5, quote: 5, shareLink: 20, follow: 4, negative: -43.2, report: -234 });
   assert.deepEqual(Object.keys(ACTIONS).sort(), Object.keys(QUESTIONS).filter((name) => QUESTIONS[name].type === "boolean").sort());
   assert.ok(Object.keys(QUESTIONS).length <= 10, "Jev requests are capped at 10 questions");
 });
@@ -56,7 +56,7 @@ test("scoring separates a bland post from a strong one", () => {
   const bland = scorePost(BLAND, { followers: 1000, textLength: 37 });
   const strong = scorePost(STRONG, { followers: 10_000, textLength: 150 });
 
-  assert.equal(bland.verdict, "Mid");
+  assert.equal(bland.verdict, "Flop");
   assert.equal(strong.verdict, "Banger");
   assert.ok(strong.viralScore > bland.viralScore + 30);
   assert.ok(strong.metrics.views > bland.metrics.views * 50);
@@ -69,7 +69,7 @@ test("negative signals sink an otherwise engaging post", () => {
   const spam = scorePost({ ...STRONG, negative: p(0.95), report: p(0.9) }, { followers: 10_000, textLength: 80 });
   assert.equal(spam.verdict, "Flop");
   assert.equal(spam.viralScore, 0);
-  assert.match(spam.tips[0], /-369/u);
+  assert.match(spam.tips[0], /-234/u);
 });
 
 test("scoring survives missing or junk model output", () => {
@@ -191,7 +191,7 @@ test("the /viral page respects its CSP and doesn't pose as X", async () => {
   assert.doesNotMatch(html, /<title>[^<]*\/ X<\/title>/u);
   assert.ok(html.includes("Not affiliated with X"));
   const platforms = await readFile(new URL("../viral-platforms.js", import.meta.url), "utf8");
-  assert.ok(platforms.includes("github.com/twitter/the-algorithm-ml"), "the X weights link to their source");
+  assert.ok(platforms.includes("github.com/xai-org/x-algorithm"), "the X weights link to their source");
   assert.doesNotMatch(html, /href="\/jev"|Free Jev API/u, "the simulator doesn't advertise the API");
   assert.match(script, /pending = \[post, \.\.\.pending\]/u, "the post goes on screen before Jev answers");
   assert.match(script, /prefers-reduced-motion/u);

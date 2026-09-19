@@ -38,24 +38,30 @@ export const PLATFORMS = {
     name: "X",
     noun: "post",
     weightsArePublished: true,
-    weightsSource: { label: "X's open-source ranking algorithm", url: "https://github.com/twitter/the-algorithm-ml/tree/main/projects/home/recap" },
+    weightsSource: { label: "X's open-source For You ranker", url: "https://github.com/xai-org/x-algorithm/blob/main/home-mixer/params/param.rs" },
     // Words the real app uses for the same places.
     chrome: { home: "Home", explore: "Explore", virality: "Virality", how: "How it works", profile: "Profile", post: "Post", foryou: "For you", following: "Following", handlePrefix: "@", showsName: true },
     composer: { placeholder: "Will you go viral?", button: "Simulate" },
+    // Weights from home-mixer/params/param.rs in xai-org/x-algorithm, the current For You
+    // ranker. Jev answers ten questions at most, so these are the eight signals that can
+    // move a text post furthest. Left out: DM share (5), share (2), click (0.4), open link
+    // (0.2), dwell (0.05), and profile click, which is now weighted 0.
     actions: {
       like: { weight: 0.5, ceiling: 0.06, label: "Like", ask: "Would a typical X (Twitter) user scrolling their feed tap like on this post?" },
-      repost: { weight: 1, ceiling: 0.015, label: "Repost", ask: "Would a typical X user repost or quote this post to their own followers?" },
-      reply: { weight: 13.5, ceiling: 0.012, label: "Reply", ask: "Would a typical X user feel compelled to reply to this post?", tip: { below: 0.35, text: "Give people something to answer. A reply is weighted 13.5, which is 27 likes." } },
-      profileClick: { weight: 12, ceiling: 0.02, label: "Profile click", ask: "Would a typical X user tap through to the author's profile after reading this post?", tip: { below: 0.25, text: "Nothing here makes a stranger curious about you. A profile click is weighted 12, so hint at who is talking." } },
-      dwell: { weight: 10, ceiling: 0.04, label: "Opens and stays 2+ min", ask: "Would a typical X user stop scrolling, open this post, and spend a couple of minutes on it and its replies?" },
-      negative: { weight: -74, ceiling: 0.004, label: "Not interested / mute / block", ask: 'Would a typical X user tap "not interested", mute, or block because of this post?', tip: { above: 0.3, text: "A lot of readers would tap \"not interested\". That signal weighs -74, about 150 likes' worth of damage each." } },
-      report: { weight: -369, ceiling: 0.0006, label: "Report", ask: "Does this post break platform rules such that users would report it (spam, harassment, hate, scams)?", tip: { above: 0.3, text: "This reads like spam or a rule break. A report carries a weight of -369, enough to bury a post on its own." } },
+      repost: { weight: 1, ceiling: 0.015, label: "Repost", ask: "Would a typical X user repost this post to their own followers?" },
+      reply: { weight: 5, ceiling: 0.012, label: "Reply", ask: "Would a typical X user feel compelled to reply to this post?", tip: { below: 0.35, text: "Give people something to answer. A reply is weighted 5, ten times a like, and 20 when you and the replier follow each other." } },
+      quote: { weight: 5, ceiling: 0.003, label: "Quote", ask: "Would a typical X user quote this post to add their own take on it?" },
+      shareLink: { weight: 20, ceiling: 0.004, label: "Copies the link to share", ask: "Would a typical X user copy the link to this post to share it somewhere else, like a group chat or another app?", tip: { below: 0.25, text: "Nobody would carry this off the timeline. Copying a post's link is the heaviest positive signal X publishes, at 20, so make something worth passing on." } },
+      follow: { weight: 4, ceiling: 0.003, label: "Follows you", ask: "Would a typical X user who doesn't follow the author follow them because of this post?", tip: { below: 0.2, text: "Nothing here makes a stranger want more from you. A follow is weighted 4, so show what you are about." } },
+      negative: { weight: -43.2, ceiling: 0.004, label: "Not interested / mute / block", ask: 'Would a typical X user tap "not interested", mute, or block because of this post?', tip: { above: 0.3, text: "A lot of readers would tap \"not interested\". That is weighted -43.2, and a mute -58.8." } },
+      report: { weight: -234, ceiling: 0.0006, label: "Report", ask: "Does this post break platform rules such that users would report it (spam, harassment, hate, scams)?", tip: { above: 0.3, text: "This reads like spam or a rule break. A report carries X's heaviest weight, -234." } },
     },
     hook: hook("How strong is the opening hook of this post?"),
     emotion: emotion("post"),
     hookTip: "The first line doesn't stop the scroll. Lead with the most surprising or specific thing you have.",
-    // Calibrated on real Jev output: "Hello" lands near 10, a strong hook in the 60s.
-    scoreFor100: 0.35,
+    // Calibrated on 9 labelled posts through live Jev with these weights: throwaway posts
+    // scored 0.000-0.002, a mild hot take 0.018, a solid thread opener 0.033, the best 0.068.
+    scoreFor100: 0.075,
     reach: { base: 0.1, boost: 4, discovery: 200_000 },
     metrics: [
       { key: "replies", label: "Replies", from: "reply", icon: "comment" },

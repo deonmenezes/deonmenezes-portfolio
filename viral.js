@@ -4,6 +4,7 @@
    in localStorage, attached media in IndexedDB. The page CSP forbids inline
    styles, so layout variants are classes and bars are <meter>/<progress>. */
 
+import { draftChecks } from "/viral-checks.js";
 import { DEFAULT_PLATFORM, PLATFORMS } from "/viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "/viral-practices.js";
 
@@ -36,29 +37,29 @@ const b = (action, label, weight, probability, contribution) => ({ action, label
 const EXAMPLES = [
   {
     id: "example-banger", example: true, platform: "x", name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
-    text: "I quit my $400k job at Google to build a startup. 18 months later I am broke, divorced, and happier than I have ever been. Here is what nobody tells you:",
-    viralScore: 63, verdict: "Banger", hook: 2.75, emotion: "awe",
-    metrics: { views: 42508, likes: 563, replies: 229, reposts: 112, bookmarks: 141 },
+    text: "A 19 year old just open-sourced a tool that does in 4 seconds what our team of 12 spent two years building. I read the code. It is 300 lines. Here is how it works:",
+    viralScore: 90, verdict: "Banger", hook: 2.72, emotion: "awe",
+    metrics: { views: 134236, likes: 3197, replies: 882, reposts: 631, bookmarks: 799 },
     breakdown: [
-      b("like", "Like", 0.5, 0.47, 0.00663), b("repost", "Repost", 1, 0.42, 0.00265), b("reply", "Reply", 13.5, 0.67, 0.07272),
-      b("profileClick", "Profile click", 12, 0.5, 0.06), b("dwell", "Opens and stays 2+ min", 10, 0.56, 0.12544),
-      b("negative", "Not interested / mute / block", -74, 0.39, -0.04502), b("report", "Report", -369, 0.1, -0.00221),
+      b("like", "Like", 0.5, 0.63, 0.01191), b("repost", "Repost", 1, 0.56, 0.0047), b("reply", "Reply", 5, 0.74, 0.03286),
+      b("quote", "Quote", 5, 0.71, 0.00756), b("shareLink", "Copies the link to share", 20, 0.47, 0.01767), b("follow", "Follows you", 4, 0.37, 0.00164),
+      b("negative", "Not interested / mute / block", -43.2, 0.22, -0.00836), b("report", "Report", -234, 0.06, -0.00051),
     ],
-    tips: ["A lot of readers would tap \"not interested\". That signal weighs -74, about 150 likes' worth of damage each."],
+    tips: [],
   },
   {
     id: "example-mid", example: true, platform: "x", name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
-    text: "good morning everyone have a nice day",
-    viralScore: 15, verdict: "Mid", hook: 0, emotion: "nothing",
-    metrics: { views: 215, likes: 0, replies: 0, reposts: 0, bookmarks: 0 },
+    text: "Hot take: tabs are better than spaces.",
+    viralScore: 24, verdict: "Mid", hook: 1.57, emotion: "relatable",
+    metrics: { views: 819, likes: 5, replies: 3, reposts: 1, bookmarks: 1 },
     breakdown: [
-      b("like", "Like", 0.5, 0.18, 0.00097), b("repost", "Repost", 1, 0.11, 0.00018), b("reply", "Reply", 13.5, 0.17, 0.00468),
-      b("profileClick", "Profile click", 12, 0.12, 0.00346), b("dwell", "Opens and stays 2+ min", 10, 0.34, 0.04624),
-      b("negative", "Not interested / mute / block", -74, 0.12, -0.00426), b("report", "Report", -369, 0.03, -0.0002),
+      b("like", "Like", 0.5, 0.32, 0.00307), b("repost", "Repost", 1, 0.25, 0.00094), b("reply", "Reply", 5, 0.52, 0.01622),
+      b("quote", "Quote", 5, 0.5, 0.00375), b("shareLink", "Copies the link to share", 20, 0.16, 0.00205), b("follow", "Follows you", 4, 0.1, 0.00012),
+      b("negative", "Not interested / mute / block", -43.2, 0.21, -0.00762), b("report", "Report", -234, 0.04, -0.00022),
     ],
     tips: [
-      "Give people something to answer. A reply is weighted 13.5, which is 27 likes.",
-      "The first line doesn't stop the scroll. Lead with the most surprising or specific thing you have.",
+      "Nobody would carry this off the timeline. Copying a post's link is the heaviest positive signal X publishes, at 20, so make something worth passing on.",
+      "Nothing here makes a stranger want more from you. A follow is weighted 4, so show what you are about.",
     ],
   },
 ];
@@ -487,6 +488,154 @@ function fillAnalysis(node, post) {
   }));
 }
 
+/* ------------------------------------------------- compare and save image */
+
+let compareFirst = null;
+const compareDialog = document.querySelector("[data-compare-dialog]");
+document.querySelector("[data-compare-close]").addEventListener("click", () => compareDialog.close());
+
+const percent = (probability) => `${Math.round(probability * 100)}%`;
+
+// Two scored posts, signal by signal. The better figure in each row is marked;
+// for signals that hurt, lower is better.
+function showComparison(first, second) {
+  const label = (post) => (post.text.length > 60 ? `${post.text.slice(0, 57)}…` : post.text);
+  compareDialog.querySelector("[data-compare-a]").textContent = label(first);
+  compareDialog.querySelector("[data-compare-b]").textContent = label(second);
+  const gap = Math.abs(first.viralScore - second.viralScore);
+  const leader = first.viralScore >= second.viralScore ? "first" : "second";
+  compareDialog.querySelector("[data-compare-winner]").textContent = gap < 5
+    ? "Too close to call. A gap under 5 points is small enough to be noise."
+    : `The ${leader} post wins by ${gap} points.`;
+
+  const rows = [
+    ["Viral score", first.viralScore, second.viralScore, String, true],
+    ["Views", first.metrics.views, second.metrics.views, compact, true],
+    ["Hook, out of 3", Number(first.hook) || 0, Number(second.hook) || 0, (value) => value.toFixed(1), true],
+  ];
+  const other = new Map(second.breakdown.map((item) => [item.action, item]));
+  for (const item of first.breakdown) {
+    const match = other.get(item.action);
+    if (match) rows.push([item.label, item.probability, match.probability, percent, item.weight > 0]);
+  }
+  compareDialog.querySelector("[data-compare-rows]").replaceChildren(...rows.map(([name, a, b2, format, higherWins]) => {
+    const row = document.createElement("tr");
+    const head = document.createElement("th");
+    head.scope = "row";
+    head.textContent = name;
+    const cells = [a, b2].map((value, index) => {
+      const cell = document.createElement("td");
+      cell.textContent = format(value);
+      const rival = index === 0 ? b2 : a;
+      if (value !== rival && (value > rival) === higherWins) cell.className = "is-better";
+      return cell;
+    });
+    row.append(head, ...cells);
+    return row;
+  }));
+  compareDialog.showModal();
+}
+
+function pickForCompare(post) {
+  if (compareFirst === post.id) {
+    compareFirst = null;
+  } else if (compareFirst) {
+    const first = feedPosts().find((entry) => entry.id === compareFirst);
+    compareFirst = null;
+    if (first) showComparison(first, post);
+  } else {
+    compareFirst = post.id;
+    showToast("Now pick a second post to compare it with.");
+  }
+  for (const button of feed.querySelectorAll("[data-compare]")) {
+    button.setAttribute("aria-pressed", String(button.closest(".post").dataset.postId === compareFirst));
+  }
+}
+
+function wrapLines(context, text, maxWidth, maxLines) {
+  const lines = [];
+  for (const paragraph of text.split("\n")) {
+    let line = "";
+    for (const word of paragraph.split(/\s+/u)) {
+      const next = line ? `${line} ${word}` : word;
+      if (context.measureText(next).width <= maxWidth || !line) line = next;
+      else {
+        lines.push(line);
+        line = word;
+      }
+    }
+    lines.push(line);
+  }
+  if (lines.length <= maxLines) return lines;
+  const kept = lines.slice(0, maxLines);
+  kept[maxLines - 1] = `${kept[maxLines - 1].replace(/.{0,3}$/u, "")}…`;
+  return kept;
+}
+
+const VERDICT_COLOURS = { Banger: "#00ba7c", Solid: "#1d9bf0", Mid: "#b7791f", Flop: "#f4212e" };
+
+// A picture of the result, drawn in the browser. It says "simulated" on its face
+// so it can't pass for a screenshot of real numbers.
+async function saveImage(post) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1200;
+  canvas.height = 675;
+  const context = canvas.getContext("2d");
+  const dark = post.platform === "tiktok";
+  const ink = dark ? "#ffffff" : "#0f1419";
+  const muted = dark ? "#9aa0a6" : "#536471";
+  const font = (weight, size) => `${weight} ${size}px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+  context.fillStyle = dark ? "#000000" : "#ffffff";
+  context.fillRect(0, 0, 1200, 675);
+
+  context.fillStyle = ink;
+  context.font = font(700, 30);
+  context.fillText(`${PLATFORMS[post.platform].chrome.handlePrefix || "@"}${post.handle || "anonymous"}`, 64, 92);
+  context.fillStyle = muted;
+  context.font = font(400, 26);
+  context.fillText(`on ${PLATFORMS[post.platform].name}`, 64, 130);
+
+  context.fillStyle = ink;
+  context.font = font(400, 40);
+  wrapLines(context, post.text, 1072, 6).forEach((line, index) => context.fillText(line, 64, 210 + index * 54));
+
+  context.fillStyle = VERDICT_COLOURS[post.verdict] || ink;
+  context.font = font(800, 64);
+  context.fillText(post.verdict, 64, 585);
+  const verdictWidth = context.measureText(post.verdict).width;
+  context.fillStyle = ink;
+  context.font = font(700, 40);
+  context.fillText(`${post.viralScore}/100`, 64 + verdictWidth + 24, 585);
+
+  context.fillStyle = muted;
+  context.font = font(400, 26);
+  const figures = PLATFORMS[post.platform].metrics.map((metric) => `${compact(post.metrics[metric.key] || 0)} ${metric.label.toLowerCase()}`).join("  ·  ");
+  context.fillText(figures, 64, 632);
+  context.textAlign = "right";
+  context.fillText("Simulated · Will It Go Viral?", 1136, 92);
+
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  if (!blob) return showToast("Couldn't make the image in this browser.");
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `will-it-go-viral-${post.verdict.toLowerCase()}-${post.viralScore}.png`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 10_000);
+  return showToast("Image saved.");
+}
+
+// Both tools need a finished score; comparing also needs the breakdown, which
+// only this browser's own posts and the samples carry.
+function armTools(node, post) {
+  const compare = node.querySelector("[data-compare]");
+  compare.hidden = !Array.isArray(post.breakdown);
+  compare.setAttribute("aria-pressed", String(compareFirst === post.id));
+  compare.onclick = () => pickForCompare(post);
+  const image = node.querySelector("[data-save-image]");
+  image.hidden = false;
+  image.onclick = () => saveImage(post);
+}
+
 function renderPost(post) {
   const node = template.content.firstElementChild.cloneNode(true);
   const find = (selector) => node.querySelector(selector);
@@ -533,6 +682,7 @@ function renderPost(post) {
     value.closest("li").classList.toggle("is-active", post.metrics[key] > 0);
   }
   fillAnalysis(node, post);
+  armTools(node, post);
   return node;
 }
 
@@ -702,6 +852,7 @@ async function simulate(post) {
   fillAnalysis(node, post);
   // Shown closed: the breakdown is there for whoever wants it, not pushed on them.
   node.querySelector("details").hidden = false;
+  armTools(node, post);
   node.classList.remove("is-live");
   renderLeaderboard();
   if (published) refreshLive();
@@ -983,6 +1134,7 @@ for (const trigger of document.querySelectorAll("[data-open-onboarding]")) trigg
 /* ------------------------------------------------------------ composer */
 
 const composerMedia = document.querySelector("[data-composer-media]");
+const checkList = document.querySelector("[data-checks]");
 const pollEditor = document.querySelector("[data-poll-editor]");
 const pollInputs = [...document.querySelectorAll("[data-poll-option]")];
 const emojiPop = document.querySelector("[data-emoji-pop]");
@@ -1016,6 +1168,14 @@ function syncComposer() {
   counter.classList.toggle("is-over", length > limit);
   const pollReady = pollEditor.hidden || pollOptions().length >= 2;
   simulateButton.disabled = !textarea.value.trim() || !pollReady;
+  const checks = draftChecks(platformId, textarea.value);
+  checkList.hidden = checks.length === 0;
+  checkList.replaceChildren(...checks.map((check) => {
+    const item = document.createElement("li");
+    item.textContent = check.text;
+    item.title = `Source: ${check.source}`;
+    return item;
+  }));
   // Grow with the text, like the box it imitates.
   textarea.rows = Math.min(12, Math.max(2, textarea.value.split("\n").length + Math.floor(length / 55)));
 

@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://deonmenezes.com/viral">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Will It Go Viral?">
-  <meta property="og:description" content="Simulate your post before you post it. Powered by Jev and the weights from X's open-source algorithm.">
+  <meta property="og:description" content="Simulate your post before you post it. Powered by Jev and the weights X publishes for its For You ranker.">
   <meta property="og:url" content="https://deonmenezes.com/viral">
   <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/viral.css">
@@ -146,6 +146,7 @@
               <button class="simulate" type="submit" data-simulate disabled>Simulate</button>
             </div>
             <p class="composer-status" role="status" aria-live="polite" data-status></p>
+            <ul class="draft-checks" aria-label="Draft checks" data-checks hidden></ul>
           </div>
         </form>
 
@@ -236,13 +237,17 @@
           <button type="button" data-discard>Discard</button>
         </p>
         <ul class="metrics" aria-label="Simulated engagement" data-metrics></ul>
-        <details class="why">
+        <div class="why">
+        <details class="why-details">
           <summary><span class="why-show">Advanced view</span><span class="why-hide">Hide advanced view</span></summary>
           <p class="why-score">Viral score <strong data-score></strong></p>
           <p class="why-line" data-summary></p>
           <div class="why-bars" data-bars></div>
           <ul class="why-tips" data-tips></ul>
         </details>
+        <button class="post-tool" type="button" aria-pressed="false" data-compare hidden>Compare</button>
+        <button class="post-tool" type="button" data-save-image hidden>Save image</button>
+        </div>
       </div>
     </article>
   </template>
@@ -269,6 +274,21 @@
       </p>
     </li>
   </template>
+
+  <dialog class="compare" aria-labelledby="compare-title" data-compare-dialog>
+    <header class="compare-head">
+      <h2 id="compare-title">Side by side</h2>
+      <button class="card-close" type="button" aria-label="Close" data-compare-close>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+    <p class="compare-winner" data-compare-winner></p>
+    <table class="compare-table">
+      <thead><tr><th scope="col">Signal</th><th scope="col" data-compare-a></th><th scope="col" data-compare-b></th></tr></thead>
+      <tbody data-compare-rows></tbody>
+    </table>
+    <p class="compare-note">Probabilities are Jev's estimate that a typical viewer would do each thing. Simulated, not a promise.</p>
+  </dialog>
 
   <div class="toast" role="status" aria-live="polite" data-toast hidden></div>
 

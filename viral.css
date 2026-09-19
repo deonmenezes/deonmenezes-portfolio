@@ -1240,9 +1240,134 @@ svg.verified {
 }
 
 .why {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
   margin-top: 8px;
   font-size: 13px;
 }
+
+/* Open, the breakdown takes the full width and the tools stay on the line above. */
+.why-details[open] {
+  order: 2;
+  flex-basis: 100%;
+}
+
+.post-tool {
+  padding: 4px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.post-tool:hover {
+  background: var(--press);
+  color: var(--ink);
+}
+
+.post-tool[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+[data-platform="instagram"] .post-tool { border-radius: 8px; }
+
+/* The first tip is the one to act on. */
+.why-tips li:first-child::before {
+  margin-right: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  content: "Fix first";
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.draft-checks {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0 4px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 17px;
+  list-style: none;
+}
+
+.draft-checks li {
+  position: relative;
+  padding-left: 14px;
+}
+
+.draft-checks li::before {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  content: "";
+}
+
+.compare {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  padding: 20px 24px 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 28%);
+}
+
+.compare::backdrop { background: rgb(0 0 0 / 40%); }
+
+.compare-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.compare-head h2 { margin: 0; font-size: 20px; font-weight: 800; }
+.compare-winner { margin: 8px 0 16px; }
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  vertical-align: top;
+}
+
+.compare-table th:first-child,
+.compare-table td:first-child { padding-left: 0; text-align: left; }
+
+.compare-table thead th {
+  width: 34%;
+  color: var(--muted);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.compare-table thead th:first-child { width: auto; }
+.compare-table .is-better { color: var(--green); font-weight: 700; }
+.compare-note { margin: 14px 0 0; color: var(--muted); font-size: 13px; }
 
 .why summary {
   display: inline-block;
@@ -1255,8 +1380,8 @@ svg.verified {
   list-style: none;
 }
 
-.why[open] .why-show,
-.why:not([open]) .why-hide {
+.why-details[open] .why-show,
+.why-details:not([open]) .why-hide {
   display: none;
 }
 
