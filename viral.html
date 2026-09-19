@@ -30,6 +30,8 @@
     <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.500v15l12-7.500z"/></symbol>
     <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7.500 10.500 11 4c1.500 0 2.500 1 2.500 2.500V9.500H18a2 2 0 0 1 2 2.300l-1 6A2 2 0 0 1 17 19.500H7.500zM7.500 10.500H4v9h3.500"/></symbol>
     <symbol id="i-userplus" viewBox="0 0 24 24"><path d="M10 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM3 20.500c.700-3.500 3.500-5.500 7-5.500 1.500 0 2.800.300 3.900 1M18 13v6M15 16h6"/></symbol>
+    <symbol id="i-muted" viewBox="0 0 24 24"><path d="M4 9.500v5h3.500l4.500 4v-13l-4.500 4zM16 9.500l5 5M21 9.500l-5 5"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.500v5h3.500l4.500 4v-13l-4.500 4zM15.500 9a4.500 4.500 0 0 1 0 6M18 6.500a8 8 0 0 1 0 11"/></symbol>
     <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m0 0L8 8m4-4 4 4M5 14v5.500h14V14"/></symbol>
   </svg>
 
@@ -107,8 +109,11 @@
             </fieldset>
             <div class="composer-foot">
               <div class="composer-tools">
-                <button class="tool" type="button" aria-label="Add photos or a video" title="Media" data-tool="media">
+                <button class="tool" type="button" aria-label="Add photos or a video" title="Photos" data-tool="media">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.500h16v13H4zM4 16l4.500-4.500 3.500 3.500 3-3 5 5M9 9.500h.010"/></svg>
+                </button>
+                <button class="tool" type="button" aria-label="Add a video" title="Video" data-tool="video">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.500 6.500h12v11h-12zM15.500 10.500l5-3v9l-5-3z"/></svg>
                 </button>
                 <button class="tool" type="button" aria-label="Add a GIF" title="GIF" data-tool="gif">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.500h16v13H4zM10 10.500H8a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h2v-1.500M12.500 10.500v3M15 13.500v-3h2.500M15 12h2"/></svg>
@@ -122,6 +127,7 @@
                 <div class="emoji-pop" data-emoji-pop hidden></div>
               </div>
               <input class="sr-only" type="file" accept="image/*,video/*" multiple tabindex="-1" aria-hidden="true" data-file-media>
+              <input class="sr-only" type="file" accept="video/*" tabindex="-1" aria-hidden="true" data-file-video>
               <input class="sr-only" type="file" accept="image/gif" tabindex="-1" aria-hidden="true" data-file-gif>
               <label class="sr-only" for="composer-format">Format</label>
               <select class="composer-format" id="composer-format" name="format" data-format hidden></select>

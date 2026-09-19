@@ -731,6 +731,46 @@ svg.verified {
   object-fit: contain;
 }
 
+/* A reel fills its frame and carries only a sound button. */
+.is-reel video {
+  cursor: pointer;
+}
+
+.media-sound {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(38 38 38 / 80%);
+  color: #fff;
+  cursor: pointer;
+}
+
+.media-sound svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+
+[data-platform="instagram"] .media-1:has(.is-reel) { aspect-ratio: 4 / 5; }
+[data-platform="tiktok"] .media-1:has(.is-reel) { aspect-ratio: 9 / 16; }
+[data-platform="youtube"] .media-1:has(.is-reel) { aspect-ratio: 16 / 9; }
+
+.media-1 .is-reel video {
+  max-height: none;
+  object-fit: cover;
+}
+
+[data-platform="youtube"] .media-1 .is-reel video {
+  object-fit: contain;
+}
+
 .media-tag {
   position: absolute;
   bottom: 8px;
@@ -2056,8 +2096,7 @@ svg.verified {
 /* Reels sit in the feed at 4:5; photos and carousels are square. */
 [data-platform="instagram"] .post-cover { aspect-ratio: 4 / 5; }
 [data-platform="instagram"] .post-cover.is-still { aspect-ratio: 1; }
-[data-platform="instagram"] .post .media-1 .media-cell img,
-[data-platform="instagram"] .post .media-1 .media-cell video { max-height: 585px; }
+[data-platform="instagram"] .post .media-1 .media-cell img { max-height: 585px; }
 [data-platform="instagram"] .cover-format { top: 12px; right: 12px; left: auto; border-radius: 999px; font-weight: 600; }
 
 [data-platform="instagram"] .post-name { font-weight: 600; font-size: 14px; }

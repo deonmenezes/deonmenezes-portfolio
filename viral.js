@@ -226,8 +226,27 @@ function mediaKind(file) {
   return file.type.startsWith("image/") ? "image" : null;
 }
 
+// Plays a reel only while most of it is on screen.
+const reelWatcher = "IntersectionObserver" in window
+  ? new IntersectionObserver((entries) => {
+    for (const { target, intersectionRatio } of entries) {
+      if (intersectionRatio < 0.6) target.pause();
+      else if (!document.hidden) target.play().catch(() => {});
+    }
+  }, { threshold: [0, 0.6] })
+  : null;
+
+// Coming back to the tab re-runs the check, since nothing starts while hidden.
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden || !reelWatcher) return;
+  for (const video of document.querySelectorAll(".is-reel video")) {
+    reelWatcher.unobserve(video);
+    reelWatcher.observe(video);
+  }
+});
+
 // `files` are { kind, blob }. Image object URLs are revoked once decoded.
-function renderMedia(container, files, { onRemove } = {}) {
+function renderMedia(container, files, { onRemove, reel = false } = {}) {
   container.replaceChildren();
   container.hidden = files.length === 0;
   container.className = `media-grid media-${Math.min(files.length, MAX_IMAGES)}`;
@@ -238,10 +257,32 @@ function renderMedia(container, files, { onRemove } = {}) {
     let element;
     if (file.kind === "video") {
       element = document.createElement("video");
-      element.controls = true;
       element.muted = true;
       element.playsInline = true;
       element.preload = "metadata";
+      // Off X a video behaves like a reel: it loops silently while on screen,
+      // a tap pauses it, and the corner button turns the sound on.
+      if (reel) {
+        element.loop = true;
+        cell.classList.add("is-reel");
+        element.addEventListener("click", () => (element.paused ? element.play().catch(() => {}) : element.pause()));
+        reelWatcher?.observe(element);
+        const sound = document.createElement("button");
+        sound.type = "button";
+        sound.className = "media-sound";
+        const paintSound = () => {
+          sound.setAttribute("aria-label", element.muted ? "Turn sound on" : "Turn sound off");
+          sound.replaceChildren(icon(element.muted ? "muted" : "sound"));
+        };
+        sound.addEventListener("click", () => {
+          element.muted = !element.muted;
+          paintSound();
+        });
+        paintSound();
+        cell.append(sound);
+      } else {
+        element.controls = true;
+      }
     } else {
       element = document.createElement("img");
       element.alt = "";
@@ -465,7 +506,7 @@ function renderPost(post) {
   find("[data-private]").hidden = !post.private;
   buildMetrics(find("[data-metrics]"), post);
 
-  if (post.mediaCount) getMedia(post.id).then((files) => renderMedia(find("[data-media]"), files));
+  if (post.mediaCount) getMedia(post.id).then((files) => renderMedia(find("[data-media]"), files, { reel: post.platform !== "x" }));
 
   const verdict = find("[data-verdict]");
   const details = find("details");
@@ -947,6 +988,8 @@ const pollInputs = [...document.querySelectorAll("[data-poll-option]")];
 const emojiPop = document.querySelector("[data-emoji-pop]");
 const emojiButton = document.querySelector('[data-tool="emoji"]');
 const fileMedia = document.querySelector("[data-file-media]");
+const fileVideo = document.querySelector("[data-file-video]");
+const videoTool = document.querySelector('[data-tool="video"]');
 const fileGif = document.querySelector("[data-file-gif]");
 const mediaTools = [document.querySelector('[data-tool="media"]'), document.querySelector('[data-tool="gif"]')];
 const pollTool = document.querySelector('[data-tool="poll"]');
@@ -979,11 +1022,13 @@ function syncComposer() {
   // Same rules as the real composer: a poll or media, not both; one video or GIF alone.
   const full = attached.length >= MAX_IMAGES || attached.some((file) => file.kind !== "image");
   for (const tool of mediaTools) tool.disabled = full || !pollEditor.hidden;
+  videoTool.disabled = attached.length > 0 || !pollEditor.hidden;
   pollTool.disabled = attached.length > 0;
 }
 
 function renderAttached() {
   renderMedia(composerMedia, attached, {
+    reel: platformId !== "x",
     onRemove: (index) => {
       attached = attached.filter((_, position) => position !== index);
       renderAttached();
@@ -1010,13 +1055,16 @@ function attach(fileList) {
     }
     attached.push({ kind, blob });
     setStatus("");
+    // A video is a Reel on Instagram and a Video elsewhere: the first format listed.
+    if (kind === "video" && !formatSelect.hidden) formatSelect.selectedIndex = 0;
   }
   renderAttached();
 }
 
 mediaTools[0].addEventListener("click", () => fileMedia.click());
 mediaTools[1].addEventListener("click", () => fileGif.click());
-for (const input of [fileMedia, fileGif]) {
+videoTool.addEventListener("click", () => fileVideo.click());
+for (const input of [fileMedia, fileGif, fileVideo]) {
   input.addEventListener("change", () => {
     attach(input.files);
     input.value = "";
