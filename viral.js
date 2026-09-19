@@ -1,11 +1,13 @@
-/* Will It Go Viral: composer, local feed, leaderboard.
-   Posts are stored only in this browser. The page CSP forbids inline styles,
-   so avatar colours are classes and bars are <meter> elements. */
+/* Will It Go Viral: handle onboarding, composer, local feed, leaderboard.
+   Posts and the chosen profile are stored only in this browser. The page CSP
+   forbids inline styles, so avatar colours are classes and bars are <meter>s. */
 
 const STORAGE_POSTS = "viral_posts";
 const STORAGE_PROFILE = "viral_profile";
 const MAX_STORED_POSTS = 50;
 const X_LIMIT = 280;
+const DEFAULT_FOLLOWERS = 1000;
+const AVATAR_PATTERN = /^https:\/\/(?:pbs|abs)\.twimg\.com\/[\w\-./]+$/u;
 
 const b = (action, label, weight, probability, contribution) => ({ action, label, weight, probability, contribution });
 
@@ -55,7 +57,6 @@ const leaderboard = document.querySelector("[data-leaderboard]");
 const leaderboardEmpty = document.querySelector("[data-leaderboard-empty]");
 const composerAvatar = document.querySelector("[data-composer-avatar]");
 const template = document.querySelector("#post-template");
-const profileInputs = { name: composer.elements.name, handle: composer.elements.handle, followers: composer.elements.followers };
 
 function load(key, fallback) {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
@@ -85,11 +86,23 @@ function timeAgo(timestamp) {
   return `${Math.floor(minutes / 1440)}d`;
 }
 
-function paintAvatar(node, name) {
+// Avatar URLs come from localStorage and the API, so only X's image hosts are
+// ever turned into an <img>; anything else falls back to an initial.
+function paintAvatar(node, name, avatarUrl) {
   const label = (name || "?").trim();
-  node.textContent = (label[0] || "?").toUpperCase();
+  const initial = (label[0] || "?").toUpperCase();
   const hue = [...label].reduce((sum, character) => sum + character.charCodeAt(0), 0) % 6;
   node.className = `avatar avatar-${hue}`;
+  if (typeof avatarUrl === "string" && AVATAR_PATTERN.test(avatarUrl)) {
+    const image = document.createElement("img");
+    image.src = avatarUrl;
+    image.alt = "";
+    image.referrerPolicy = "no-referrer";
+    image.addEventListener("error", () => node.replaceChildren(initial));
+    node.replaceChildren(image);
+  } else {
+    node.replaceChildren(initial);
+  }
 }
 
 function countUp(node, target) {
@@ -111,8 +124,9 @@ function renderPost(post, { animate = false } = {}) {
   const node = template.content.firstElementChild.cloneNode(true);
   const find = (selector) => node.querySelector(selector);
 
-  paintAvatar(find("[data-avatar]"), post.name);
+  paintAvatar(find("[data-avatar]"), post.name, post.avatarUrl);
   find("[data-name]").textContent = post.name || "Anonymous";
+  find("[data-verified]").toggleAttribute("hidden", !post.verified);
   find("[data-handle]").textContent = `@${post.handle || "anonymous"}`;
   find("[data-time]").textContent = timeAgo(post.createdAt);
   find("[data-text]").textContent = post.text;
@@ -188,26 +202,125 @@ function setStatus(message, isError = false) {
 
 /* ------------------------------------------------------------- profile */
 
-const profile = load(STORAGE_PROFILE, {});
-if (typeof profile.name === "string") profileInputs.name.value = profile.name;
-if (typeof profile.handle === "string") profileInputs.handle.value = profile.handle;
-if (profile.followers) profileInputs.followers.value = String(profile.followers);
+const ANONYMOUS = Object.freeze({ handle: "anonymous", name: "Anonymous", avatarUrl: null, verified: false, followers: DEFAULT_FOLLOWERS });
 
-function currentProfile() {
+function cleanProfile(value) {
+  if (!value || typeof value.handle !== "string") return null;
+  const followers = Number(value.followers);
   return {
-    name: profileInputs.name.value.trim().slice(0, 40),
-    handle: profileInputs.handle.value.replace(/[^A-Za-z0-9_]/gu, "").slice(0, 15),
-    followers: Number(profileInputs.followers.value) || 1000,
+    handle: value.handle.replace(/[^A-Za-z0-9_]/gu, "").slice(0, 15) || ANONYMOUS.handle,
+    name: String(value.name || value.handle).slice(0, 60),
+    avatarUrl: typeof value.avatarUrl === "string" && AVATAR_PATTERN.test(value.avatarUrl) ? value.avatarUrl : null,
+    verified: Boolean(value.verified),
+    followers: value.followers != null && Number.isFinite(followers) && followers >= 0 ? followers : DEFAULT_FOLLOWERS,
   };
 }
 
-function syncProfile() {
-  const next = currentProfile();
-  save(STORAGE_PROFILE, next);
-  paintAvatar(composerAvatar, next.name || next.handle);
+let me = cleanProfile(load(STORAGE_PROFILE, null));
+
+const meName = document.querySelector("[data-me-name]");
+const meHandle = document.querySelector("[data-me-handle]");
+const meFollowers = document.querySelector("[data-me-followers]");
+const meVerified = document.querySelector("[data-me-verified]");
+
+function renderMe() {
+  const profile = me || ANONYMOUS;
+  paintAvatar(composerAvatar, profile.name, profile.avatarUrl);
+  meName.textContent = profile.name;
+  meHandle.textContent = `@${profile.handle}`;
+  meFollowers.textContent = `· ${compact(profile.followers)} followers`;
+  meVerified.toggleAttribute("hidden", !profile.verified);
 }
 
-for (const input of Object.values(profileInputs)) input.addEventListener("input", syncProfile);
+/* ---------------------------------------------------------- onboarding */
+
+const onboarding = document.querySelector("[data-onboarding]");
+const onboardingForm = document.querySelector("[data-onboarding-form]");
+const handleInput = document.querySelector("#onboarding-handle");
+const continueButton = document.querySelector("[data-onboarding-continue]");
+const previewHint = document.querySelector("[data-preview-hint]");
+const previewProfile = document.querySelector("[data-preview-profile]");
+
+let previewed = null;
+let lookupTimer;
+let lookupSequence = 0;
+
+function showHint(message) {
+  previewed = null;
+  previewHint.textContent = message;
+  previewHint.hidden = false;
+  previewProfile.hidden = true;
+}
+
+function showPreview(profile) {
+  previewed = profile;
+  previewHint.hidden = true;
+  previewProfile.hidden = false;
+  paintAvatar(document.querySelector("[data-preview-avatar]"), profile.name, profile.avatarUrl);
+  document.querySelector("[data-preview-name]").textContent = profile.name;
+  document.querySelector("[data-preview-verified]").toggleAttribute("hidden", !profile.verified);
+  document.querySelector("[data-preview-meta]").textContent = `@${profile.handle} · ${compact(profile.followers)} followers`;
+}
+
+async function lookup(handle) {
+  const sequence = ++lookupSequence;
+  showHint(`Looking up @${handle}…`);
+  try {
+    const response = await fetch(`/api/viral/profile?handle=${encodeURIComponent(handle)}`);
+    if (sequence !== lookupSequence) return;
+    if (response.status === 404) {
+      showHint(`Couldn't find @${handle}. You can still continue with it.`);
+      return;
+    }
+    if (!response.ok) throw new Error("lookup failed");
+    const { profile } = await response.json();
+    if (sequence === lookupSequence) showPreview(cleanProfile(profile));
+  } catch {
+    if (sequence === lookupSequence) showHint("X isn't answering right now. You can still continue with this handle.");
+  }
+}
+
+handleInput.addEventListener("input", () => {
+  const handle = handleInput.value.replace(/[^A-Za-z0-9_]/gu, "").slice(0, 15);
+  if (handle !== handleInput.value) handleInput.value = handle;
+  clearTimeout(lookupTimer);
+  lookupSequence++;
+  continueButton.disabled = !handle;
+  if (!handle) {
+    showHint("Type a handle to preview…");
+    return;
+  }
+  showHint(`Looking up @${handle}…`);
+  lookupTimer = setTimeout(() => lookup(handle), 450);
+});
+
+function openOnboarding() {
+  handleInput.value = me && me.handle !== ANONYMOUS.handle ? me.handle : "";
+  continueButton.disabled = !handleInput.value;
+  showHint("Type a handle to preview…");
+  if (handleInput.value) lookup(handleInput.value);
+  onboarding.showModal();
+}
+
+onboardingForm.addEventListener("submit", (event) => {
+  const handle = handleInput.value;
+  if (event.submitter?.value === "continue" && handle) {
+    // Continuing before the lookup lands, or after it failed, keeps the handle
+    // and simulates with the default audience.
+    me = previewed && previewed.handle.toLowerCase() === handle.toLowerCase()
+      ? previewed
+      : cleanProfile({ handle, name: handle });
+  } else {
+    me = { ...ANONYMOUS };
+  }
+  save(STORAGE_PROFILE, me);
+  renderMe();
+});
+
+// Escape closes the dialog without saving a choice, so the question comes back
+// on the next visit; until then the composer posts as Anonymous.
+onboarding.addEventListener("close", () => textarea.focus());
+document.querySelector("[data-open-onboarding]").addEventListener("click", openOnboarding);
 
 /* ------------------------------------------------------------ composer */
 
@@ -223,7 +336,7 @@ composer.addEventListener("submit", async (event) => {
   event.preventDefault();
   const text = textarea.value.trim();
   if (!text) return;
-  const author = currentProfile();
+  const author = me || ANONYMOUS;
 
   simulateButton.disabled = true;
   setStatus("Jev is reading your post…");
@@ -241,6 +354,8 @@ composer.addEventListener("submit", async (event) => {
       text,
       name: author.name,
       handle: author.handle,
+      avatarUrl: author.avatarUrl,
+      verified: author.verified,
       createdAt: Date.now(),
       viralScore: result.viralScore,
       verdict: result.verdict,
@@ -265,6 +380,7 @@ composer.addEventListener("submit", async (event) => {
   }
 });
 
-syncProfile();
+renderMe();
 renderFeed();
 renderLeaderboard();
+if (!me) openOnboarding();
