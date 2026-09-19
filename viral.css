@@ -1772,6 +1772,62 @@ svg.verified {
   }
 }
 
+/* Shown only where the platform puts a username in front of the caption. */
+.caption-handle {
+  display: none;
+}
+
+/* Generated cover for a visual post with nothing attached. */
+.post-cover {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 24px;
+  color: #fff;
+  text-align: center;
+}
+
+.cover-0 { background: linear-gradient(135deg, #405de6, #833ab4); }
+.cover-1 { background: linear-gradient(135deg, #f09433, #dc2743); }
+.cover-2 { background: linear-gradient(135deg, #11998e, #38ef7d); }
+.cover-3 { background: linear-gradient(135deg, #232526, #414345); }
+.cover-4 { background: linear-gradient(135deg, #fe2c55, #25f4ee); }
+.cover-5 { background: linear-gradient(135deg, #c31432, #240b36); }
+
+.cover-format {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 55%);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* A faint play mark behind the text says "video"; photos don't get one. */
+.cover-play {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  opacity: 0.16;
+}
+
+.is-still .cover-play {
+  display: none;
+}
+
+.cover-text {
+  position: relative;
+  max-width: 90%;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 45%);
+  overflow-wrap: anywhere;
+}
+
 /* ------------------------------------------------------ platform accents */
 
 [data-platform="instagram"] .post > .avatar {
@@ -1809,4 +1865,244 @@ svg.verified {
     border-right: 0;
     border-bottom: 1px solid var(--line);
   }
+}
+
+/* =========================================================================
+   Native post layouts. The markup is shared; .post-body dissolves into the
+   post's own grid so each platform can put the same pieces where its app does.
+   ========================================================================= */
+
+[data-platform="instagram"] .post-body,
+[data-platform="tiktok"] .post-body,
+[data-platform="youtube"] .post-body {
+  display: contents;
+}
+
+[data-platform="instagram"] .post:hover,
+[data-platform="tiktok"] .post:hover,
+[data-platform="youtube"] .post:hover {
+  background: transparent;
+}
+
+/* ------------------------------------------------------------- Instagram */
+
+[data-platform="instagram"] .post {
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 0 10px;
+  align-items: center;
+  max-width: 470px;
+  margin: 0 auto;
+  padding: 12px 0 16px;
+}
+
+[data-platform="instagram"] .post > .avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 13px;
+}
+
+[data-platform="instagram"] .post-head { grid-column: 2; order: 1; }
+[data-platform="instagram"] .post-cover,
+[data-platform="instagram"] .post .media-grid { grid-column: 1 / -1; order: 2; margin-top: 12px; border-radius: 4px; }
+[data-platform="instagram"] .metrics { grid-column: 1 / -1; order: 3; }
+[data-platform="instagram"] .post-text { grid-column: 1 / -1; order: 4; margin-top: 8px; }
+[data-platform="instagram"] .poll,
+[data-platform="instagram"] .post-failed { grid-column: 1 / -1; order: 5; }
+[data-platform="instagram"] .why { grid-column: 1 / -1; order: 6; }
+
+[data-platform="instagram"] .post-cover { aspect-ratio: 1; }
+[data-platform="instagram"] .post-name { font-weight: 600; font-size: 14px; }
+[data-platform="instagram"] .post-handle { display: none; }
+[data-platform="instagram"] .post-head .post-dot:nth-of-type(1) { display: inline; }
+
+[data-platform="instagram"] .caption-handle {
+  display: inline;
+  margin-right: 5px;
+  font-weight: 600;
+}
+
+[data-platform="instagram"] .metrics {
+  justify-content: flex-start;
+  gap: 16px;
+  max-width: none;
+  margin-top: 12px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+[data-platform="instagram"] .metrics li { min-width: 0; gap: 6px; }
+[data-platform="instagram"] .metrics svg { width: 24px; height: 24px; stroke-width: 2; }
+/* Save sits alone on the right, as it does in the app. */
+[data-platform="instagram"] .metrics li:nth-child(4) { order: 9; margin-left: auto; }
+
+/* ---------------------------------------------------------------- TikTok */
+
+[data-platform="tiktok"] .post {
+  grid-template-columns: minmax(0, 336px) 48px;
+  gap: 0 16px;
+  justify-content: center;
+  align-items: end;
+  padding: 20px 16px 24px;
+}
+
+[data-platform="tiktok"] .post-cover,
+[data-platform="tiktok"] .post .media-grid {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  margin-top: 0;
+  border: 0;
+  border-radius: 16px;
+}
+
+[data-platform="tiktok"] .post-cover { aspect-ratio: 9 / 16; max-height: 600px; }
+[data-platform="tiktok"] .post .media-grid { aspect-ratio: 9 / 16; }
+
+/* The creator's avatar heads the action column. */
+[data-platform="tiktok"] .post > .avatar {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  box-shadow: 0 0 0 2px var(--bg);
+}
+
+[data-platform="tiktok"] .metrics {
+  grid-column: 2;
+  grid-row: 2;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+[data-platform="tiktok"] .metrics li {
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+[data-platform="tiktok"] .metrics svg {
+  box-sizing: content-box;
+  width: 24px;
+  height: 24px;
+  padding: 12px;
+  border-radius: 50%;
+  background: var(--press);
+  fill: currentcolor;
+  stroke: none;
+}
+
+[data-platform="tiktok"] .floater { bottom: auto; top: -4px; left: 50%; }
+[data-platform="tiktok"] .post-head { grid-column: 1 / -1; grid-row: 3; margin-top: 12px; }
+[data-platform="tiktok"] .post-text { grid-column: 1 / -1; grid-row: 4; }
+[data-platform="tiktok"] .poll,
+[data-platform="tiktok"] .post-failed { grid-column: 1 / -1; grid-row: 5; }
+[data-platform="tiktok"] .why { grid-column: 1 / -1; grid-row: 6; }
+[data-platform="tiktok"] .post-name { font-size: 17px; }
+
+/* --------------------------------------------------------------- YouTube */
+
+[data-platform="youtube"] .feed {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+  padding: 20px 16px 8px;
+}
+
+[data-platform="youtube"] .post {
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 0 12px;
+  align-content: start;
+  padding: 0;
+  border-bottom: 0;
+}
+
+[data-platform="youtube"] .post-cover,
+[data-platform="youtube"] .post .media-grid {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  margin: 0 0 12px;
+  border: 0;
+  border-radius: 12px;
+}
+
+[data-platform="youtube"] .post-cover { aspect-ratio: 16 / 9; }
+[data-platform="youtube"] .cover-text { font-size: 17px; }
+[data-platform="youtube"] .cover-format { top: auto; right: 8px; bottom: 8px; left: auto; }
+[data-platform="youtube"] .post > .avatar { grid-column: 1; grid-row: 2 / span 2; align-self: start; width: 36px; height: 36px; }
+
+/* The title is the headline; the channel line sits under it. */
+[data-platform="youtube"] .post-text {
+  display: -webkit-box;
+  overflow: hidden;
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+[data-platform="youtube"] .post-head { grid-column: 2; grid-row: 3; flex-wrap: wrap; margin-top: 4px; color: var(--muted); font-size: 14px; white-space: normal; }
+[data-platform="youtube"] .post-name { color: var(--muted); font-weight: 400; }
+[data-platform="youtube"] .post-handle,
+[data-platform="youtube"] .post-more { display: none; }
+[data-platform="youtube"] .verified { width: 14px; height: 14px; color: var(--muted); }
+
+[data-platform="youtube"] .metrics {
+  grid-column: 1 / -1;
+  grid-row: 4;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+  max-width: none;
+  margin-top: 12px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+[data-platform="youtube"] .metrics li {
+  min-width: 0;
+  padding: 6px 12px;
+  border-radius: 18px;
+  background: var(--press);
+}
+
+[data-platform="youtube"] .poll,
+[data-platform="youtube"] .post-failed,
+[data-platform="youtube"] .why { grid-column: 1 / -1; }
+
+/* YouTube's feed filter is a row of chips, not underlined tabs. */
+[data-platform="youtube"] .tabs {
+  gap: 12px;
+  align-items: center;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 0;
+}
+
+[data-platform="youtube"] .tab {
+  flex: none;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--press);
+  color: var(--ink);
+  font-size: 14px;
+}
+
+[data-platform="youtube"] .tab.is-active { background: var(--ink); color: var(--bg); }
+[data-platform="youtube"] .tab.is-active span::after { display: none; }
+
+@media (max-width: 700px) {
+  [data-platform="youtube"] .feed { grid-template-columns: minmax(0, 1fr); }
+  [data-platform="tiktok"] .post { grid-template-columns: minmax(0, 1fr) 48px; }
 }

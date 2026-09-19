@@ -59,28 +59,28 @@
         <svg class="solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
       </a>
       <a class="rail-link is-active" href="/viral">
-        <svg class="solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.500 2.500 10.500V21.500h7v-7h5v7h7V10.500z"/></svg><span>Home</span>
+        <svg class="solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.500 2.500 10.500V21.500h7v-7h5v7h7V10.500z"/></svg><span data-rail="home">Home</span>
       </a>
       <a class="rail-link" href="#leaderboard">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.500 4a6.500 6.500 0 1 0 0 13 6.500 6.500 0 0 0 0-13zM20 20l-4.800-4.800"/></svg><span>Explore</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.500 4a6.500 6.500 0 1 0 0 13 6.500 6.500 0 0 0 0-13zM20 20l-4.800-4.800"/></svg><span data-rail="explore">Explore</span>
       </a>
       <a class="rail-link" href="#leaderboard">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M10 20V4M15 20v-7M20 20V8"/></svg><span>Virality</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M10 20V4M15 20v-7M20 20V8"/></svg><span data-rail="virality">Virality</span>
       </a>
       <button class="rail-link" type="button" data-tab-jump="jev">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v6M12 7.500v.500"/></svg><span>How it works</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v6M12 7.500v.500"/></svg><span data-rail="how">How it works</span>
       </button>
       <button class="rail-link" type="button" data-open-onboarding>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.500 20.500c.800-3.800 3.800-5.500 7.500-5.500s6.700 1.700 7.500 5.500"/></svg><span>Profile</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.500 20.500c.800-3.800 3.800-5.500 7.500-5.500s6.700 1.700 7.500 5.500"/></svg><span data-rail="profile">Profile</span>
       </button>
-      <button class="rail-post" type="button" data-focus-composer>Post</button>
+      <button class="rail-post" type="button" data-focus-composer data-rail="post">Post</button>
     </nav>
 
     <main class="timeline" id="feed">
       <h1 class="sr-only">Will it go viral?</h1>
       <div class="tabs" role="tablist" aria-label="Timelines">
-        <button class="tab is-active" type="button" role="tab" aria-selected="true" data-tab="foryou"><span>For you</span></button>
-        <button class="tab" type="button" role="tab" aria-selected="false" data-tab="following"><span>Following</span></button>
+        <button class="tab is-active" type="button" role="tab" aria-selected="true" data-tab="foryou"><span data-tab-label="foryou">For you</span></button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-tab="following"><span data-tab-label="following">Following</span></button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="jev"><span>Jev</span></button>
       </div>
 
@@ -187,7 +187,7 @@
         <ul class="onboarding-results" id="onboarding-results" role="listbox" aria-label="Matching profiles" data-results hidden></ul>
       </div>
       <label class="onboarding-audience" data-audience hidden>
-        <span>Or enter your <span data-audience-platform>Instagram</span> followers yourself</span>
+        <span>Or enter your <span data-audience-platform>Instagram</span> <span data-audience-noun>followers</span> yourself</span>
         <input type="number" name="audience" min="0" max="500000000" step="1" inputmode="numeric" placeholder="1000" data-audience-input>
       </label>
       <button class="onboarding-continue" type="submit" value="continue" data-onboarding-continue disabled>Continue</button>
@@ -210,7 +210,12 @@
           <span class="post-private" data-private hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10.500h12v9.500H6zM8.500 10.500V8a3.500 3.500 0 0 1 7 0v2.500"/></svg>Only you</span>
           <svg class="post-more solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10.500a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3z"/></svg>
         </header>
-        <p class="post-text" data-text></p>
+        <p class="post-text"><span class="caption-handle" data-caption-handle></span><span data-text></span></p>
+        <div class="post-cover" data-cover hidden>
+          <span class="cover-format" data-cover-format></span>
+          <svg class="cover-play solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          <span class="cover-text" data-cover-text></span>
+        </div>
         <div class="media-grid" data-media hidden></div>
         <div class="poll" data-poll hidden></div>
         <p class="post-failed" data-failed hidden>

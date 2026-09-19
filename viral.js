@@ -268,6 +268,19 @@ function renderMedia(container, files, { onRemove } = {}) {
   });
 }
 
+// Instagram, TikTok, and YouTube posts are built around a picture. When nothing
+// is attached, a generated cover stands in: the format, and the hook or text.
+function paintCover(cover, post) {
+  const visual = post.platform !== "x" && !post.mediaCount;
+  cover.hidden = !visual;
+  if (!visual) return;
+  const format = post.format || PLATFORMS[post.platform].composer.formats?.[0] || "";
+  const still = /photo|carousel/iu.test(format);
+  cover.className = `post-cover cover-${hashText(post.text) % 6}${still ? " is-still" : ""}`;
+  cover.querySelector("[data-cover-format]").textContent = format;
+  cover.querySelector("[data-cover-text]").textContent = (post.extra || post.text).slice(0, 110);
+}
+
 function renderPoll(container, post, revealed) {
   const options = post.poll || [];
   container.hidden = options.length < 2;
@@ -438,12 +451,17 @@ function renderPost(post) {
   const find = (selector) => node.querySelector(selector);
   node.dataset.postId = post.id;
 
+  const { chrome } = PLATFORMS[post.platform];
+  const handle = post.handle || "anonymous";
   paintAvatar(find("[data-avatar]"), post.name, post.avatarUrl);
-  find("[data-name]").textContent = post.name || "Anonymous";
+  // Instagram and TikTok lead with the username; X and YouTube with the name.
+  find("[data-name]").textContent = chrome.showsName ? post.name || "Anonymous" : handle;
   find("[data-verified]").toggleAttribute("hidden", !post.verified);
-  find("[data-handle]").textContent = `@${post.handle || "anonymous"}`;
+  find("[data-handle]").textContent = chrome.showsName ? `${chrome.handlePrefix}${handle}` : post.name || "";
   find("[data-time]").textContent = timeAgo(post.createdAt);
   find("[data-text]").textContent = post.text;
+  find("[data-caption-handle]").textContent = handle;
+  paintCover(find("[data-cover]"), post);
   find("[data-private]").hidden = !post.private;
   buildMetrics(find("[data-metrics]"), post);
 
@@ -529,7 +547,7 @@ function renderLeaderboard() {
     find("[data-rank]").textContent = String(index + 1);
     find("[data-text]").textContent = post.text;
     paintAvatar(find("[data-avatar]"), post.name, post.avatarUrl);
-    find("[data-handle]").textContent = `@${post.handle || "anonymous"}`;
+    find("[data-handle]").textContent = `${PLATFORMS[post.platform].chrome.handlePrefix}${post.handle || "anonymous"}`;
     find("[data-time]").textContent = timeAgo(post.createdAt);
     paintVerdict(find("[data-verdict]"), post.verdict);
     find("[data-views]").textContent = `${compact(post.metrics.views)} views`;
@@ -882,6 +900,7 @@ function openOnboarding() {
   lookupButton.hidden = searchesByName();
   audienceField.hidden = searchesByName();
   document.querySelector("[data-audience-platform]").textContent = name;
+  document.querySelector("[data-audience-noun]").textContent = platformId === "youtube" ? "subscribers" : "followers";
   audienceInput.value = "";
   showHint(searchesByName() ? "Type a name or handle to search…" : `Type your ${name} handle.`);
   if (searchInput.value && searchesByName()) search(searchInput.value);
@@ -1228,6 +1247,11 @@ function setPlatform(id, { persist = true } = {}) {
   document.documentElement.dataset.platform = platformId;
   document.querySelector("[data-switcher-name]").textContent = platform().name;
   for (const option of platformOptions) option.setAttribute("aria-pressed", String(option.dataset.platformOption === platformId));
+
+  // The rail and tabs use each app's own words for the same places.
+  const { chrome } = platform();
+  for (const node of document.querySelectorAll("[data-rail]")) node.textContent = chrome[node.dataset.rail];
+  for (const node of document.querySelectorAll("[data-tab-label]")) node.textContent = chrome[node.dataset.tabLabel];
 
   const { placeholder, extra, formats } = platform().composer;
   textarea.placeholder = placeholder;

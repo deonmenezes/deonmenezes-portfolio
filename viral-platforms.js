@@ -39,6 +39,8 @@ export const PLATFORMS = {
     noun: "post",
     weightsArePublished: true,
     weightsSource: { label: "X's open-source ranking algorithm", url: "https://github.com/twitter/the-algorithm-ml/tree/main/projects/home/recap" },
+    // Words the real app uses for the same places.
+    chrome: { home: "Home", explore: "Explore", virality: "Virality", how: "How it works", profile: "Profile", post: "Post", foryou: "For you", following: "Following", handlePrefix: "@", showsName: true },
     composer: { placeholder: "Will you go viral?", button: "Simulate" },
     actions: {
       like: { weight: 0.5, ceiling: 0.06, label: "Like", ask: "Would a typical X (Twitter) user scrolling their feed tap like on this post?" },
@@ -68,6 +70,7 @@ export const PLATFORMS = {
     name: "Instagram",
     noun: "post",
     weightsArePublished: false,
+    chrome: { home: "Home", explore: "Explore", virality: "Reels", how: "Insights", profile: "Profile", post: "Create", foryou: "For you", following: "Following", handlePrefix: "", showsName: false },
     composer: {
       placeholder: "Write a caption…",
       button: "Simulate",
@@ -104,6 +107,7 @@ export const PLATFORMS = {
     name: "TikTok",
     noun: "video",
     weightsArePublished: false,
+    chrome: { home: "For You", explore: "Explore", virality: "Trending", how: "Insights", profile: "Profile", post: "Upload", foryou: "For You", following: "Following", handlePrefix: "", showsName: false },
     composer: {
       placeholder: "Describe your video…",
       button: "Simulate",
@@ -140,6 +144,7 @@ export const PLATFORMS = {
     name: "YouTube",
     noun: "video",
     weightsArePublished: false,
+    chrome: { home: "Home", explore: "Shorts", virality: "Trending", how: "Insights", profile: "You", post: "Create", foryou: "All", following: "Subscriptions", handlePrefix: "@", showsName: true },
     composer: {
       placeholder: "Your video title…",
       button: "Simulate",
