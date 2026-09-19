@@ -23,6 +23,7 @@ const PUBLIC_ROOT_PAGES = Object.freeze([
   "newsletter.html",
   "privacy.html",
   "resources.html",
+  "viral.html",
 ]);
 
 function countOccurrences(text, needle) {
@@ -440,7 +441,7 @@ test("Google Analytics loads once via first-party /ga.js on every public page, n
     ...(await htmlIn("services")),
     ...(await htmlIn("resources")),
   ];
-  assert.equal(publicPages.length, 7 + 1 + 8 + 24 + handWrittenResourcePages.length);
+  assert.equal(publicPages.length, 8 + 1 + 8 + 24 + handWrittenResourcePages.length);
 
   for (const page of publicPages) {
     const html = await readFile(new URL(page, root), "utf8");

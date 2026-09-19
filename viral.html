@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Will It Go Viral? · Deon X Jev</title>
+  <meta name="description" content="Write a post and simulate how it would do on X. Jev predicts every engagement, scored with the weights from X's open-source algorithm.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/viral">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Will It Go Viral?">
+  <meta property="og:description" content="Simulate your post before you post it. Powered by Jev and the weights from X's open-source algorithm.">
+  <meta property="og:url" content="https://deonmenezes.com/viral">
+  <meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="/viral.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
+  <script src="/ga.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#composer-text">Skip to the composer</a>
+  <div class="shell">
+    <nav class="rail" aria-label="Primary">
+      <a class="rail-brand" href="/viral" aria-label="Will It Go Viral home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
+      </a>
+      <a class="rail-link is-active" href="#feed">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/></svg><span>Home</span>
+      </a>
+      <a class="rail-link" href="#leaderboard">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10h4v10zm6 0V4h4v16zm6 0v-7h4v7z"/></svg><span>Bangers</span>
+      </a>
+      <a class="rail-link" href="#how">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2zm0-8h-2V7h2z"/></svg><span>How it works</span>
+      </a>
+      <a class="rail-link" href="/jev">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6 1.4-1.4L4.8 12l4.6-4.6zm8 0-1.4 1.4 4.6 4.6-4.6 4.6L16 18l6-6z"/></svg><span>Free Jev API</span>
+      </a>
+      <a class="rail-link" href="/deon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.4 0-8 2.2-8 5v3h16v-3c0-2.8-3.6-5-8-5z"/></svg><span>Deon Menezes</span>
+      </a>
+      <button class="rail-post" type="button" data-focus-composer>Post</button>
+    </nav>
+
+    <main class="timeline" id="feed">
+      <header class="timeline-head">
+        <h1>Will it go viral?</h1>
+        <p>Simulate your post before you post it.</p>
+      </header>
+
+      <form class="composer" data-composer>
+        <div class="avatar" data-composer-avatar aria-hidden="true">?</div>
+        <div class="composer-body">
+          <div class="composer-profile">
+            <label class="sr-only" for="profile-name">Display name</label>
+            <input id="profile-name" name="name" type="text" maxlength="40" placeholder="Your name" autocomplete="off">
+            <label class="sr-only" for="profile-handle">Handle</label>
+            <span class="composer-at">@<input id="profile-handle" name="handle" type="text" maxlength="15" placeholder="handle" autocomplete="off" pattern="[A-Za-z0-9_]*"></span>
+            <label class="sr-only" for="profile-followers">Your follower count</label>
+            <select id="profile-followers" name="followers">
+              <option value="100">100 followers</option>
+              <option value="1000" selected>1K followers</option>
+              <option value="10000">10K followers</option>
+              <option value="100000">100K followers</option>
+              <option value="1000000">1M followers</option>
+            </select>
+          </div>
+          <label class="sr-only" for="composer-text">Your post</label>
+          <textarea id="composer-text" name="text" rows="3" maxlength="1000" placeholder="Will you go viral?" required></textarea>
+          <div class="composer-foot">
+            <span class="composer-count" data-count>0 / 280</span>
+            <button class="simulate" type="submit" data-simulate>Simulate</button>
+          </div>
+          <p class="composer-status" role="status" aria-live="polite" data-status></p>
+        </div>
+      </form>
+
+      <div class="feed" data-feed aria-live="polite"></div>
+      <p class="feed-end">Posts live only in this browser. Nothing is published anywhere.</p>
+    </main>
+
+    <aside class="side">
+      <section class="panel" id="leaderboard" aria-labelledby="leaderboard-title">
+        <h2 id="leaderboard-title">Bangers leaderboard</h2>
+        <ol class="leaderboard" data-leaderboard></ol>
+        <p class="panel-empty" data-leaderboard-empty>Simulate a post to get on the board.</p>
+      </section>
+
+      <section class="panel" id="how" aria-labelledby="how-title">
+        <h2 id="how-title">How it works</h2>
+        <p><a href="/jev">Jev</a>, TypeSafe AI's decision model, reads your post and estimates how likely a typical reader is to like it, reply, repost, open your profile, stick around, hit "not interested", or report it.</p>
+        <p>Those estimates are scored with the weights X published in its <a href="https://github.com/twitter/the-algorithm-ml/tree/main/projects/home/recap" target="_blank" rel="noopener noreferrer">open-source ranking algorithm ↗</a>:</p>
+        <dl class="weights">
+          <div><dt>Reply</dt><dd>+13.5</dd></div>
+          <div><dt>Profile click</dt><dd>+12</dd></div>
+          <div><dt>Opens and stays 2+ min</dt><dd>+10</dd></div>
+          <div><dt>Repost</dt><dd>+1</dd></div>
+          <div><dt>Like</dt><dd>+0.5</dd></div>
+          <div><dt>Not interested / block</dt><dd class="is-negative">−74</dd></div>
+          <div><dt>Report</dt><dd class="is-negative">−369</dd></div>
+        </dl>
+        <p class="panel-note">The weights are real. The views and likes are a simulation for fun, not a promise. Not affiliated with X, TypeSafe AI, or Vercel.</p>
+      </section>
+    </aside>
+  </div>
+
+  <template id="post-template">
+    <article class="post">
+      <div class="avatar" data-avatar aria-hidden="true"></div>
+      <div class="post-body">
+        <header class="post-head">
+          <span class="post-name" data-name></span>
+          <span class="post-handle" data-handle></span>
+          <span class="post-dot" aria-hidden="true">·</span>
+          <time class="post-time" data-time></time>
+          <span class="badge" data-verdict></span>
+        </header>
+        <p class="post-text" data-text></p>
+        <ul class="metrics" aria-label="Simulated engagement">
+          <li title="Replies"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/></svg><span data-metric="replies">0</span></li>
+          <li title="Reposts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z"/></svg><span data-metric="reposts">0</span></li>
+          <li title="Likes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.300 2.700 4.500 6.300 4.500c2.100 0 3.700 1.200 5.700 3.300 2-2.100 3.600-3.300 5.700-3.300 3.600 0 5.400 3.800 3.900 7.200C19.500 16.400 12 21 12 21z"/></svg><span data-metric="likes">0</span></li>
+          <li title="Views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10h4v10zm6 0V4h4v16zm6 0v-7h4v7z"/></svg><span data-metric="views">0</span></li>
+          <li title="Bookmarks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg><span data-metric="bookmarks">0</span></li>
+        </ul>
+        <details class="why">
+          <summary>Why <span data-score></span></summary>
+          <p class="why-line" data-summary></p>
+          <div class="why-bars" data-bars></div>
+          <ul class="why-tips" data-tips></ul>
+        </details>
+      </div>
+    </article>
+  </template>
+
+  <script src="/viral.js" type="module"></script>
+</body>
+</html>

@@ -10,6 +10,7 @@ import backfillPreviewHandler from "../lib/backfill-preview.js";
 import backfillSendHandler from "../lib/backfill-send.js";
 import backfillCheckHandler from "../lib/backfill-check.js";
 import jevHandler, { jevKeyHandler } from "../lib/jev.js";
+import viralHandler from "../lib/viral.js";
 
 const FALLBACK = {
   mantishackStars: 363,
@@ -94,6 +95,7 @@ export default async function handler(req, res) {
   if (req.query?.route === "backfill-check") return backfillCheckHandler(req, res);
   if (req.query?.route === "jev") return jevHandler(req, res);
   if (req.query?.route === "jev-keys") return jevKeyHandler(req, res);
+  if (req.query?.route === "viral") return viralHandler(req, res);
 
   const keys = Object.keys(tasks);
   const settled = await Promise.allSettled(keys.map((k) => tasks[k]()));
