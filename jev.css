@@ -7,11 +7,15 @@
 }
 
 .jev-key {
-  background: var(--teal-pale);
+  background: var(--paper-2);
+}
+
+.jev-section h2 {
+  max-width: 24ch;
 }
 
 .jev-reference {
-  background: var(--wash);
+  background: var(--paper-2);
 }
 
 .jev-section h3 {
@@ -23,7 +27,7 @@
 .jev-lead {
   max-width: 52ch;
   margin: 1.1rem 0 1.75rem;
-  color: var(--muted);
+  color: var(--ink-soft);
 }
 
 code {
@@ -36,15 +40,15 @@ code {
 .jev-list code {
   padding: 0.1rem 0.35rem;
   border-radius: 0.35rem;
-  background: var(--teal-pale);
+  background: var(--card);
 }
 
 .jev-button {
   min-height: 3.25rem;
   padding: 0 1.5rem;
-  border: 1.5px solid var(--teal-dark);
+  border: 1.5px solid var(--ink);
   border-radius: 0.85rem;
-  background: var(--teal);
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
   font: inherit;
@@ -65,7 +69,7 @@ code {
 .jev-button:focus-visible,
 .jev-copy:focus-visible,
 .jev-form textarea:focus-visible {
-  outline: 3px solid var(--teal-dark);
+  outline: 3px solid var(--ink);
   outline-offset: 2px;
 }
 
@@ -77,9 +81,9 @@ code {
   max-width: 44rem;
   margin: 1.25rem 0 0;
   padding: 0.9rem 1rem;
-  border: 1.5px dashed var(--teal);
+  border: 1.5px dashed var(--accent);
   border-radius: 0.85rem;
-  background: var(--paper);
+  background: var(--card);
 }
 
 .jev-key-box[hidden],
@@ -97,7 +101,7 @@ code {
   padding: 0.4rem 0.9rem;
   border: 1.5px solid var(--line);
   border-radius: 999px;
-  background: var(--paper);
+  background: var(--card);
   color: var(--ink);
   cursor: pointer;
   font: inherit;
@@ -106,13 +110,13 @@ code {
 }
 
 .jev-copy:hover {
-  border-color: var(--teal);
+  border-color: var(--accent);
 }
 
 .jev-status {
   min-height: 1.4rem;
   margin: 0.75rem 0 0;
-  color: var(--teal-dark);
+  color: var(--ink);
   font-size: 0.9rem;
   font-weight: 700;
 }
@@ -139,7 +143,7 @@ code {
   padding: 0.85rem 1rem;
   border: 1.5px solid var(--line);
   border-radius: 0.85rem;
-  background: var(--paper);
+  background: var(--card);
   color: var(--ink);
   font: inherit;
   line-height: 1.5;
@@ -167,12 +171,12 @@ code {
   padding: 1.1rem 1.2rem;
   border: 1px solid var(--line);
   border-radius: 1rem;
-  background: var(--wash);
+  background: var(--paper-2);
 }
 
 .jev-answer-name {
   margin: 0;
-  color: var(--muted);
+  color: var(--ink-soft);
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.8rem;
 }
@@ -199,7 +203,7 @@ code {
 }
 
 .jev-figure {
-  color: var(--muted);
+  color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
 }
 
@@ -236,15 +240,15 @@ code {
 
 .jev-types dd {
   margin: 0.25rem 0 0;
-  color: var(--muted);
+  color: var(--ink-soft);
 }
 
 .jev-tip {
   max-width: 50rem;
   margin: 2rem 0 0;
   padding: 1rem 1.2rem;
-  border-left: 0.3rem solid var(--teal);
-  background: var(--paper);
+  border-left: 0.3rem solid var(--accent);
+  background: var(--card);
   font-weight: 650;
 }
 
@@ -253,7 +257,7 @@ code {
   gap: 0.85rem;
   max-width: 54rem;
   margin: 1.75rem 0 0;
-  color: var(--muted);
+  color: var(--ink-soft);
 }
 
 .jev-list strong {
