@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { createViralProfileHandler, parseFxProfile, parseProfile } from "../lib/viral-profile.js";
+import { cleanSearchQuery, createViralProfileHandler, createViralSearchHandler, parseFxProfile, parseFxSearch, parseProfile } from "../lib/viral-profile.js";
 import statsHandler from "../api/stats.js";
 
 function request({ handle, headers = {}, ...overrides } = {}) {
@@ -154,10 +154,87 @@ test("the profile route is wired through stats.js, the rewrite, and the page CSP
   const vercel = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
   assert.equal(vercel.rewrites.find((rule) => rule.source === "/api/viral/profile").destination, "/api/stats?route=viral-profile");
   const cspFor = (source) => vercel.headers.find((rule) => rule.source === source).headers.find((header) => header.key === "Content-Security-Policy").value;
-  assert.match(cspFor("/viral"), /img-src 'self' https:\/\/pbs\.twimg\.com https:\/\/abs\.twimg\.com/u);
+  assert.match(cspFor("/viral"), /img-src 'self' blob: https:\/\/pbs\.twimg\.com https:\/\/abs\.twimg\.com/u);
+  assert.match(cspFor("/viral"), /media-src blob:/u, "attached videos play from blob: URLs");
+  assert.equal(vercel.rewrites.find((rule) => rule.source === "/api/viral/search").destination, "/api/stats?route=viral-search");
   assert.doesNotMatch(cspFor("/jev"), /twimg/u, "only the viral page loads X avatars");
 
   const script = await readFile(new URL("../viral.js", import.meta.url), "utf8");
   assert.match(script, /AVATAR_PATTERN\.test\(avatarUrl\)/u, "the page must re-check avatar URLs read back from localStorage");
   assert.doesNotMatch(script, /innerHTML/u);
+});
+
+const person = (screen_name, name, followers, extra = {}) => ({
+  screen_name, name, followers,
+  avatar_url: `https://pbs.twimg.com/profile_images/1/${screen_name}_normal.jpg`,
+  verification: { verified: false },
+  ...extra,
+});
+
+test("people search returns several clickable candidates with real follower counts", () => {
+  const profiles = parseFxSearch({ results: [
+    person("DeonMen", "Deon Menezes", 1526, { verification: { verified: true } }),
+    person("deon_menezes", "Deon menezes", 4),
+    person("DeonMen", "Duplicate", 1),
+    person("bad handle!", "Broken", 9),
+  ] });
+  assert.deepEqual(profiles.map((profile) => profile.handle), ["DeonMen", "deon_menezes"]);
+  assert.equal(profiles[0].followers, 1526);
+  assert.equal(profiles[0].verified, true);
+  assert.match(profiles[0].avatarUrl, /_400x400\.jpg$/u);
+});
+
+test("typeahead results drop their follower counts, which are always zero", () => {
+  const profiles = parseFxSearch({ users: [person("elonmusk", "Elon Musk", 0)] });
+  assert.equal(profiles[0].followers, null);
+  assert.deepEqual(parseFxSearch({}), []);
+  assert.equal(parseFxSearch({ results: Array.from({ length: 30 }, (_, i) => person(`user_${i}`, "U", i)) }).length, 8);
+});
+
+test("search queries are cleaned before they reach the upstream URL", () => {
+  assert.equal(cleanSearchQuery("@Deon  <script>Menezes!!"), "Deon script Menezes");
+  assert.equal(cleanSearchQuery("Esra Elönü"), "Esra Elönü");
+  assert.equal(cleanSearchQuery("x".repeat(80)).length, 50);
+  assert.equal(cleanSearchQuery(undefined), "");
+});
+
+test("the search handler tries typeahead first, falls back to people search, and never caches empties", async () => {
+  const searchRequest = (q, headers = {}) => ({ method: "GET", query: { q }, headers: { "sec-fetch-site": "same-origin", ...headers } });
+  const fetched = [];
+  const handler = createViralSearchHandler({ fetchFn: async (url) => {
+    fetched.push(url);
+    return url.includes("/typeahead")
+      ? new Response("down", { status: 503 })
+      : new Response(JSON.stringify({ results: [person("DeonMen", "Deon Menezes", 1526)] }), { status: 200 });
+  } });
+
+  let res = response();
+  await handler(searchRequest("deon & menezes"), res);
+  assert.equal(res.statusCode, 200);
+  assert.deepEqual(fetched, [
+    "https://api.fxtwitter.com/2/typeahead?q=deon%20menezes",
+    "https://api.fxtwitter.com/2/search/users?q=deon%20menezes",
+  ]);
+  assert.equal(res.body.profiles[0].handle, "DeonMen");
+  assert.match(res.headers["Cache-Control"], /s-maxage=3600/u);
+
+  res = response();
+  await handler(searchRequest("d"), res);
+  assert.equal(res.statusCode, 400);
+
+  res = response();
+  await handler(searchRequest("deon", { "sec-fetch-site": "cross-site" }), res);
+  assert.equal(res.statusCode, 403);
+
+  const empty = createViralSearchHandler({ fetchFn: async () => new Response(JSON.stringify({ results: [] }), { status: 200 }) });
+  res = response();
+  await empty(searchRequest("zzzzqqqq"), res);
+  assert.equal(res.statusCode, 200);
+  assert.deepEqual(res.body, { profiles: [] });
+  assert.match(res.headers["Cache-Control"], /no-store/u);
+
+  const down = createViralSearchHandler({ fetchFn: async () => new Response("down", { status: 503 }) });
+  res = response();
+  await down(searchRequest("deon"), res);
+  assert.equal(res.statusCode, 502);
 });

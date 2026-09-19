@@ -104,6 +104,28 @@ test("a simulation meters the visitor's network, not a djev key, and sends only 
   assert.equal(queries[1].values[2], 620, "reconciles to the gateway's real token count");
 });
 
+test("attachments and polls are described to Jev, and junk is dropped", async () => {
+  let upstream;
+  const handler = createViralHandler({
+    queryFn: async () => claimed(),
+    fetchFn: async (_url, options) => { upstream = JSON.parse(options.body); return gateway(BLAND); },
+  });
+
+  await handler(request({
+    text: "which one?",
+    attachments: ["image", "video", "exe", 7, "gif", "image", "image"],
+    poll: ["  Tabs ", "Spaces", "", 42, "x".repeat(40)],
+  }), response());
+  assert.deepEqual(upstream.state, {
+    post: "which one?",
+    attachments: ["image", "video", "gif", "image"],
+    poll: ["Tabs", "Spaces", "x".repeat(25)],
+  });
+
+  await handler(request({ text: "solo", poll: ["only one"] }), response());
+  assert.deepEqual(upstream.state, { post: "solo" }, "a poll needs two options to count");
+});
+
 test("simulations are same-origin, non-empty, bounded, and rate limited", async () => {
   const never = { queryFn: async () => { throw new Error("db should not be called"); }, fetchFn: async () => { throw new Error("gateway should not be called"); } };
   const handler = createViralHandler(never);
@@ -169,6 +191,9 @@ test("the /viral page respects its CSP and doesn't pose as X", async () => {
   assert.doesNotMatch(html, /<title>[^<]*\/ X<\/title>/u);
   assert.ok(html.includes("Not affiliated with X"));
   assert.ok(html.includes("github.com/twitter/the-algorithm-ml"));
+  assert.doesNotMatch(html, /href="\/jev"|Free Jev API/u, "the simulator doesn't advertise the API");
+  assert.match(script, /pending = \[post, \.\.\.pending\]/u, "the post goes on screen before Jev answers");
+  assert.match(script, /prefers-reduced-motion/u);
   for (const verdict of ["banger", "solid", "mid", "flop"]) {
     assert.ok((await readFile(new URL("../viral.css", import.meta.url), "utf8")).includes(`.verdict-${verdict}`));
   }

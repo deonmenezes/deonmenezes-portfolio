@@ -35,9 +35,6 @@
       <button class="rail-link" type="button" data-tab-jump="jev">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v6M12 7.500v.500"/></svg><span>How it works</span>
       </button>
-      <a class="rail-link" href="/jev">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8.500 7-5 5 5 5M15.500 7l5 5-5 5"/></svg><span>Free Jev API</span>
-      </a>
       <button class="rail-link" type="button" data-open-onboarding>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.500 20.500c.800-3.800 3.800-5.500 7.500-5.500s6.700 1.700 7.500 5.500"/></svg><span>Profile</span>
       </button>
@@ -60,15 +57,33 @@
           <div class="composer-body">
             <label class="sr-only" for="composer-text">Your post</label>
             <textarea id="composer-text" name="text" rows="2" maxlength="1000" placeholder="Will you go viral?" required></textarea>
+            <div class="media-grid" data-composer-media hidden></div>
+            <fieldset class="poll-editor" data-poll-editor hidden>
+              <legend class="sr-only">Poll options</legend>
+              <input type="text" maxlength="25" placeholder="Choice 1" aria-label="Choice 1" data-poll-option>
+              <input type="text" maxlength="25" placeholder="Choice 2" aria-label="Choice 2" data-poll-option>
+              <input type="text" maxlength="25" placeholder="Choice 3 (optional)" aria-label="Choice 3" data-poll-option>
+              <input type="text" maxlength="25" placeholder="Choice 4 (optional)" aria-label="Choice 4" data-poll-option>
+              <button class="poll-remove" type="button" data-poll-remove>Remove poll</button>
+            </fieldset>
             <div class="composer-foot">
-              <div class="composer-tools" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M4 5.500h16v13H4zM4 16l4.500-4.500 3.500 3.500 3-3 5 5M9 9.500h.010"/></svg>
-                <svg viewBox="0 0 24 24"><path d="M4 5.500h16v13H4zM10 10.500H8a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h2v-1.500M12.500 10.500v3M15 13.500v-3h2.500M15 12h2"/></svg>
-                <svg viewBox="0 0 24 24"><path d="M6 19V9M12 19V5M18 19v-7"/></svg>
-                <svg viewBox="0 0 24 24"><path d="M12 3.500a8.500 8.500 0 1 0 0 17 8.500 8.500 0 0 0 0-17zM8.500 14a4 4 0 0 0 7 0M9 10h.010M15 10h.010"/></svg>
-                <svg viewBox="0 0 24 24"><path d="M5 6.500h14v13H5zM5 10.500h14M9 4v4M15 4v4"/></svg>
-                <svg viewBox="0 0 24 24"><path d="M12 21s-6-5.200-6-10a6 6 0 1 1 12 0c0 4.800-6 10-6 10zM12 9a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+              <div class="composer-tools">
+                <button class="tool" type="button" aria-label="Add photos or a video" title="Media" data-tool="media">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.500h16v13H4zM4 16l4.500-4.500 3.500 3.500 3-3 5 5M9 9.500h.010"/></svg>
+                </button>
+                <button class="tool" type="button" aria-label="Add a GIF" title="GIF" data-tool="gif">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.500h16v13H4zM10 10.500H8a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h2v-1.500M12.500 10.500v3M15 13.500v-3h2.500M15 12h2"/></svg>
+                </button>
+                <button class="tool" type="button" aria-label="Add a poll" title="Poll" data-tool="poll">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19V9M12 19V5M18 19v-7"/></svg>
+                </button>
+                <button class="tool" type="button" aria-label="Add an emoji" title="Emoji" aria-expanded="false" data-tool="emoji">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.500a8.500 8.500 0 1 0 0 17 8.500 8.500 0 0 0 0-17zM8.500 14a4 4 0 0 0 7 0M9 10h.010M15 10h.010"/></svg>
+                </button>
+                <div class="emoji-pop" data-emoji-pop hidden></div>
               </div>
+              <input class="sr-only" type="file" accept="image/*,video/*" multiple tabindex="-1" aria-hidden="true" data-file-media>
+              <input class="sr-only" type="file" accept="image/gif" tabindex="-1" aria-hidden="true" data-file-gif>
               <span class="composer-count" data-count hidden>0 / 280</span>
               <button class="simulate" type="submit" data-simulate disabled>Simulate</button>
             </div>
@@ -87,7 +102,7 @@
 
       <section class="about" id="how" data-panel="jev" hidden>
         <h2>How it works</h2>
-        <p><a href="/jev">Jev</a>, TypeSafe AI's decision model, reads your post and estimates how likely a typical reader is to like it, reply, repost, open your profile, stick around, hit "not interested", or report it.</p>
+        <p>Jev, TypeSafe AI's decision model, reads your post and estimates how likely a typical reader is to like it, reply, repost, open your profile, stick around, hit "not interested", or report it.</p>
         <p>Those estimates are scored with the weights X published in its <a href="https://github.com/twitter/the-algorithm-ml/tree/main/projects/home/recap" target="_blank" rel="noopener noreferrer">open-source ranking algorithm ↗</a>:</p>
         <dl class="weights">
           <div><dt>Reply</dt><dd>+13.5</dd></div>
@@ -112,7 +127,7 @@
         </header>
         <ol class="leaderboard" data-leaderboard></ol>
       </section>
-      <p class="side-foot">A fan-made simulator by <a href="/deon">Deon Menezes</a>. Built with <a href="/jev">Jev</a>. Not affiliated with X.</p>
+      <p class="side-foot">A fan-made simulator by <a href="/deon">Deon Menezes</a>. Not affiliated with X.</p>
     </aside>
   </div>
 
@@ -123,17 +138,11 @@
       <p class="onboarding-lead">We'll grab your profile pic so your posts look like yours</p>
       <label class="onboarding-field" for="onboarding-handle">
         <span aria-hidden="true">@</span>
-        <input id="onboarding-handle" name="handle" type="text" maxlength="16" placeholder="handle" autocomplete="off" autocapitalize="none" spellcheck="false">
+        <input id="onboarding-handle" name="handle" type="text" maxlength="50" placeholder="name or handle" role="combobox" aria-expanded="false" aria-controls="onboarding-results" autocomplete="off" autocapitalize="none" spellcheck="false">
       </label>
-      <div class="onboarding-preview" data-preview aria-live="polite">
-        <p class="onboarding-hint" data-preview-hint>Type a handle to preview…</p>
-        <div class="onboarding-profile" data-preview-profile hidden>
-          <div class="avatar" data-preview-avatar aria-hidden="true"></div>
-          <div>
-            <p class="onboarding-name"><span data-preview-name></span><svg class="verified" viewBox="0 0 24 24" data-preview-verified hidden><title>Verified</title><path d="m12 1.500 2.600 2.100 3.300-.300.900 3.200 2.900 1.700-1.300 3.100 1.300 3.100-2.900 1.700-.900 3.200-3.300-.300L12 22.500l-2.600-2.100-3.300.300-.900-3.200-2.900-1.700L3.600 12.700 2.300 9.600l2.900-1.700.900-3.200 3.300.300zm-1.200 14.300 5.600-6.300-1.500-1.300-4.200 4.800-2-1.900-1.400 1.400z"/></svg></p>
-            <p class="onboarding-meta" data-preview-meta></p>
-          </div>
-        </div>
+      <div class="onboarding-preview" data-preview>
+        <p class="onboarding-hint" role="status" data-preview-hint>Type a name or handle to search…</p>
+        <ul class="onboarding-results" id="onboarding-results" role="listbox" aria-label="Matching profiles" data-results hidden></ul>
       </div>
       <button class="onboarding-continue" type="submit" value="continue" data-onboarding-continue disabled>Continue</button>
       <button class="onboarding-skip" type="submit" value="skip">Skip — post anonymously</button>
@@ -155,6 +164,13 @@
           <svg class="post-more solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10.500a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3z"/></svg>
         </header>
         <p class="post-text" data-text></p>
+        <div class="media-grid" data-media hidden></div>
+        <div class="poll" data-poll hidden></div>
+        <p class="post-failed" data-failed hidden>
+          <span data-failed-message></span>
+          <button type="button" data-retry>Retry</button>
+          <button type="button" data-discard>Discard</button>
+        </p>
         <ul class="metrics" aria-label="Simulated engagement">
           <li class="metric-reply" title="Replies"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.500a7.500 7.500 0 0 1 7.500-7.500h1a7.500 7.500 0 0 1 3.400 14.200L12 20.500V19h-.500A7.500 7.500 0 0 1 4 11.500z"/></svg><span data-metric="replies">0</span></li>
           <li class="metric-repost" title="Reposts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.500 8 7.500 5l3 3M7.500 5v10a2 2 0 0 0 2 2H13M19.500 16l-3 3-3-3M16.500 19V9a2 2 0 0 0-2-2H11"/></svg><span data-metric="reposts">0</span></li>
@@ -173,6 +189,18 @@
     </article>
   </template>
 
+  <template id="result-template">
+    <li role="presentation">
+      <button class="result" type="button" role="option" aria-selected="false">
+        <span class="avatar" data-avatar aria-hidden="true"></span>
+        <span class="result-text">
+          <span class="result-name"><span data-name></span><svg class="verified" viewBox="0 0 24 24" data-verified hidden><title>Verified</title><path d="m12 1.500 2.600 2.100 3.300-.300.900 3.200 2.900 1.700-1.300 3.100 1.300 3.100-2.900 1.700-.900 3.200-3.300-.300L12 22.500l-2.600-2.100-3.300.300-.900-3.200-2.900-1.700L3.600 12.700 2.300 9.600l2.900-1.700.900-3.200 3.300.300zm-1.200 14.300 5.600-6.300-1.500-1.300-4.200 4.800-2-1.900-1.400 1.400z"/></svg></span>
+          <span class="result-meta" data-meta></span>
+        </span>
+      </button>
+    </li>
+  </template>
+
   <template id="leaderboard-template">
     <li class="rank">
       <p class="rank-label"><span data-rank></span> · Trending</p>
@@ -183,6 +211,8 @@
       </p>
     </li>
   </template>
+
+  <div class="toast" role="status" aria-live="polite" data-toast hidden></div>
 
   <script src="/viral.js" type="module"></script>
 </body>

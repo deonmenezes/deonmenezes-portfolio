@@ -48,6 +48,10 @@
       "destination": "/api/stats?route=viral-profile"
     },
     {
+      "source": "/api/viral/search",
+      "destination": "/api/stats?route=viral-search"
+    },
+    {
       "source": "/api/viral",
       "destination": "/api/stats?route=viral"
     },
@@ -183,7 +187,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'none'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' https://pbs.twimg.com https://abs.twimg.com https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
+          "value": "default-src 'none'; base-uri 'none'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.google.com; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: https://pbs.twimg.com https://abs.twimg.com https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; media-src blob:; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'"
         },
         {
           "key": "Cross-Origin-Opener-Policy",
