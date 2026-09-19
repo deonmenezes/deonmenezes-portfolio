@@ -126,7 +126,7 @@ test("posts are published only when storage is on, the author is well formed, an
       },
     });
     const res = response();
-    await handler(request({ id: "1789820000000-abc123", platform, text: "a perfectly fine post", author, ...body }), res);
+    await handler(request({ id: "1789820000000-abc123", platform, text: "a perfectly fine post", author, publish: true, ...body }), res);
     return { saves, calls, res };
   };
 
@@ -153,6 +153,14 @@ test("posts are published only when storage is on, the author is well formed, an
 
   result = await run({ enabled: true, body: { author: { handle: "not a handle!" } } });
   assert.equal(result.saves.length, 0);
+
+  for (const publish of [false, undefined, "true", 1]) {
+    result = await run({ enabled: true, platform: "tiktok", body: { publish } });
+    assert.equal(result.saves.length, 0, `publish=${publish} is private`);
+    assert.equal(result.res.body.published, false);
+    assert.equal(result.calls.length, 1, "a private post is not even sent for the moderation check");
+    assert.equal(result.res.statusCode, 200, "and is still scored");
+  }
 });
 
 test("authors are reduced to safe fields", () => {

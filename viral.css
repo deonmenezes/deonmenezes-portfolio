@@ -872,6 +872,80 @@ svg.verified {
   color: var(--red);
 }
 
+.visibility {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.visibility:hover {
+  background: var(--accent-soft);
+}
+
+.visibility svg {
+  width: 16px;
+  height: 16px;
+}
+
+.visibility[aria-pressed="true"] {
+  color: var(--muted);
+}
+
+.visibility[aria-pressed="true"] .visibility-public,
+.visibility[aria-pressed="false"] .visibility-private {
+  display: none;
+}
+
+.new-posts {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.new-posts:hover {
+  background: var(--hover);
+}
+
+.post-private {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.post-private::before {
+  margin-right: 4px;
+  content: "·";
+}
+
+.post-private svg {
+  width: 14px;
+  height: 14px;
+}
+
+.post.is-new {
+  animation: arrive 0.5s ease-out;
+}
+
+@keyframes arrive {
+  from { background: var(--accent-soft); opacity: 0; transform: translateY(-8px); }
+  to { background: transparent; opacity: 1; transform: none; }
+}
+
 .simulate {
   min-height: 36px;
   padding: 0 16px;
@@ -1115,6 +1189,7 @@ svg.verified {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .post.is-new,
   .is-pulsing svg,
   .floater,
   .verdict.is-revealed,

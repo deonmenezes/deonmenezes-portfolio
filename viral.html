@@ -126,12 +126,18 @@
               <label class="sr-only" for="composer-format">Format</label>
               <select class="composer-format" id="composer-format" name="format" data-format hidden></select>
               <span class="composer-count" data-count hidden>0 / 280</span>
+              <button class="visibility" type="button" aria-pressed="false" data-visibility>
+                <svg class="visibility-public" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.500 2.500 3.800 5.500 3.800 9s-1.300 6.500-3.800 9c-2.500-2.500-3.800-5.500-3.800-9S9.500 5.500 12 3z"/></svg>
+                <svg class="visibility-private" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10.500h12v9.500H6zM8.500 10.500V8a3.500 3.500 0 0 1 7 0v2.500"/></svg>
+                <span data-visibility-label>Public</span>
+              </button>
               <button class="simulate" type="submit" data-simulate disabled>Simulate</button>
             </div>
             <p class="composer-status" role="status" aria-live="polite" data-status></p>
           </div>
         </form>
 
+        <button class="new-posts" type="button" data-new-posts hidden></button>
         <div class="feed" data-feed aria-live="polite"></div>
         <p class="feed-empty" data-feed-empty hidden></p>
         <p class="feed-end" data-feed-end>Posts live only in this browser. Nothing is published anywhere.</p>
@@ -201,6 +207,7 @@
           <time class="post-time" data-time></time>
           <span class="post-dot" aria-hidden="true">·</span>
           <span class="verdict" data-verdict></span>
+          <span class="post-private" data-private hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10.500h12v9.500H6zM8.500 10.500V8a3.500 3.500 0 0 1 7 0v2.500"/></svg>Only you</span>
           <svg class="post-more solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10.500a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3z"/></svg>
         </header>
         <p class="post-text" data-text></p>

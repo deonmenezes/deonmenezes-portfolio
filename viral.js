@@ -9,6 +9,8 @@ import { BASIS_LABELS, PRACTICES } from "/viral-practices.js";
 
 const STORAGE_POSTS = "viral_posts";
 const STORAGE_PLATFORM = "viral_platform";
+const STORAGE_PRIVATE = "viral_private";
+const FEED_POLL_MS = 6000;
 // How much of the box each platform really gives you, capped at what the API takes.
 const TEXT_LIMITS = { x: 280, instagram: 1000, tiktok: 1000, youtube: 100 };
 const STORAGE_PROFILE = "viral_profile";
@@ -442,6 +444,7 @@ function renderPost(post) {
   find("[data-handle]").textContent = `@${post.handle || "anonymous"}`;
   find("[data-time]").textContent = timeAgo(post.createdAt);
   find("[data-text]").textContent = post.text;
+  find("[data-private]").hidden = !post.private;
   buildMetrics(find("[data-metrics]"), post);
 
   if (post.mediaCount) getMedia(post.id).then((files) => renderMedia(find("[data-media]"), files));
@@ -485,16 +488,33 @@ function visiblePosts() {
   return [...shared, ...unshared].sort((a, b2) => (b2.createdAt || 0) - (a.createdAt || 0));
 }
 
-function renderFeed() {
+// Ids already shown, so a live update can tell what just arrived.
+let shownIds = new Set();
+
+// What the feed should show right now: posts being simulated, then real posts,
+// or the samples when there is nothing else.
+function feedPosts() {
   const waiting = pending.filter((post) => post.platform === platformId);
   const real = visiblePosts();
-  const samples = EXAMPLES.filter((post) => post.platform === platformId);
-  const visible = waiting.length || real.length ? [...waiting, ...real] : samples;
-  feed.replaceChildren(...visible.map(renderPost));
+  return waiting.length || real.length ? [...waiting, ...real] : EXAMPLES.filter((post) => post.platform === platformId);
+}
+
+function renderFeed({ announce = false } = {}) {
+  const visible = feedPosts();
+  // A live refresh must not slam shut a breakdown someone is reading.
+  const open = new Set([...feed.querySelectorAll("details[open]")].map((details) => details.closest(".post").dataset.postId));
+  feed.replaceChildren(...visible.map((post) => {
+    const node = renderPost(post);
+    if (open.has(post.id)) node.querySelector("details").open = true;
+    if (announce && !shownIds.has(post.id)) node.classList.add("is-new");
+    return node;
+  }));
+  shownIds = new Set(visible.map((post) => post.id));
+  newPostsButton.hidden = true;
   feedEmpty.hidden = visible.length > 0;
   feedEmpty.textContent = `Nothing simulated on ${platform().name} yet. Write the first one.`;
   feedEnd.textContent = remote.enabled
-    ? "Simulated posts are shared on the public feed. Attached media stays in your browser."
+    ? "Public posts join the shared feed for everyone, live. Private ones and all attached media stay in your browser."
     : "Posts live only in this browser. Nothing is published anywhere.";
 }
 
@@ -532,10 +552,31 @@ async function refreshRemote() {
     if (sequence !== feedSequence) return;
     remote = { enabled: false, posts: [], leaderboard: [] };
   }
-  // Leave a post alone while its numbers are climbing.
-  if (!feed.querySelector(".is-live")) renderFeed();
   renderLeaderboard();
+  const next = feedPosts();
+  const arrived = next.filter((post) => !shownIds.has(post.id)).length;
+  const changed = arrived > 0 || next.length !== shownIds.size;
+  // Leave a post alone while its numbers are climbing.
+  if (!changed || feed.querySelector(".is-live")) return;
+  if (!live || scrollY < 300) {
+    renderFeed({ announce: live });
+  } else if (arrived > 0) {
+    newPostsButton.textContent = `Show ${arrived} ${arrived === 1 ? "post" : "posts"}`;
+    newPostsButton.hidden = false;
+  }
 }
+
+// `live` is false for the first load of a platform, so its posts don't all
+// animate in as if they had just been written.
+let live = false;
+const refreshLive = () => refreshRemote().then(() => { live = true; });
+
+setInterval(() => {
+  if (!document.hidden && remote.enabled && !onboarding.open) refreshLive();
+}, FEED_POLL_MS);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && remote.enabled) refreshLive();
+});
 
 /* ----------------------------------------------------------- simulation */
 
@@ -564,7 +605,8 @@ async function simulate(post) {
         followers: post.followers,
         attachments: post.attachments,
         poll: post.poll,
-        author: { handle: post.handle, name: post.name, avatarUrl: post.avatarUrl, verified: post.verified },
+        publish: !post.private,
+        ...(post.private ? {} : { author: { handle: post.handle, name: post.name, avatarUrl: post.avatarUrl, verified: post.verified } }),
       }),
     });
     result = await response.json().catch(() => ({}));
@@ -603,8 +645,8 @@ async function simulate(post) {
   node.querySelector("details").hidden = false;
   node.classList.remove("is-live");
   renderLeaderboard();
-  if (published) refreshRemote();
-  showToast(`${post.verdict}: ${compact(post.metrics.views)} views. ${remainingToday} simulations left today.`);
+  if (published) refreshLive();
+  showToast(post.private ? `${post.verdict}: ${compact(post.metrics.views)} views. Private, only you can see it.` : `${post.verdict}: ${compact(post.metrics.views)} views. ${remainingToday} simulations left today.`);
 }
 
 /* ------------------------------------------------------------- profile */
@@ -892,6 +934,8 @@ const pollTool = document.querySelector('[data-tool="poll"]');
 const extraField = document.querySelector("[data-composer-extra]");
 const extraInput = document.querySelector("#composer-extra-text");
 const formatSelect = document.querySelector("[data-format]");
+const visibilityButton = document.querySelector("[data-visibility]");
+const newPostsButton = document.querySelector("[data-new-posts]");
 const feedEmpty = document.querySelector("[data-feed-empty]");
 const feedEnd = document.querySelector("[data-feed-end]");
 const leaderboardEmpty = document.querySelector("[data-leaderboard-empty]");
@@ -1034,6 +1078,7 @@ composer.addEventListener("submit", (event) => {
     verified: author.verified,
     followers: author.followers,
     platform: platformId,
+    ...(isPrivate ? { private: true } : {}),
     ...(extraInput.value.trim() && !extraField.hidden ? { extra: extraInput.value.trim() } : {}),
     ...(formatSelect.hidden ? {} : { format: formatSelect.value }),
     createdAt: Date.now(),
@@ -1088,6 +1133,29 @@ document.querySelector("[data-focus-composer]")?.addEventListener("click", () =>
   showTab("foryou");
   textarea.focus();
 });
+
+/* ----------------------------------------------------------- visibility */
+
+// Public is the default: simulated posts join the shared feed. Private keeps a
+// post in this browser and tells the server not to store it.
+let isPrivate = load(STORAGE_PRIVATE, false) === true;
+
+function renderVisibility() {
+  visibilityButton.setAttribute("aria-pressed", String(isPrivate));
+  visibilityButton.title = isPrivate ? "Private: only you will see this post" : "Public: this post joins the shared feed";
+  document.querySelector("[data-visibility-label]").textContent = isPrivate ? "Private" : "Public";
+}
+
+visibilityButton.addEventListener("click", () => {
+  isPrivate = !isPrivate;
+  save(STORAGE_PRIVATE, isPrivate);
+  renderVisibility();
+});
+newPostsButton.addEventListener("click", () => {
+  renderFeed({ announce: true });
+  scrollTo({ top: 0, behavior: "smooth" });
+});
+renderVisibility();
 
 /* ------------------------------------------------------------ platforms */
 
@@ -1177,13 +1245,14 @@ function setPlatform(id, { persist = true } = {}) {
   if (platformId !== "x" && !pollEditor.hidden) document.querySelector("[data-poll-remove]").click();
 
   remote = { enabled: false, posts: [], leaderboard: [] };
+  live = false;
   renderMe();
   renderPractices(platformId);
   renderAbout();
   renderFeed();
   renderLeaderboard();
   syncComposer();
-  refreshRemote();
+  refreshLive();
 }
 
 // Hovering a platform previews its best practices; clicking switches to it.
