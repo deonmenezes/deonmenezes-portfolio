@@ -863,8 +863,8 @@ const RESOURCE_PAGES = Object.freeze({
         url: "https://github.com/Blueturboguy07/ghost-location",
       },
       {
-        label: "Download v0.1.7",
-        url: "https://github.com/Blueturboguy07/ghost-location/releases/tag/v0.1.7",
+        label: "Watch the tutorial",
+        url: "https://youtu.be/tZKGeVnSjw4",
       },
     ],
     headings: {
@@ -886,6 +886,11 @@ const RESOURCE_PAGES = Object.freeze({
         label: "Ghost on GitHub",
         url: "https://github.com/Blueturboguy07/ghost-location",
         note: "Source code, README and changelog. Free and open source.",
+      },
+      {
+        label: "Watch the tutorial",
+        url: "https://youtu.be/tZKGeVnSjw4",
+        note: "My full walkthrough on YouTube: how to change your location on your iPhone.",
       },
       {
         label: "Download Ghost 0.1.7",
