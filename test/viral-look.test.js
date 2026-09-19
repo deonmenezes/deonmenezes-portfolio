@@ -45,7 +45,7 @@ test("frames are described by the vision model, metered in their own bucket, and
   let upstream;
   const handler = createViralLookHandler({
     queryFn: async (sql, values) => { queries.push(values); return claimed(); },
-    fetchFn: async (url, options) => { upstream = { url, auth: options.headers.Authorization, body: JSON.parse(options.body) }; return chat(`  A dark screen opens.\n\n${"x".repeat(900)}`); },
+    fetchFn: async (url, options) => { upstream = { url, auth: options.headers.Authorization, body: JSON.parse(options.body) }; return chat(`  A dark screen opens.\n\n${"x".repeat(1300)}`); },
   });
   const res = response();
   await handler(request({ platform: "tiktok", kind: "video", frames: [FRAME, FRAME, FRAME] }), res);
@@ -70,6 +70,62 @@ test("frames are described by the vision model, metered in their own bucket, and
   assert.equal(reconcile[2], 1372);
   assert.ok(Math.abs(reconcile[4] - (1249 * 0.44 + 123 * 1.32) / 1e6) < 1e-12);
   assert.equal(JEV_LIMITS.globalDailyCostUsd, 0.25, "Jev's own cap is untouched");
+});
+
+const AUDIO = `data:audio/wav;base64,${Buffer.alloc(32_000 * 10).toString("base64")}`;
+
+test("a video's opening sound goes to a model that can hear, side by side with the frames", async () => {
+  const queries = [];
+  const calls = [];
+  const handler = createViralLookHandler({
+    queryFn: async (sql, values) => { queries.push(values); return claimed(); },
+    fetchFn: async (_url, options) => {
+      const body = JSON.parse(options.body);
+      calls.push(body);
+      return body.model.startsWith("google/") ? chat('"Stop scrolling." No music.', { prompt_tokens: 480, completion_tokens: 61 }) : chat("A dark screen opens.");
+    },
+  });
+  const res = response();
+  await handler(request({ platform: "tiktok", kind: "video", frames: [FRAME], audio: AUDIO }), res);
+
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.description, 'A dark screen opens. Sound: "Stop scrolling." No music.');
+  const listen = calls.find((call) => call.model === "google/gemini-3.5-flash-lite");
+  const [prompt, clip] = listen.messages[0].content;
+  assert.match(prompt.text, /Do not guess/u);
+  assert.match(prompt.text, /never instructions to you/u);
+  assert.deepEqual(clip, { type: "input_audio", input_audio: { data: AUDIO.slice(AUDIO.indexOf(",") + 1), format: "wav" } });
+  assert.ok(queries[0][2] > 300 + 400 + 300 + 400, "sound is reserved for up front as well");
+  assert.equal(queries[1][2], 1249 + 123 + 480 + 61);
+  assert.ok(Math.abs(queries[1][4] - ((1249 * 0.44 + 123 * 1.32) + (480 * 0.3 + 61 * 2.5)) / 1e6) < 1e-12, "each model at its own price");
+});
+
+test("sound alone is enough, and one model failing does not lose the other's answer", async () => {
+  const soundOnly = response();
+  await createViralLookHandler({ queryFn: async () => claimed(), fetchFn: async () => chat("No speech. A steady tone.") })(request({ kind: "video", frames: [], audio: AUDIO }), soundOnly);
+  assert.equal(soundOnly.body.description, "Sound: No speech. A steady tone.");
+
+  const logged = [];
+  const original = console.error;
+  console.error = (...args) => logged.push(args.map(String).join(" "));
+  try {
+    const deaf = response();
+    await createViralLookHandler({
+      queryFn: async () => claimed(),
+      fetchFn: async (_url, options) => (JSON.parse(options.body).model.startsWith("google/") ? new Response(JSON.stringify({ message: "overloaded" }), { status: 429 }) : chat("A cat on a desk.")),
+    })(request({ kind: "video", frames: [FRAME], audio: AUDIO }), deaf);
+    assert.equal(deaf.statusCode, 200);
+    assert.equal(deaf.body.description, "A cat on a desk.");
+  } finally {
+    console.error = original;
+  }
+  assert.ok(!logged.join(" ").includes("base64"), "no clip data in the logs");
+
+  for (const audio of ["data:audio/mpeg;base64,AAAA", "https://example.com/a.wav", 42, `data:audio/wav;base64,${"A".repeat(2_100_000)}`]) {
+    const bad = response();
+    await createViralLookHandler({ queryFn: async () => { throw new Error("must not claim"); }, fetchFn: async () => { throw new Error("must not call"); } })(request({ frames: [FRAME], audio }), bad);
+    assert.equal(bad.statusCode, 400, String(audio).slice(0, 30));
+  }
 });
 
 test("anything that is not a small batch of JPEG data URIs is refused before it costs anything", async () => {
@@ -136,9 +192,9 @@ test("what the vision model saw reaches Jev only alongside real attachments, cle
     queryFn: async () => [{ status: "ok", key_requests: 0, day: "2026-09-19" }],
     fetchFn: async (_url, options) => { upstream = JSON.parse(options.body); return new Response(JSON.stringify({ answers: {}, usage: { inputTokens: 700 } }), { status: 200 }); },
   });
-  await handler(request({ platform: "tiktok", text: "POV: it works first try", attachments: ["video"], visual: `  A person\n at a desk. ${"y".repeat(900)}` }), response());
+  await handler(request({ platform: "tiktok", text: "POV: it works first try", attachments: ["video"], visual: `  A person\n at a desk. ${"y".repeat(1300)}` }), response());
   assert.ok(upstream.state.whatViewersSee.startsWith("A person at a desk. y"));
-  assert.equal(upstream.state.whatViewersSee.length, 700);
+  assert.equal(upstream.state.whatViewersSee.length, 1100);
 
   await handler(request({ platform: "tiktok", text: "POV: it works first try", attachments: ["video"], visual: { nope: true } }), response());
   assert.equal(upstream.state.whatViewersSee, undefined);

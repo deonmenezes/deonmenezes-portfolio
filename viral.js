@@ -466,7 +466,7 @@ function fillAnalysis(node, post) {
   find("[data-score]").textContent = `${post.viralScore}/100`;
   const visual = find("[data-visual]");
   visual.hidden = !post.visual;
-  visual.textContent = post.visual ? `What the vision model saw: ${post.visual}` : "";
+  visual.textContent = post.visual ? `What the AI saw and heard: ${post.visual}` : "";
   find("[data-summary]").textContent = `Jev thinks ${EMOTIONS[post.emotion] || EMOTIONS.nothing}, with a hook of ${Number(post.hook).toFixed(1)} out of 3.`;
 
   find("[data-bars]").replaceChildren(...post.breakdown.map((item) => {
@@ -709,6 +709,61 @@ async function imageFrame(blob) {
   }
 }
 
+const SOUND_SECONDS = 40;
+const SOUND_RATE = 16_000;
+// Decoding holds the whole soundtrack in memory, so long uploads are not listened to.
+const SOUND_MAX_BYTES = 80 * 1024 * 1024;
+const SOUND_MAX_SECONDS = 600;
+
+// The first 40 seconds of a video's sound as a small mono WAV data URI, or "" if
+// it has none or cannot be decoded. Only this clip leaves the browser.
+async function openingSound(blob) {
+  if (blob.size > SOUND_MAX_BYTES || typeof OfflineAudioContext === "undefined") return "";
+  let decoder;
+  try {
+    decoder = new AudioContext();
+    const decoded = await decoder.decodeAudioData(await blob.arrayBuffer());
+    if (decoded.duration > SOUND_MAX_SECONDS) return "";
+    const seconds = Math.min(SOUND_SECONDS, decoded.duration);
+    if (seconds < 0.5) return "";
+    const offline = new OfflineAudioContext(1, Math.ceil(seconds * SOUND_RATE), SOUND_RATE);
+    const source = offline.createBufferSource();
+    source.buffer = decoded;
+    source.connect(offline.destination);
+    source.start();
+    const samples = (await offline.startRendering()).getChannelData(0);
+    // Silence is not worth a request.
+    if (!samples.some((sample) => Math.abs(sample) > 0.01)) return "";
+
+    const wav = new DataView(new ArrayBuffer(44 + samples.length * 2));
+    const text = (offset, value) => [...value].forEach((character, index) => wav.setUint8(offset + index, character.charCodeAt(0)));
+    text(0, "RIFF");
+    wav.setUint32(4, 36 + samples.length * 2, true);
+    text(8, "WAVEfmt ");
+    wav.setUint32(16, 16, true);
+    wav.setUint16(20, 1, true);
+    wav.setUint16(22, 1, true);
+    wav.setUint32(24, SOUND_RATE, true);
+    wav.setUint32(28, SOUND_RATE * 2, true);
+    wav.setUint16(32, 2, true);
+    wav.setUint16(34, 16, true);
+    text(36, "data");
+    wav.setUint32(40, samples.length * 2, true);
+    samples.forEach((sample, index) => wav.setInt16(44 + index * 2, Math.max(-1, Math.min(1, sample)) * 0x7fff, true));
+
+    return await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).replace(/^data:[^;]*;/u, "data:audio/wav;"));
+      reader.onerror = () => resolve("");
+      reader.readAsDataURL(new Blob([wav], { type: "audio/wav" }));
+    });
+  } catch {
+    return "";
+  } finally {
+    decoder?.close().catch(() => {});
+  }
+}
+
 // Returns the description, or "" when anything goes wrong.
 async function lookAt(post) {
   try {
@@ -716,11 +771,12 @@ async function lookAt(post) {
     const frames = video
       ? await videoFrames(video.blob)
       : (await Promise.allSettled(post.lookFiles.slice(0, MAX_IMAGES).map((file) => imageFrame(file.blob)))).filter((result) => result.status === "fulfilled").map((result) => result.value);
-    if (!frames.length) return "";
+    const audio = video ? await openingSound(video.blob) : "";
+    if (!frames.length && !audio) return "";
     const response = await fetch("/api/viral/look", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ platform: post.platform, kind: video ? "video" : "images", frames }),
+      body: JSON.stringify({ platform: post.platform, kind: video ? "video" : "images", frames, ...(audio ? { audio } : {}) }),
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -1081,7 +1137,7 @@ function renderFeed({ announce = false } = {}) {
   feedEmpty.hidden = visible.length > 0;
   feedEmpty.textContent = `Nothing simulated on ${platform().name} yet. Write the first one.`;
   feedEnd.textContent = remote.enabled
-    ? "Public posts join the shared feed for everyone, live. Private ones and all attached media stay in your browser; if you leave analysis on, a few small frames are described by a vision model and not kept."
+    ? "Public posts join the shared feed for everyone, live. Private ones and all attached media stay in your browser; if you leave analysis on, a few small frames are and a video's opening sound are described by AI models and not kept."
     : "Posts live only in this browser. Nothing is published anywhere.";
 }
 
@@ -1542,7 +1598,11 @@ function syncComposer() {
   const pollReady = pollEditor.hidden || pollOptions().length >= 2;
   simulateButton.disabled = !textarea.value.trim() || !pollReady;
   lookToggle.hidden = attached.length === 0;
-  document.querySelector("[data-look-label]").textContent = attached.some((file) => file.kind === "video") ? "Analyse the video." : "Analyse the pictures.";
+  const hasVideo = attached.some((file) => file.kind === "video");
+  document.querySelector("[data-look-label]").textContent = hasVideo ? "Analyse the video." : "Analyse the pictures.";
+  document.querySelector("[data-look-note]").textContent = hasVideo
+    ? "A few small frames and the first 40 seconds of sound go to AI models, which describe them to Jev. They are not stored."
+    : "Small copies go to a vision model, which describes them to Jev. They are not stored.";
   const checks = draftChecks(platformId, textarea.value);
   checkList.hidden = checks.length === 0;
   checkList.replaceChildren(...checks.map((check) => {
