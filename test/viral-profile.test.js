@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { createViralProfileHandler, parseProfile } from "../lib/viral-profile.js";
+import { createViralProfileHandler, parseFxProfile, parseProfile } from "../lib/viral-profile.js";
 import statsHandler from "../api/stats.js";
 
 function request({ handle, headers = {}, ...overrides } = {}) {
@@ -28,6 +28,34 @@ function page(...users) {
   const entries = users.map((entry) => ({ content: { tweet: { user: entry } } }));
   return `<html><script id="__NEXT_DATA__" type="application/json">${JSON.stringify({ props: { pageProps: { timeline: { entries } } } })}</script></html>`;
 }
+
+const fxBody = (overrides) => ({
+  code: 200,
+  user: {
+    screen_name: "DeonMen", name: "Deon Menezes", followers: 1526,
+    avatar_url: "https://pbs.twimg.com/profile_images/1994789024620580866/5i1dzRnM_normal.jpg",
+    verification: { verified: true, type: "individual" },
+    ...overrides,
+  },
+});
+const fxOk = (overrides) => new Response(JSON.stringify(fxBody(overrides)), { status: 200 });
+const fxMissing = () => new Response(JSON.stringify({ code: 404, message: "User not found" }), { status: 404 });
+const isFx = (url) => url.startsWith("https://api.fxtwitter.com/");
+
+test("both sources normalize to the same profile shape", () => {
+  const expected = {
+    handle: "DeonMen",
+    name: "Deon Menezes",
+    avatarUrl: "https://pbs.twimg.com/profile_images/1994789024620580866/5i1dzRnM_400x400.jpg",
+    verified: true,
+    followers: 1526,
+  };
+  assert.deepEqual(parseFxProfile(fxBody(), "deonmen"), expected);
+  assert.deepEqual(parseProfile(page(user()), "deonmen"), expected);
+  assert.equal(parseFxProfile(fxBody({ screen_name: "someone_else" }), "deonmen"), null);
+  assert.equal(parseFxProfile({ code: 200 }, "deonmen"), null);
+  assert.equal(parseFxProfile(fxBody({ avatar_url: "https://evil.example/a.jpg" }), "deonmen").avatarUrl, null);
+});
 
 test("a profile lookup returns name, large avatar, verified, and real followers", () => {
   const profile = parseProfile(page(user()), "deonmen");
@@ -58,27 +86,39 @@ test("unparseable pages yield no profile instead of throwing", () => {
 });
 
 test("the handler validates the handle before fetching and caches hits at the CDN", async () => {
-  let fetched;
-  const handler = createViralProfileHandler({ fetchFn: async (url) => { fetched = url; return new Response(page(user()), { status: 200 }); } });
+  const fetched = [];
+  const handler = createViralProfileHandler({ fetchFn: async (url) => { fetched.push(url); return fxOk(); } });
 
   for (const handle of ["", "has space", "../../etc/passwd", "waytoolongforanxhandle", "a?b=c"]) {
     const res = response();
-    fetched = undefined;
     await handler(request({ handle }), res);
     assert.equal(res.statusCode, 400, handle);
-    assert.equal(fetched, undefined, "an invalid handle must never reach the upstream URL");
   }
+  assert.deepEqual(fetched, [], "an invalid handle must never reach an upstream URL");
 
   const res = response();
   await handler(request({ handle: "@DeonMen" }), res);
   assert.equal(res.statusCode, 200);
-  assert.equal(fetched, "https://syndication.twitter.com/srv/timeline-profile/screen-name/DeonMen");
+  assert.deepEqual(fetched, ["https://api.fxtwitter.com/DeonMen"], "a hit on the first source must not call the second");
   assert.equal(res.body.profile.followers, 1526);
   assert.match(res.headers["Cache-Control"], /s-maxage=86400/u);
 });
 
+test("the handler falls back to the syndication page when the first source fails or misses", async () => {
+  const failing = createViralProfileHandler({ fetchFn: async (url) => (isFx(url) ? new Response("down", { status: 503 }) : new Response(page(user()), { status: 200 })) });
+  let res = response();
+  await failing(request({ handle: "DeonMen" }), res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.profile.handle, "DeonMen");
+
+  const missing = createViralProfileHandler({ fetchFn: async (url) => (isFx(url) ? fxMissing() : new Response(page(user()), { status: 200 })) });
+  res = response();
+  await missing(request({ handle: "DeonMen" }), res);
+  assert.equal(res.statusCode, 200);
+});
+
 test("the handler refuses cross-site callers and reports misses and upstream failures distinctly", async () => {
-  const ok = createViralProfileHandler({ fetchFn: async () => new Response(page(), { status: 200 }) });
+  const ok = createViralProfileHandler({ fetchFn: async (url) => (isFx(url) ? fxMissing() : new Response(page(), { status: 200 })) });
 
   let res = response();
   await ok(request({ handle: "DeonMen", headers: { "sec-fetch-site": "cross-site" } }), res);
@@ -88,6 +128,12 @@ test("the handler refuses cross-site callers and reports misses and upstream fai
   await ok(request({ handle: "nobody_here" }), res);
   assert.equal(res.statusCode, 404);
   assert.match(res.headers["Cache-Control"], /no-store/u, "misses and errors must not be cached");
+
+  // One source saying "not found" while the other is down is still a miss, not an outage.
+  const half = createViralProfileHandler({ fetchFn: async (url) => (isFx(url) ? fxMissing() : new Response("rate limited", { status: 429 })) });
+  res = response();
+  await half(request({ handle: "nobody_here" }), res);
+  assert.equal(res.statusCode, 404);
 
   const down = createViralProfileHandler({ fetchFn: async () => new Response("rate limited", { status: 429 }) });
   res = response();
