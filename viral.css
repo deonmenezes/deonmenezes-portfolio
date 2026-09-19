@@ -1254,6 +1254,20 @@ svg.verified {
   flex-basis: 100%;
 }
 
+.look-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 17px;
+}
+
+.look-toggle input { margin: 2px 0 0; accent-color: var(--accent); }
+.look-toggle strong { color: var(--ink); }
+.why-visual { color: var(--ink); }
+
 .why-stats {
   display: flex;
   flex-wrap: wrap;

@@ -464,6 +464,9 @@ function fillAnalysis(node, post) {
   find("details").hidden = !Array.isArray(post.breakdown);
   if (!Array.isArray(post.breakdown)) return;
   find("[data-score]").textContent = `${post.viralScore}/100`;
+  const visual = find("[data-visual]");
+  visual.hidden = !post.visual;
+  visual.textContent = post.visual ? `What the vision model saw: ${post.visual}` : "";
   find("[data-summary]").textContent = `Jev thinks ${EMOTIONS[post.emotion] || EMOTIONS.nothing}, with a hook of ${Number(post.hook).toFixed(1)} out of 3.`;
 
   find("[data-bars]").replaceChildren(...post.breakdown.map((item) => {
@@ -639,8 +642,98 @@ async function saveImage(post) {
 }
 
 function storePosts() {
-  save(STORAGE_POSTS, posts.map(({ state, followers, ...stored }) => stored));
+  save(STORAGE_POSTS, posts.map(({ state, followers, lookFiles, looking, ...stored }) => stored));
 }
+
+/* ------------------------------------------------------ looking at media */
+
+const FRAME_EDGE = 384;
+const FRAME_WAIT_MS = 4000;
+
+function shrink(source, width, height) {
+  const scale = Math.min(1, FRAME_EDGE / Math.max(width, height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(width * scale));
+  canvas.height = Math.max(1, Math.round(height * scale));
+  canvas.getContext("2d").drawImage(source, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", 0.6);
+}
+
+const waitFor = (target, event) => new Promise((resolve, reject) => {
+  const timer = setTimeout(() => reject(new Error("timeout")), FRAME_WAIT_MS);
+  target.addEventListener(event, () => {
+    clearTimeout(timer);
+    resolve();
+  }, { once: true });
+  target.addEventListener("error", () => {
+    clearTimeout(timer);
+    reject(new Error("unreadable"));
+  }, { once: true });
+});
+
+// Six stills: three from the opening seconds, where a viewer decides, and three
+// from the rest. Only these small pictures ever leave the browser.
+async function videoFrames(blob) {
+  const video = document.createElement("video");
+  video.muted = true;
+  video.playsInline = true;
+  video.preload = "auto";
+  const url = URL.createObjectURL(blob);
+  const frames = [];
+  try {
+    video.src = url;
+    await waitFor(video, "loadeddata");
+    const length = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 4;
+    const times = [...new Set([0.3, 1.5, 3, length * 0.45, length * 0.7, length * 0.92].map((time) => Math.min(time, Math.max(0, length - 0.1)).toFixed(2)))].map(Number).sort((a, b2) => a - b2);
+    for (const time of times) {
+      video.currentTime = time;
+      await waitFor(video, "seeked");
+      frames.push(shrink(video, video.videoWidth, video.videoHeight));
+    }
+  } catch {
+    // Whatever was captured before the problem is still worth sending.
+  } finally {
+    URL.revokeObjectURL(url);
+    video.removeAttribute("src");
+    video.load();
+  }
+  return frames;
+}
+
+async function imageFrame(blob) {
+  const bitmap = await createImageBitmap(blob);
+  try {
+    return shrink(bitmap, bitmap.width, bitmap.height);
+  } finally {
+    bitmap.close();
+  }
+}
+
+// Returns the description, or "" when anything goes wrong.
+async function lookAt(post) {
+  try {
+    const video = post.lookFiles.find((file) => file.kind === "video");
+    const frames = video
+      ? await videoFrames(video.blob)
+      : (await Promise.allSettled(post.lookFiles.slice(0, MAX_IMAGES).map((file) => imageFrame(file.blob)))).filter((result) => result.status === "fulfilled").map((result) => result.value);
+    if (!frames.length) return "";
+    const response = await fetch("/api/viral/look", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ platform: post.platform, kind: video ? "video" : "images", frames }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      if (response.status === 429) showToast(result.message || "Video analysis has hit today's limit.");
+      return "";
+    }
+    return typeof result.description === "string" ? result.description : "";
+  } catch {
+    return "";
+  }
+}
+
+
 
 /* ------------------------------------------------- hook, risk, reach, goal */
 
@@ -926,7 +1019,7 @@ function renderPost(post) {
   const details = find("details");
   if (post.state === "pending" || post.state === "failed") {
     node.classList.add(post.state === "pending" ? "is-pending" : "is-failed");
-    verdict.textContent = post.state === "pending" ? "Simulating" : "Not simulated";
+    verdict.textContent = post.state === "pending" ? (post.looking ? "Watching it" : "Simulating") : "Not simulated";
     verdict.className = "verdict verdict-pending";
     details.hidden = true;
     renderPoll(find("[data-poll]"), post, false);
@@ -988,7 +1081,7 @@ function renderFeed({ announce = false } = {}) {
   feedEmpty.hidden = visible.length > 0;
   feedEmpty.textContent = `Nothing simulated on ${platform().name} yet. Write the first one.`;
   feedEnd.textContent = remote.enabled
-    ? "Public posts join the shared feed for everyone, live. Private ones and all attached media stay in your browser."
+    ? "Public posts join the shared feed for everyone, live. Private ones and all attached media stay in your browser; if you leave analysis on, a few small frames are described by a vision model and not kept."
     : "Posts live only in this browser. Nothing is published anywhere.";
 }
 
@@ -1065,6 +1158,17 @@ async function simulate(post) {
   post.state = "pending";
   renderFeed();
 
+  // A vision model describes the attached video or photos first, so Jev can weigh
+  // more than the caption. If that fails, the post is scored on its words alone.
+  if (post.lookFiles?.length && !post.visual) {
+    post.looking = true;
+    renderFeed();
+    post.visual = await lookAt(post);
+    delete post.looking;
+    if (!post.visual) delete post.visual;
+    renderFeed();
+  }
+
   let result;
   try {
     const response = await fetch("/api/viral", {
@@ -1079,6 +1183,7 @@ async function simulate(post) {
         followers: post.followers,
         attachments: post.attachments,
         poll: post.poll,
+        visual: post.visual,
         publish: !post.private,
         ...(post.private ? {} : { author: { handle: post.handle, name: post.name, avatarUrl: post.avatarUrl, verified: post.verified } }),
       }),
@@ -1401,6 +1506,8 @@ for (const trigger of document.querySelectorAll("[data-open-onboarding]")) trigg
 
 const composerMedia = document.querySelector("[data-composer-media]");
 const checkList = document.querySelector("[data-checks]");
+const lookToggle = document.querySelector("[data-look]");
+const lookInput = document.querySelector("[data-look-input]");
 const pollEditor = document.querySelector("[data-poll-editor]");
 const pollInputs = [...document.querySelectorAll("[data-poll-option]")];
 const emojiPop = document.querySelector("[data-emoji-pop]");
@@ -1434,6 +1541,8 @@ function syncComposer() {
   counter.classList.toggle("is-over", length > limit);
   const pollReady = pollEditor.hidden || pollOptions().length >= 2;
   simulateButton.disabled = !textarea.value.trim() || !pollReady;
+  lookToggle.hidden = attached.length === 0;
+  document.querySelector("[data-look-label]").textContent = attached.some((file) => file.kind === "video") ? "Analyse the video." : "Analyse the pictures.";
   const checks = draftChecks(platformId, textarea.value);
   checkList.hidden = checks.length === 0;
   checkList.replaceChildren(...checks.map((check) => {
@@ -1577,6 +1686,8 @@ composer.addEventListener("submit", (event) => {
     createdAt: Date.now(),
     attachments: attached.map((file) => file.kind),
     mediaCount: attached.length,
+    // Held in memory only, for the vision step; never stored with the post.
+    ...(attached.length && lookInput.checked ? { lookFiles: attached } : {}),
     ...(poll.length >= 2 ? { poll } : {}),
     state: "pending",
   };

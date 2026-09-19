@@ -105,6 +105,10 @@
               <input id="composer-extra-text" name="extra" type="text" maxlength="300" autocomplete="off">
             </div>
             <div class="media-grid" data-composer-media hidden></div>
+            <label class="look-toggle" data-look hidden>
+              <input type="checkbox" checked data-look-input>
+              <span><strong data-look-label>Analyse the video</strong> A few small frames go to a vision model, which describes them to Jev. They are not stored. No sound is analysed.</span>
+            </label>
             <fieldset class="poll-editor" data-poll-editor hidden>
               <legend class="sr-only">Poll options</legend>
               <input type="text" maxlength="25" placeholder="Choice 1" aria-label="Choice 1" data-poll-option>
@@ -261,6 +265,7 @@
           <summary><span class="why-show">Advanced view</span><span class="why-hide">Hide advanced view</span></summary>
           <p class="why-score">Viral score <strong data-score></strong></p>
           <p class="why-line" data-summary></p>
+          <p class="why-line why-visual" data-visual hidden></p>
           <dl class="why-stats" data-stats></dl>
           <p class="why-goal">
             <label>Your goal <select data-goal></select></label>
