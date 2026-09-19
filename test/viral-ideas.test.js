@@ -84,7 +84,7 @@ test("ideas are metered in their own bucket, reserved up front, and reconciled w
   assert.match(claim.values[0], /^ideas:[0-9a-f]{64}$/u, "the visitor is a hashed network, never a raw address");
   assert.equal(claim.values[1], IDEAS_BUCKET.globalKey);
   assert.notEqual(claim.values[1], "*", "ideas never draw on Jev's site-wide bucket");
-  assert.ok(claim.values[2] >= 2500, "the reservation covers everything the model may write");
+  assert.ok(claim.values[2] >= 2000, "the reservation covers everything the model may write");
   assert.deepEqual(claim.values.slice(3), [IDEAS_DAILY_REQUESTS_PER_NETWORK, 150, 400_000, 0.25]);
   assert.equal(reconcile.values[1], IDEAS_BUCKET.globalKey);
   assert.equal(reconcile.values[2], 800);
@@ -93,7 +93,8 @@ test("ideas are metered in their own bucket, reserved up front, and reconciled w
   assert.equal(upstream.auth, "Bearer gmi_test_key");
   assert.equal(upstream.url, "https://api.gmi-serving.com/v1/chat/completions");
   assert.equal(upstream.body.model, "deepseek-ai/DeepSeek-V4.1-Flash");
-  assert.equal(upstream.body.max_tokens, 2500);
+  assert.equal(upstream.body.max_tokens, 2000);
+  assert.deepEqual(upstream.body.thinking, { type: "disabled" }, "thinking off, or it can burn the whole allowance and answer nothing");
   const draft = JSON.parse(upstream.body.messages[1].content);
   assert.equal(draft.draft, "Hot take: tabs are better than spaces.");
   assert.equal(draft.characterLimit, 280);
