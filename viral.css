@@ -830,9 +830,23 @@ svg.verified {
 }
 
 .why summary {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
   color: var(--blue);
   cursor: pointer;
+  font-weight: 700;
   list-style: none;
+}
+
+.why[open] .why-show,
+.why:not([open]) .why-hide {
+  display: none;
+}
+
+.why-score {
+  margin: 12px 0 0;
 }
 
 .why summary::-webkit-details-marker {
@@ -840,7 +854,7 @@ svg.verified {
 }
 
 .why summary:hover {
-  text-decoration: underline;
+  background: rgb(29 155 240 / 10%);
 }
 
 .why-line {

@@ -493,8 +493,8 @@ async function simulate(post) {
   verdict.classList.add("is-revealed");
   renderPoll(node.querySelector("[data-poll]"), post, true);
   fillAnalysis(node, post);
+  // Shown closed: the breakdown is there for whoever wants it, not pushed on them.
   node.querySelector("details").hidden = false;
-  node.querySelector("details").open = true;
   node.classList.remove("is-live");
   renderLeaderboard();
   showToast(`${post.verdict}: ${compact(post.metrics.views)} views. ${remainingToday} simulations left today.`);
