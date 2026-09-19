@@ -1,0 +1,272 @@
+/* Deon X Jev page. Rides on /resources/detail.css for the shell, header, hero,
+   footer, and .prompt-text code blocks; adds the key box, try-it form, results. */
+
+.jev-section {
+  padding: clamp(2rem, 5vw, 4.5rem);
+  border-top: 1px solid var(--line);
+}
+
+.jev-key {
+  background: var(--teal-pale);
+}
+
+.jev-reference {
+  background: var(--wash);
+}
+
+.jev-section h3 {
+  margin: 2.25rem 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+
+.jev-lead {
+  max-width: 52ch;
+  margin: 1.1rem 0 1.75rem;
+  color: var(--muted);
+}
+
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.jev-lead code,
+.jev-types code,
+.jev-list code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.35rem;
+  background: var(--teal-pale);
+}
+
+.jev-button {
+  min-height: 3.25rem;
+  padding: 0 1.5rem;
+  border: 1.5px solid var(--teal-dark);
+  border-radius: 0.85rem;
+  background: var(--teal);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  transition: transform 160ms ease, box-shadow 200ms ease;
+}
+
+.jev-button:hover:not(:disabled) {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.jev-button:disabled {
+  cursor: progress;
+  opacity: 0.65;
+}
+
+.jev-button:focus-visible,
+.jev-copy:focus-visible,
+.jev-form textarea:focus-visible {
+  outline: 3px solid var(--teal-dark);
+  outline-offset: 2px;
+}
+
+.jev-key-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 44rem;
+  margin: 1.25rem 0 0;
+  padding: 0.9rem 1rem;
+  border: 1.5px dashed var(--teal);
+  border-radius: 0.85rem;
+  background: var(--paper);
+}
+
+.jev-key-box[hidden],
+.jev-results[hidden] {
+  display: none;
+}
+
+.jev-key-value {
+  flex: 1 1 16rem;
+  overflow-wrap: anywhere;
+  font-weight: 650;
+}
+
+.jev-copy {
+  padding: 0.4rem 0.9rem;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.jev-copy:hover {
+  border-color: var(--teal);
+}
+
+.jev-status {
+  min-height: 1.4rem;
+  margin: 0.75rem 0 0;
+  color: var(--teal-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.jev-status.is-error {
+  color: #a3282d;
+}
+
+/* ---------------------------------------------------------------- try it */
+
+.jev-form {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 46rem;
+}
+
+.jev-form label {
+  margin-top: 0.6rem;
+  font-weight: 700;
+}
+
+.jev-form textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.jev-form textarea[name="questions"] {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+.jev-form .jev-button {
+  justify-self: start;
+  margin-top: 0.75rem;
+}
+
+.jev-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+  margin: 1.75rem 0 0;
+}
+
+.jev-answer {
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--wash);
+}
+
+.jev-answer-name {
+  margin: 0;
+  color: var(--muted);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.jev-answer-verdict {
+  margin: 0.15rem 0 0.8rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.jev-meter-row {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, auto) 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.jev-meter-row meter {
+  width: 100%;
+  height: 0.7rem;
+}
+
+.jev-figure {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* -------------------------------------------------------------- snippets */
+
+.jev-snippet {
+  position: relative;
+  max-width: 52rem;
+}
+
+.jev-snippet .jev-copy {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+}
+
+.jev-snippet .prompt-text {
+  padding-top: 2.75rem;
+  white-space: pre;
+}
+
+/* ------------------------------------------------------------- reference */
+
+.jev-types {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 52rem;
+  margin: 1.75rem 0 0;
+}
+
+.jev-types dt {
+  font-weight: 750;
+}
+
+.jev-types dd {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.jev-tip {
+  max-width: 50rem;
+  margin: 2rem 0 0;
+  padding: 1rem 1.2rem;
+  border-left: 0.3rem solid var(--teal);
+  background: var(--paper);
+  font-weight: 650;
+}
+
+.jev-list {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 54rem;
+  margin: 1.75rem 0 0;
+  color: var(--muted);
+}
+
+.jev-list strong {
+  color: var(--ink);
+}
+
+@media (max-width: 420px) {
+  .jev-meter-row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .jev-meter-row meter {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+}

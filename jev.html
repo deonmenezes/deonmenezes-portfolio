@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deon X Jev · Free Jev API key and setup guide</title>
+  <meta name="description" content="Get a free API key for Jev, TypeSafe AI's decision model, and make your first call in under a minute. No card, no waitlist.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/jev">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Deon X Jev">
+  <meta property="og:description" content="A free API key for Jev, the AI model that answers in milliseconds. No card, no waitlist.">
+  <meta property="og:url" content="https://deonmenezes.com/jev">
+  <meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="/resources/detail.css">
+  <link rel="stylesheet" href="/jev.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
+  <script src="/ga.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the guide</a>
+  <header class="site-header">
+    <a class="brand" href="/deon" aria-label="Deon Menezes portfolio">
+      <span class="brand-mark" aria-hidden="true">D</span>
+      <span>Deon Menezes</span>
+    </a>
+    <a class="all-resources" href="/resources">All resources</a>
+  </header>
+
+  <main id="main">
+    <article>
+      <header class="hero">
+        <p class="eyebrow">Free API</p>
+        <h1>Deon X Jev</h1>
+        <p class="summary">Jev is TypeSafe AI's new kind of model. It doesn't chat. You hand it some text and a few questions, and it answers in milliseconds with a yes/no, a pick, or a score, each with a probability.</p>
+        <p class="offer">Get a free key below and call it from anywhere. No card, no waitlist, 1,000 requests a day.</p>
+        <p class="actions">
+          <a class="button button-primary" href="#get-key">Get your free key</a>
+          <a class="button button-secondary" href="#setup">Read the setup guide</a>
+        </p>
+      </header>
+
+      <section class="jev-section jev-key" id="get-key" aria-labelledby="key-title">
+        <p class="section-label">Step 1</p>
+        <h2 id="key-title">Get your key</h2>
+        <p class="jev-lead">One click. The key is shown once, so copy it somewhere safe. It is also kept in this browser so the examples below fill themselves in.</p>
+
+        <button class="jev-button" type="button" data-key-create>Generate my free key</button>
+        <div class="jev-key-box" data-key-box hidden>
+          <code class="jev-key-value" data-key-value></code>
+          <button class="jev-copy" type="button" data-copy-key>Copy</button>
+        </div>
+        <p class="jev-status" role="status" aria-live="polite" data-key-status></p>
+      </section>
+
+      <section class="jev-section" id="try" aria-labelledby="try-title">
+        <p class="section-label">Step 2</p>
+        <h2 id="try-title">Try it here</h2>
+        <p class="jev-lead">Type any message. Jev reads it and answers all three questions at once.</p>
+
+        <form class="jev-form" data-try-form>
+          <label for="jev-state">The text to judge</label>
+          <textarea id="jev-state" name="state" rows="3" maxlength="4000" required>Help! My payouts have been failing for 3 days and nobody is answering my emails.</textarea>
+
+          <label for="jev-questions">The questions (JSON)</label>
+          <textarea id="jev-questions" name="questions" rows="12" spellcheck="false" required>{
+  "isUrgent": {
+    "type": "boolean",
+    "instructions": "Does this convey urgency?"
+  },
+  "category": {
+    "type": "choice",
+    "instructions": "What is this message about?",
+    "criteria": {
+      "billing": "Payments, payouts, invoices, refunds",
+      "bug": "Something in the product is broken",
+      "sales": "Interest in buying or partnering",
+      "other": "Anything else"
+    }
+  },
+  "frustration": {
+    "type": "score",
+    "instructions": "How frustrated is the writer?",
+    "criteria": ["Calm", "Mildly annoyed", "Clearly frustrated", "Furious"]
+  }
+}</textarea>
+
+          <button class="jev-button" type="submit" data-try-submit>Ask Jev</button>
+          <p class="jev-status" role="status" aria-live="polite" data-try-status></p>
+        </form>
+
+        <div class="jev-results" data-try-results hidden></div>
+      </section>
+
+      <section class="jev-section" id="setup" aria-labelledby="setup-title">
+        <p class="section-label">Step 3</p>
+        <h2 id="setup-title">Use it in your code</h2>
+        <p class="jev-lead">One endpoint. Send your key as a Bearer token, plus the <code>state</code> to judge and your named <code>questions</code>. If you generated a key above, it is already filled in.</p>
+
+        <h3>curl</h3>
+        <div class="jev-snippet">
+          <button class="jev-copy" type="button" data-copy-snippet>Copy</button>
+          <pre class="prompt-text" data-snippet>curl https://deonmenezes.com/api/jev \
+  -H "Authorization: Bearer YOUR_DJEV_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "state": "I was charged twice. Please refund the extra charge.",
+    "questions": {
+      "wantsRefund": {
+        "type": "boolean",
+        "instructions": "Is the customer asking for a refund?"
+      }
+    }
+  }'</pre>
+        </div>
+
+        <h3>JavaScript</h3>
+        <div class="jev-snippet">
+          <button class="jev-copy" type="button" data-copy-snippet>Copy</button>
+          <pre class="prompt-text" data-snippet>const response = await fetch("https://deonmenezes.com/api/jev", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer YOUR_DJEV_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    state: "I was charged twice. Please refund the extra charge.",
+    questions: {
+      wantsRefund: {
+        type: "boolean",
+        instructions: "Is the customer asking for a refund?",
+      },
+    },
+  }),
+});
+
+const { answers } = await response.json();
+console.log(answers.wantsRefund.probability); // 0.97</pre>
+        </div>
+
+        <h3>Python</h3>
+        <div class="jev-snippet">
+          <button class="jev-copy" type="button" data-copy-snippet>Copy</button>
+          <pre class="prompt-text" data-snippet>import requests
+
+response = requests.post(
+    "https://deonmenezes.com/api/jev",
+    headers={"Authorization": "Bearer YOUR_DJEV_KEY"},
+    json={
+        "state": "I was charged twice. Please refund the extra charge.",
+        "questions": {
+            "wantsRefund": {
+                "type": "boolean",
+                "instructions": "Is the customer asking for a refund?",
+            }
+        },
+    },
+)
+
+print(response.json()["answers"]["wantsRefund"]["probability"])  # 0.97</pre>
+        </div>
+
+        <h3>What comes back</h3>
+        <div class="jev-snippet">
+          <pre class="prompt-text">{
+  "model": "typesafe-ai/jev",
+  "answers": {
+    "wantsRefund": { "type": "boolean", "probability": 0.97 }
+  },
+  "confidence": {},
+  "usage": { "inputTokens": 279, "outputTokens": 20 },
+  "remainingToday": 999
+}</pre>
+        </div>
+      </section>
+
+      <section class="jev-section jev-reference" aria-labelledby="types-title">
+        <p class="section-label">Reference</p>
+        <h2 id="types-title">The three question types</h2>
+        <dl class="jev-types">
+          <div>
+            <dt><code>boolean</code></dt>
+            <dd>A yes/no question. You get <code>probability</code>, from 0 to 1, that the answer is yes. <code>criteria</code> is optional: <code>{ "true": "...", "false": "..." }</code>.</dd>
+          </div>
+          <div>
+            <dt><code>choice</code></dt>
+            <dd>Pick one option. <code>criteria</code> maps each option to a short description. You get the winning <code>choice</code> and <code>probabilities</code> for every option.</dd>
+          </div>
+          <div>
+            <dt><code>score</code></dt>
+            <dd>Rate on a scale. <code>criteria</code> is a list of levels, lowest first (at least two). You get a <code>score</code> where 0 is the first level, and it can land between levels.</dd>
+          </div>
+        </dl>
+        <p class="jev-tip">Tip: ask small, specific questions. Ten narrow questions in one request beat one vague one, and they all run in parallel.</p>
+      </section>
+
+      <section class="jev-section" aria-labelledby="limits-title">
+        <p class="section-label">Fine print</p>
+        <h2 id="limits-title">Limits and errors</h2>
+        <ul class="jev-list">
+          <li><strong>1,000 requests a day</strong> per key, resetting at 00:00 UTC. Up to 10 questions and 32 KB per request.</li>
+          <li><strong>3 keys a day</strong> per network. Keep your key out of public code; anyone holding it spends your daily limit.</li>
+          <li><code>401</code> means a missing or unknown key. <code>400</code> means the request shape is off, and the message says where. <code>429</code> means a daily limit was hit.</li>
+          <li>This is a free community service that runs on my own account, with no uptime promise. If it takes off, limits may change.</li>
+          <li>Your text is sent to Vercel AI Gateway and TypeSafe AI to get the answer. I store request counts per key, not your text.</li>
+        </ul>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <p>Deon X Jev is not affiliated with TypeSafe AI or Vercel.</p>
+    <a href="/resources">Browse the resource library</a>
+  </footer>
+
+  <script src="/jev.js" type="module"></script>
+</body>
+</html>

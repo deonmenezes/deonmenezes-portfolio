@@ -18,6 +18,7 @@ const GA_TAGS = Object.freeze([
 const PUBLIC_ROOT_PAGES = Object.freeze([
   "data-deletion.html",
   "index.html",
+  "jev.html",
   "linktree.html",
   "newsletter.html",
   "privacy.html",
@@ -418,7 +419,7 @@ test("Google Analytics loads once via first-party /ga.js on every public page, n
     ...(await htmlIn("services")),
     ...(await htmlIn("resources")),
   ];
-  assert.equal(publicPages.length, 6 + 1 + 8 + 24 + handWrittenResourcePages.length);
+  assert.equal(publicPages.length, 7 + 1 + 8 + 24 + handWrittenResourcePages.length);
 
   for (const page of publicPages) {
     const html = await readFile(new URL(page, root), "utf8");
