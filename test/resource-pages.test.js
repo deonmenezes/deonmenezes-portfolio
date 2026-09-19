@@ -227,6 +227,24 @@ test("optional hero actions link the repository prominently, only where declared
   assert.doesNotMatch(blenderMcp, /class="actions"/u);
 });
 
+test("a resource with a preview image publishes large-card tags that point at a real file", async () => {
+  const ghost = await readFile(new URL("resources/ghost.html", root), "utf8");
+  const imagePath = "/assets/img/og/ghost-2026-09-19.png";
+  assert.ok(ghost.includes(`<meta property="og:image" content="https://deonmenezes.com${imagePath}">`));
+  assert.ok(ghost.includes(`<meta name="twitter:image" content="https://deonmenezes.com${imagePath}">`));
+  assert.ok(ghost.includes('<meta name="twitter:card" content="summary_large_image">'));
+  assert.doesNotMatch(ghost, /twitter:card" content="summary"/u);
+  const image = await readFile(new URL(`.${imagePath}`, root));
+  assert.equal(image.subarray(1, 4).toString("ascii"), "PNG");
+
+  const blenderMcp = await readFile(
+    new URL("resources/blender-mcp.html", root),
+    "utf8",
+  );
+  assert.ok(blenderMcp.includes('<meta name="twitter:card" content="summary">'));
+  assert.doesNotMatch(blenderMcp, /og:image/u);
+});
+
 test("TradingView resources accurately limit the MCP to analysis and replay practice", async () => {
   const tradingSlugs = [
     "claude-start-here",

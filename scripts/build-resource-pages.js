@@ -853,6 +853,10 @@ const RESOURCE_PAGES = Object.freeze({
       "Ghost is a free, open-source app for Mac and Windows. Plug in your iPhone or Android, pick a spot on the map, and your phone is there. It can even drive down real roads. No jailbreak, no root, no account.",
     offer:
       "Everything is in the GitHub repo: the download, the setup guide and the fixes. Start there.",
+    image: {
+      path: "/assets/img/og/ghost-2026-09-19.png",
+      alt: "Ghost: set your phone location anywhere. Free and open source on GitHub.",
+    },
     actions: [
       {
         label: "Ghost on GitHub",
@@ -1007,6 +1011,16 @@ function renderPage(slug, resource) {
     ? `
         <p class="offer">${escapeHtml(resource.offer)}</p>`
     : "";
+  const preview = resource.image
+    ? `
+  <meta property="og:image" content="${SITE_ORIGIN}${escapeHtml(resource.image.path)}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="${escapeHtml(resource.image.alt)}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="${SITE_ORIGIN}${escapeHtml(resource.image.path)}">`
+    : `
+  <meta name="twitter:card" content="summary">`;
   const headings = resource.headings ?? {};
   const checklistLabel = headings.checklistLabel ?? "Use this safely";
   const checklistTitle =
@@ -1026,8 +1040,7 @@ function renderPage(slug, resource) {
   <meta property="og:type" content="article">
   <meta property="og:title" content="${escapeHtml(resource.title)}">
   <meta property="og:description" content="${escapeHtml(resource.summary)}">
-  <meta property="og:url" content="${canonicalUrl}">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:url" content="${canonicalUrl}">${preview}
   <link rel="stylesheet" href="/resources/detail.css">
   <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
   <script src="/ga.js"></script>
