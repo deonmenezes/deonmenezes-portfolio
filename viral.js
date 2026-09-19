@@ -12,10 +12,17 @@ const STORAGE_PLATFORM = "viral_platform";
 // How much of the box each platform really gives you, capped at what the API takes.
 const TEXT_LIMITS = { x: 280, instagram: 1000, tiktok: 1000, youtube: 100 };
 const STORAGE_PROFILE = "viral_profile";
+const STORAGE_PROFILES = "viral_profiles";
 const MAX_STORED_POSTS = 50;
 const DEFAULT_FOLLOWERS = 1000;
-const AVATAR_PATTERN = /^https:\/\/(?:pbs|abs)\.twimg\.com\/[\w\-./]+$/u;
-const HANDLE_PATTERN = /^[A-Za-z0-9_]{1,15}$/u;
+// X avatars load from X's image hosts; the other platforms' are served by this site.
+const AVATAR_PATTERN = /^(?:https:\/\/(?:pbs|abs)\.twimg\.com\/[\w\-./]+|\/api\/viral\/avatar\?platform=(?:instagram|tiktok|youtube)&handle=[\w.%-]{1,90})$/u;
+const HANDLE_PATTERNS = {
+  x: /^[A-Za-z0-9_]{1,15}$/u,
+  instagram: /^[A-Za-z0-9._]{1,30}$/u,
+  tiktok: /^[A-Za-z0-9._]{2,24}$/u,
+  youtube: /^[A-Za-z0-9._-]{3,30}$/u,
+};
 const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_VIDEO_BYTES = 80 * 1024 * 1024;
@@ -602,42 +609,49 @@ async function simulate(post) {
 
 /* ------------------------------------------------------------- profile */
 
-const ANONYMOUS = Object.freeze({ handle: "anonymous", name: "Anonymous", avatarUrl: null, verified: false, followers: DEFAULT_FOLLOWERS, followersKnown: false, audiences: {} });
+// One identity per platform: someone's Instagram is not their X.
+const ANONYMOUS = Object.freeze({ handle: "anonymous", name: "Anonymous", avatarUrl: null, verified: false, followers: DEFAULT_FOLLOWERS, followersKnown: false });
 
 function cleanProfile(value) {
   if (!value || typeof value.handle !== "string") return null;
   const followers = Number(value.followers);
   const known = value.followersKnown !== false && value.followers != null && Number.isFinite(followers) && followers >= 0;
   return {
-    handle: value.handle.replace(/[^A-Za-z0-9_]/gu, "").slice(0, 15) || ANONYMOUS.handle,
+    handle: value.handle.replace(/[^A-Za-z0-9._-]/gu, "").slice(0, 30) || ANONYMOUS.handle,
     name: String(value.name || value.handle).slice(0, 60),
     avatarUrl: typeof value.avatarUrl === "string" && AVATAR_PATTERN.test(value.avatarUrl) ? value.avatarUrl : null,
     verified: Boolean(value.verified),
-    followers: known ? followers : DEFAULT_FOLLOWERS,
+    followers: known ? Math.min(Math.floor(followers), 500_000_000) : DEFAULT_FOLLOWERS,
     followersKnown: known,
-    audiences: cleanAudiences(value.audiences),
   };
 }
 
-// X's follower count says nothing about someone's Instagram. Other platforms
-// use a number the visitor gives, kept per platform.
-function cleanAudiences(value) {
-  const audiences = {};
+function loadProfiles() {
+  const stored = load(STORAGE_PROFILES, {});
+  const profiles = {};
   for (const id of Object.keys(PLATFORMS)) {
-    const count = Math.floor(Number(value?.[id]));
-    if (id !== "x" && value?.[id] != null && Number.isFinite(count) && count >= 0) audiences[id] = Math.min(count, 500_000_000);
+    const profile = cleanProfile(stored?.[id]);
+    if (profile) profiles[id] = profile;
   }
-  return audiences;
+  // Before there were platforms there was one X profile.
+  if (!profiles.x) {
+    const legacy = cleanProfile(load(STORAGE_PROFILE, null));
+    if (legacy) profiles.x = legacy;
+  }
+  return profiles;
 }
 
-function followersFor(profile, id) {
-  return id === "x" ? profile.followers : profile.audiences?.[id] ?? DEFAULT_FOLLOWERS;
-}
+const profiles = loadProfiles();
+const me = () => profiles[platformId] || null;
 
-let me = cleanProfile(load(STORAGE_PROFILE, null));
+function setMe(profile) {
+  profiles[platformId] = profile;
+  save(STORAGE_PROFILES, profiles);
+  renderMe();
+}
 
 function renderMe() {
-  const profile = me || ANONYMOUS;
+  const profile = me() || ANONYMOUS;
   paintAvatar(composerAvatar, profile.name, profile.avatarUrl);
 }
 
@@ -651,20 +665,24 @@ const previewHint = document.querySelector("[data-preview-hint]");
 const resultsList = document.querySelector("[data-results]");
 const audienceField = document.querySelector("[data-audience]");
 const audienceInput = document.querySelector("[data-audience-input]");
+const lookupButton = document.querySelector("[data-lookup]");
 
 let results = [];
 let selected = null;
 let searchTimer;
 let searchSequence = 0;
+// X can be searched by name as you type. The others are looked up by exact
+// handle, on request, because each lookup is a paid scrape.
+const searchesByName = () => platformId === "x";
 
 function typedHandle() {
   const value = searchInput.value.trim().replace(/^@/u, "");
-  return HANDLE_PATTERN.test(value) ? value : "";
+  return HANDLE_PATTERNS[platformId].test(value) ? value : "";
 }
 
 function syncContinue() {
-  const audienceOnly = platformId !== "x" && audienceInput.value !== "" && Boolean(me);
-  continueButton.disabled = !selected && !typedHandle() && !audienceOnly;
+  continueButton.disabled = !selected && !typedHandle() && !(audienceInput.value !== "" && !searchesByName());
+  lookupButton.disabled = !typedHandle();
 }
 
 function showHint(message) {
@@ -675,7 +693,8 @@ function showHint(message) {
 }
 
 function resultMeta(profile) {
-  return profile.followersKnown ? `@${profile.handle} · ${compact(profile.followers)} followers` : `@${profile.handle}`;
+  const audience = platformId === "youtube" ? "subscribers" : "followers";
+  return profile.followersKnown ? `@${profile.handle} · ${compact(profile.followers)} ${audience}` : `@${profile.handle}`;
 }
 
 function select(profile) {
@@ -686,9 +705,9 @@ function select(profile) {
     option.setAttribute("aria-selected", String(active));
   }
   syncContinue();
-  if (!profile || profile.followersKnown) return;
+  if (!profile || profile.followersKnown || !searchesByName()) return;
 
-  // Search results carry no follower count. Fetch it for the one they picked,
+  // X search results carry no follower count. Fetch it for the one they picked,
   // so the row shows it and the simulation uses their real audience.
   fetchProfile(profile.handle).then((full) => {
     if (!full) return;
@@ -698,12 +717,12 @@ function select(profile) {
   }).catch(() => {});
 }
 
-function showResults(profiles) {
-  results = profiles;
+function showResults(found) {
+  results = found;
   previewHint.hidden = true;
   resultsList.hidden = false;
   searchInput.setAttribute("aria-expanded", "true");
-  resultsList.replaceChildren(...profiles.map((profile) => {
+  resultsList.replaceChildren(...found.map((profile) => {
     const node = resultTemplate.content.firstElementChild.cloneNode(true);
     const option = node.querySelector(".result");
     option.dataset.handle = profile.handle;
@@ -716,13 +735,17 @@ function showResults(profiles) {
     return node;
   }));
   // An exact handle match is almost certainly who they mean.
-  const exact = profiles.find((profile) => profile.handle.toLowerCase() === typedHandle().toLowerCase());
-  select(exact || (profiles.length === 1 ? profiles[0] : null));
+  const exact = found.find((profile) => profile.handle.toLowerCase() === typedHandle().toLowerCase());
+  select(exact || (found.length === 1 ? found[0] : null));
 }
 
-async function fetchProfile(handle) {
-  const response = await fetch(`/api/viral/profile?handle=${encodeURIComponent(handle)}`);
-  if (!response.ok) return null;
+async function fetchProfile(handle, id = platformId) {
+  const response = await fetch(`/api/viral/profile?platform=${encodeURIComponent(id)}&handle=${encodeURIComponent(handle)}`);
+  if (!response.ok) {
+    const error = new Error("lookup failed");
+    error.status = response.status;
+    throw error;
+  }
   return cleanProfile((await response.json()).profile);
 }
 
@@ -733,20 +756,45 @@ async function search(query) {
     if (sequence !== searchSequence) return;
     const body = response.ok ? await response.json() : { profiles: [] };
     if (sequence !== searchSequence) return;
-    let profiles = (body.profiles || []).map(cleanProfile).filter(Boolean);
+    let found = (body.profiles || []).map(cleanProfile).filter(Boolean);
 
     // Search can miss a small or new account; an exact handle lookup catches it.
     const handle = typedHandle();
-    if (handle && !profiles.some((profile) => profile.handle.toLowerCase() === handle.toLowerCase())) {
+    if (handle && !found.some((profile) => profile.handle.toLowerCase() === handle.toLowerCase())) {
       const exact = await fetchProfile(handle).catch(() => null);
       if (sequence !== searchSequence) return;
-      if (exact) profiles = [exact, ...profiles];
+      if (exact) found = [exact, ...found];
     }
 
-    if (profiles.length) showResults(profiles);
+    if (found.length) showResults(found);
     else showHint(handle ? `No one found. You can still continue as @${handle}.` : "No one found. Try their exact handle.");
   } catch {
     if (sequence === searchSequence) showHint(typedHandle() ? "Search isn't answering. You can still continue with this handle." : "Search isn't answering right now.");
+  }
+}
+
+// Instagram, TikTok, and YouTube: one exact lookup, only when asked for.
+async function lookUp() {
+  const handle = typedHandle();
+  if (!handle) return;
+  const sequence = ++searchSequence;
+  const name = platform().name;
+  lookupButton.disabled = true;
+  showHint(`Looking up @${handle} on ${name}… this can take up to 20 seconds.`);
+  try {
+    const profile = await fetchProfile(handle);
+    if (sequence !== searchSequence) return;
+    showResults([profile]);
+  } catch (error) {
+    if (sequence !== searchSequence) return;
+    const messages = {
+      404: `Couldn't find @${handle} on ${name}. Check the spelling, or enter your followers below.`,
+      429: "That's the lookup limit for today. Enter your followers below instead.",
+      503: `${name} lookup isn't set up yet. Enter your followers below instead.`,
+    };
+    showHint(messages[error.status] || `${name} isn't answering right now. Enter your followers below instead.`);
+  } finally {
+    syncContinue();
   }
 }
 
@@ -757,6 +805,10 @@ searchInput.addEventListener("input", () => {
   results = [];
   syncContinue();
   const query = searchInput.value.trim();
+  if (!searchesByName()) {
+    showHint(typedHandle() ? "Press Look up to fetch your profile." : `Type your ${platform().name} handle.`);
+    return;
+  }
   if (query.length < 2) {
     showHint("Type a name or handle to search…");
     return;
@@ -765,45 +817,60 @@ searchInput.addEventListener("input", () => {
   searchTimer = setTimeout(() => search(query), 350);
 });
 
+searchInput.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" || searchesByName() || selected) return;
+  event.preventDefault();
+  lookUp();
+});
+lookupButton.addEventListener("click", lookUp);
+audienceInput.addEventListener("input", syncContinue);
+
 function openOnboarding() {
-  searchInput.value = me && me.handle !== ANONYMOUS.handle ? me.handle : "";
+  const current = me();
+  const name = platform().name;
+  searchInput.value = current && current.handle !== ANONYMOUS.handle ? current.handle : "";
+  searchInput.placeholder = searchesByName() ? "name or handle" : "handle";
   selected = null;
   results = [];
-  syncContinue();
-  showHint("Type a name or handle to search…");
-  if (searchInput.value) search(searchInput.value);
-  audienceField.hidden = platformId === "x";
-  document.querySelector("[data-audience-platform]").textContent = platform().name;
-  audienceInput.value = me?.audiences?.[platformId] ?? "";
-  document.querySelector("[data-onboarding-lead]").textContent = platformId === "x"
+  searchSequence++;
+  document.querySelector("[data-onboarding-title]").textContent = `What's your ${name} handle?`;
+  document.querySelector("[data-onboarding-lead]").textContent = searchesByName()
     ? "We'll grab your profile pic so your posts look like yours"
-    : `We'll use your X profile pic. Tell us your ${platform().name} audience below.`;
+    : `We'll grab your profile pic and ${platformId === "youtube" ? "subscriber" : "follower"} count`;
+  lookupButton.hidden = searchesByName();
+  audienceField.hidden = searchesByName();
+  document.querySelector("[data-audience-platform]").textContent = name;
+  audienceInput.value = "";
+  showHint(searchesByName() ? "Type a name or handle to search…" : `Type your ${name} handle.`);
+  if (searchInput.value && searchesByName()) search(searchInput.value);
+  syncContinue();
   onboarding.showModal();
 }
 
 onboardingForm.addEventListener("submit", (event) => {
-  const audiences = { ...(me?.audiences || {}) };
-  if (platformId !== "x" && audienceInput.value !== "") Object.assign(audiences, cleanAudiences({ [platformId]: audienceInput.value }));
   if (event.submitter?.value !== "continue") {
-    me = { ...ANONYMOUS, audiences };
-  } else {
-    // Enter with a list showing and nothing picked takes the top result.
-    const keepMe = !selected && !typedHandle() && !results.length && me ? me : null;
-    const choice = selected || keepMe || (typedHandle() ? null : results[0]);
-    me = { ...(choice || cleanProfile({ handle: typedHandle() || ANONYMOUS.handle, name: typedHandle() })), audiences };
-    // Typeahead results carry no follower count; fetch it so reach is real.
-    if (!me.followersKnown && me.handle !== ANONYMOUS.handle) {
-      const handle = me.handle;
-      fetchProfile(handle).then((profile) => {
-        if (!profile || me?.handle !== handle) return;
-        me = { ...profile, audiences: me.audiences };
-        save(STORAGE_PROFILE, me);
-        renderMe();
-      }).catch(() => {});
-    }
+    setMe({ ...ANONYMOUS });
+    return;
   }
-  save(STORAGE_PROFILE, me);
-  renderMe();
+  // Enter with a list showing and nothing picked takes the top result.
+  const handle = typedHandle();
+  let profile = selected || (handle ? null : results[0]) || cleanProfile({ handle: handle || ANONYMOUS.handle, name: handle });
+  // A number they typed themselves wins over nothing, never over a real lookup.
+  if (!profile.followersKnown && audienceInput.value !== "") {
+    profile = cleanProfile({ ...profile, followers: audienceInput.value, followersKnown: true });
+  }
+  setMe(profile);
+
+  // X results picked before their follower count arrived: fill it in after.
+  if (searchesByName() && !profile.followersKnown && profile.handle !== ANONYMOUS.handle) {
+    const chosenOn = platformId;
+    fetchProfile(profile.handle, chosenOn).then((full) => {
+      if (!full || profiles[chosenOn]?.handle !== profile.handle) return;
+      profiles[chosenOn] = full;
+      save(STORAGE_PROFILES, profiles);
+      renderMe();
+    }).catch(() => {});
+  }
 });
 
 // Escape closes the dialog without saving a choice, so the question comes back
@@ -955,7 +1022,7 @@ composer.addEventListener("submit", (event) => {
   event.preventDefault();
   const text = textarea.value.trim();
   if (!text) return;
-  const author = me || ANONYMOUS;
+  const author = me() || ANONYMOUS;
   const poll = pollOptions();
 
   const post = {
@@ -965,7 +1032,7 @@ composer.addEventListener("submit", (event) => {
     handle: author.handle,
     avatarUrl: author.avatarUrl,
     verified: author.verified,
-    followers: followersFor(author, platformId),
+    followers: author.followers,
     platform: platformId,
     ...(extraInput.value.trim() && !extraField.hidden ? { extra: extraInput.value.trim() } : {}),
     ...(formatSelect.hidden ? {} : { format: formatSelect.value }),
@@ -1110,6 +1177,7 @@ function setPlatform(id, { persist = true } = {}) {
   if (platformId !== "x" && !pollEditor.hidden) document.querySelector("[data-poll-remove]").click();
 
   remote = { enabled: false, posts: [], leaderboard: [] };
+  renderMe();
   renderPractices(platformId);
   renderAbout();
   renderFeed();
@@ -1127,6 +1195,7 @@ for (const option of platformOptions) {
     // Drop focus too, or :focus-within keeps the panel open after the choice.
     option.blur();
     closeSwitcher();
+    if (!me()) openOnboarding();
   });
 }
 
@@ -1149,8 +1218,6 @@ document.addEventListener("click", (event) => {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeSwitcher();
 });
-audienceInput.addEventListener("input", syncContinue);
-
 renderMe();
 setPlatform(platformId, { persist: false });
-if (!me) openOnboarding();
+if (!me()) openOnboarding();

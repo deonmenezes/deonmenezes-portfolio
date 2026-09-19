@@ -56,6 +56,10 @@
       "destination": "/api/stats?route=viral-feed"
     },
     {
+      "source": "/api/viral/avatar",
+      "destination": "/api/stats?route=viral-avatar"
+    },
+    {
       "source": "/api/viral",
       "destination": "/api/stats?route=viral"
     },

@@ -1445,6 +1445,23 @@ svg.verified {
   font: inherit;
 }
 
+.onboarding-lookup {
+  flex: none;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--button-bg);
+  color: var(--button-ink);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.onboarding-lookup:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
 .onboarding-preview {
   min-height: 68px;
   max-height: 264px;

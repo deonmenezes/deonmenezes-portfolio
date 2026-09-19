@@ -169,18 +169,19 @@
   <dialog class="onboarding" data-onboarding aria-labelledby="onboarding-title">
     <form method="dialog" class="onboarding-form" data-onboarding-form>
       <svg class="onboarding-mark solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
-      <h2 id="onboarding-title">What's your X handle?</h2>
+      <h2 id="onboarding-title" data-onboarding-title>What's your X handle?</h2>
       <p class="onboarding-lead" data-onboarding-lead>We'll grab your profile pic so your posts look like yours</p>
       <label class="onboarding-field" for="onboarding-handle">
         <span aria-hidden="true">@</span>
         <input id="onboarding-handle" name="handle" type="text" maxlength="50" placeholder="name or handle" role="combobox" aria-expanded="false" aria-controls="onboarding-results" autocomplete="off" autocapitalize="none" spellcheck="false">
+        <button class="onboarding-lookup" type="button" data-lookup hidden>Look up</button>
       </label>
       <div class="onboarding-preview" data-preview>
         <p class="onboarding-hint" role="status" data-preview-hint>Type a name or handle to search…</p>
         <ul class="onboarding-results" id="onboarding-results" role="listbox" aria-label="Matching profiles" data-results hidden></ul>
       </div>
       <label class="onboarding-audience" data-audience hidden>
-        <span>Your <span data-audience-platform>Instagram</span> followers</span>
+        <span>Or enter your <span data-audience-platform>Instagram</span> followers yourself</span>
         <input type="number" name="audience" min="0" max="500000000" step="1" inputmode="numeric" placeholder="1000" data-audience-input>
       </label>
       <button class="onboarding-continue" type="submit" value="continue" data-onboarding-continue disabled>Continue</button>
