@@ -75,7 +75,7 @@ test("each source runs once per interval however many visitors ask, with a charg
   const apify = calls.filter((call) => call.url.startsWith("https://api.apify.com/"));
   assert.equal(apify.length, 2, "one TikTok run and one Instagram run, not one per visitor");
   for (const call of apify) {
-    assert.match(call.url, /maxTotalChargeUsd=0\.(?:04|2)(?:&|$)/u);
+    assert.match(call.url, /maxTotalChargeUsd=0\.(?:04|5)(?:&|$)/u);
     assert.match(call.url, /maxItems=10/u);
     assert.equal(call.options.headers.Authorization, "Bearer apify_test_token");
     assert.ok(!call.url.includes("apify_test_token"), "the token never rides in the URL");
@@ -87,7 +87,7 @@ test("each source runs once per interval however many visitors ask, with a charg
   assert.equal(calls.filter((call) => call.url.startsWith("https://api.apify.com/")).length, 2, "the paid sources are not");
 
   const tiktok = await liveTrendsFor("tiktok", { getDatabaseFn: async () => db, now: NOW + 7 * 3_600_000 });
-  assert.deepEqual(tiktok.map((source) => source.id), ["tiktok-hashtags", "google"], "the platform's own source leads");
+  assert.deepEqual(tiktok.map((source) => source.id), ["tiktok-tags", "google"], "the platform's own source leads");
   assert.deepEqual(tiktok[0].topics, ["#garbanight", "#h1b"]);
   const instagram = await liveTrendsFor("instagram", { getDatabaseFn: async () => db, now: NOW });
   assert.deepEqual(instagram[0].topics, ["Navratri outfits"]);
@@ -97,7 +97,7 @@ test("each source runs once per interval however many visitors ask, with a charg
 });
 
 test("a failed or switched-off run keeps the old topics and does not retry until the next interval", async () => {
-  const old = { _id: "tiktok-hashtags", nextAt: new Date(NOW - 1000), topics: ["#older"], fetchedAt: new Date(NOW - 3_600_000) };
+  const old = { _id: "tiktok-tags", nextAt: new Date(NOW - 1000), topics: ["#older"], fetchedAt: new Date(NOW - 3_600_000) };
   const db = database([old]);
   let runs = 0;
   const fetchFn = async (url) => {
