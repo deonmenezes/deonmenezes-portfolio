@@ -7,7 +7,7 @@
 import { draftChecks } from "/viral-checks.js";
 import { DEFAULT_PLATFORM, PLATFORMS } from "/viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "/viral-practices.js";
-import { TRENDS_AS_OF, TRENDS_SCOPE, trendsFor } from "/viral-trends.js";
+import { MAX_OWN_TOPICS, TRENDS, TRENDS_AS_OF, TRENDS_SCOPE, cleanTopics, trendsFor } from "/viral-trends.js";
 
 const STORAGE_POSTS = "viral_posts";
 const STORAGE_PLATFORM = "viral_platform";
@@ -967,8 +967,15 @@ const trendsCard = document.querySelector("[data-trends]");
 // The same dated list Jev is given. Shown so a low timeliness score has an answer.
 function renderTrends() {
   const trends = trendsFor(platformId);
-  trendsCard.hidden = !trends;
-  if (!trends) return;
+  // The visitor's own topics work even after the researched list has gone stale. X has neither.
+  trendsCard.hidden = !Object.hasOwn(TRENDS, platformId);
+  trendsCard.querySelector("[data-trends-listed]").hidden = !trends;
+  if (trendsCard.hidden) return;
+  renderOwnTopics();
+  if (!trends) {
+    trendsCard.querySelector("[data-trends-scope]").textContent = `Jev is given your topics with every ${platform().noun}, so it can tell what is new.`;
+    return;
+  }
   const asOf = new Date(`${TRENDS_AS_OF}T00:00:00Z`).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
   trendsCard.querySelector("[data-trends-scope]").textContent = `In ${TRENDS_SCOPE}, as of ${asOf}. Jev is given this list with every ${platform().noun}, so it can tell what is new.`;
   const items = (list) => list.map((entry) => {
@@ -987,6 +994,47 @@ function renderTrends() {
   trendsCard.querySelector("[data-trends-gaps]").replaceChildren(...items(trends.gaps));
   trendsCard.querySelector("[data-trends-source]").textContent = `Source: ${trends.source.label}.`;
 }
+
+// Topics the visitor adds for their own niche. They lead the list Jev reads.
+const STORAGE_TOPICS = "viral_topics";
+const ownTopicsList = trendsCard.querySelector("[data-own-topics]");
+const ownTopicForm = trendsCard.querySelector("[data-own-topic-form]");
+const ownTopicInput = trendsCard.querySelector("[data-own-topic-input]");
+let ownTopics = cleanTopics(load(STORAGE_TOPICS, []));
+
+function renderOwnTopics() {
+  ownTopicsList.replaceChildren(...ownTopics.map((topic) => {
+    const item = document.createElement("li");
+    const label = document.createElement("span");
+    label.textContent = topic;
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "own-topic-remove";
+    remove.textContent = "×";
+    remove.setAttribute("aria-label", `Remove ${topic}`);
+    remove.addEventListener("click", () => {
+      ownTopics = ownTopics.filter((entry) => entry !== topic);
+      save(STORAGE_TOPICS, ownTopics);
+      renderOwnTopics();
+    });
+    item.append(label, remove);
+    return item;
+  }));
+  ownTopicsList.hidden = ownTopics.length === 0;
+  const full = ownTopics.length >= MAX_OWN_TOPICS;
+  ownTopicForm.hidden = full;
+  trendsCard.querySelector("[data-own-topics-note]").textContent = full
+    ? `That's the limit of ${MAX_OWN_TOPICS}. Remove one to add another.`
+    : "Jev takes your word for these. Add only what really is trending, or the timeliness score flatters you.";
+}
+
+ownTopicForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  ownTopics = cleanTopics([...ownTopics, ownTopicInput.value]);
+  save(STORAGE_TOPICS, ownTopics);
+  ownTopicInput.value = "";
+  renderOwnTopics();
+});
 
 /* -------------------------------------------------------------- history */
 
@@ -1240,6 +1288,7 @@ async function simulate(post) {
         attachments: post.attachments,
         poll: post.poll,
         visual: post.visual,
+        topics: ownTopics,
         publish: !post.private,
         ...(post.private ? {} : { author: { handle: post.handle, name: post.name, avatarUrl: post.avatarUrl, verified: post.verified } }),
       }),
@@ -1682,7 +1731,8 @@ mediaTools[1].addEventListener("click", () => fileGif.click());
 videoTool.addEventListener("click", () => fileVideo.click());
 for (const input of [fileMedia, fileGif, fileVideo]) {
   input.addEventListener("change", () => {
-    attach(input.files);
+    if (createDialog.open) createAttach(input.files);
+    else attach(input.files);
     input.value = "";
   });
 }
@@ -1814,9 +1864,106 @@ document.querySelector("[data-leaderboard-close]")?.addEventListener("click", ()
   document.querySelector("[data-leaderboard-card]").hidden = true;
 });
 
+/* ----------------------------------------------------- Instagram's Create */
+
+// Instagram posts start from Create: pick the media, write the caption beside
+// it, Share. It fills the same composer underneath, so scoring has one path.
+const createDialog = document.querySelector("[data-create]");
+const createPick = createDialog.querySelector("[data-create-pick]");
+const createEdit = createDialog.querySelector("[data-create-edit]");
+const createMedia = createDialog.querySelector("[data-create-media]");
+const createCaption = createDialog.querySelector("[data-create-caption]");
+const createHook = createDialog.querySelector("[data-create-hook]");
+const createShare = createDialog.querySelector("[data-create-share]");
+const createBack = createDialog.querySelector("[data-create-back]");
+const createNote = createDialog.querySelector("[data-create-note]");
+const CREATE_NOTE = createNote.textContent;
+
+function renderCreate() {
+  const editing = attached.length > 0;
+  createPick.hidden = editing;
+  createEdit.hidden = !editing;
+  createBack.hidden = !editing;
+  createShare.hidden = !editing;
+  createShare.disabled = !createCaption.value.trim();
+  createDialog.querySelector("[data-create-count]").textContent = `${createCaption.value.length} / ${TEXT_LIMITS[platformId]}`;
+}
+
+// Only when the files change: redrawing on every keystroke would restart a playing video.
+function renderCreateMedia() {
+  renderCreate();
+  renderMedia(createMedia, attached, {
+    reel: true,
+    onRemove: (index) => {
+      attached = attached.filter((_, position) => position !== index);
+      renderAttached();
+      renderCreateMedia();
+    },
+  });
+}
+
+function createAttach(files) {
+  const before = attached.length;
+  attach(files);
+  // attach() explains a refused file in the composer's status line, which the dialog covers.
+  const refused = attached.length === before && [...files].length > 0;
+  createNote.textContent = refused ? "Use up to 4 photos, or one video: images under 10 MB, videos under 80 MB." : CREATE_NOTE;
+  createNote.classList.toggle("is-error", refused);
+  renderCreateMedia();
+  if (attached.length) createCaption.focus();
+}
+
+function openCreate() {
+  const author = me() || ANONYMOUS;
+  paintAvatar(createDialog.querySelector("[data-create-avatar]"), author.name, author.avatarUrl);
+  createDialog.querySelector("[data-create-handle]").textContent = author.handle;
+  createCaption.value = textarea.value;
+  createHook.value = extraInput.value;
+  createNote.textContent = CREATE_NOTE;
+  createNote.classList.remove("is-error");
+  renderCreateMedia();
+  createDialog.showModal();
+}
+
+createDialog.querySelector("[data-create-select]").addEventListener("click", () => fileMedia.click());
+createDialog.querySelector("[data-create-close]").addEventListener("click", () => createDialog.close());
+createCaption.addEventListener("input", renderCreate);
+createBack.addEventListener("click", () => {
+  attached = [];
+  renderAttached();
+  renderCreateMedia();
+});
+createPick.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  createPick.classList.add("is-over");
+});
+createPick.addEventListener("dragleave", () => createPick.classList.remove("is-over"));
+createPick.addEventListener("drop", (event) => {
+  event.preventDefault();
+  createPick.classList.remove("is-over");
+  createAttach(event.dataTransfer?.files || []);
+});
+// Closing keeps the draft: whatever was written carries into the composer.
+createDialog.addEventListener("close", () => {
+  textarea.value = createCaption.value;
+  extraInput.value = createHook.value;
+  syncComposer();
+});
+createShare.addEventListener("click", () => {
+  textarea.value = createCaption.value;
+  extraInput.value = createHook.value;
+  // The close handler runs after this; emptied, it cannot put the caption back.
+  createCaption.value = "";
+  createHook.value = "";
+  createDialog.close();
+  syncComposer();
+  if (!simulateButton.disabled) composer.requestSubmit();
+});
+
 document.querySelector("[data-focus-composer]")?.addEventListener("click", () => {
   showTab("foryou");
-  textarea.focus();
+  if (platformId === "instagram") openCreate();
+  else textarea.focus();
 });
 
 /* ----------------------------------------------------------- visibility */

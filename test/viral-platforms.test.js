@@ -5,7 +5,7 @@ import { createViralHandler, scorePost } from "../lib/viral.js";
 import { cleanAuthor, createViralFeedHandler, savePost } from "../lib/viral-store.js";
 import { PLATFORM_IDS, PLATFORMS, questionsFor } from "../viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "../viral-practices.js";
-import { TRENDS, TRENDS_AS_OF, TRENDS_MAX_AGE_DAYS, trendContext, trendsFor } from "../viral-trends.js";
+import { MAX_OWN_TOPICS, TRENDS, TRENDS_AS_OF, TRENDS_MAX_AGE_DAYS, cleanTopics, trendContext, trendsFor } from "../viral-trends.js";
 
 const saved = { gateway: process.env.AI_GATEWAY_API_KEY, secret: process.env.JEV_HASH_SECRET, mongo: process.env.MONGODB_URI };
 
@@ -289,4 +289,24 @@ test("the page loads the shared platform files, and the stylesheet themes all fo
   for (const name of icons) assert.ok(html.includes(`id="i-${name}"`), `icon ${name}`);
   assert.doesNotMatch(css, /var\(--blue\)/u);
   assert.equal(vercel.rewrites.find((rule) => rule.source === "/api/viral/feed").destination, "/api/stats?route=viral-feed");
+});
+
+test("a visitor's own topics lead the list Jev reads, cleaned and capped", async () => {
+  const asOf = Date.parse(`${TRENDS_AS_OF}T00:00:00Z`);
+  const day = 86_400_000;
+  assert.deepEqual(cleanTopics(["  Garba\n night ", "garba night", 7, "", "x".repeat(200)]), ["Garba night", "x".repeat(80)]);
+  assert.equal(cleanTopics(Array.from({ length: 20 }, (_, index) => `topic ${index}`)).length, MAX_OWN_TOPICS);
+  assert.deepEqual(cleanTopics("not a list"), []);
+
+  assert.deepEqual(trendContext("tiktok", asOf, ["Garba night"]).trendingNow, ["Garba night", ...TRENDS.tiktok.topics]);
+  assert.deepEqual(trendContext("tiktok", asOf + (TRENDS_MAX_AGE_DAYS + 1) * day, ["Garba night"]).trendingNow, ["Garba night"], "they outlive the researched list");
+  assert.deepEqual(trendContext("x", asOf, ["Garba night"]), {}, "X still gets none");
+
+  let upstream;
+  const handler = createViralHandler({
+    queryFn: async () => claimed(),
+    fetchFn: async (_url, options) => { upstream = JSON.parse(options.body); return gateway(everyAction("instagram", 0.5)); },
+  });
+  await handler(request({ platform: "instagram", text: "Garba in the Bay", topics: ["Garba night", { not: "text" }] }), response());
+  assert.deepEqual(upstream.state.trendingNow.slice(0, 2), ["Garba night", TRENDS.instagram.topics[0]]);
 });

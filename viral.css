@@ -1331,6 +1331,15 @@ svg.verified {
 .trends-scope { margin: 0 16px; color: var(--muted); font-size: 12px; line-height: 16px; }
 .trends ul + .trends-scope { margin-top: 12px; }
 .trends .basis { margin-left: 6px; }
+.trends .own-topics { padding-left: 16px; list-style: none; }
+.own-topics li { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.own-topic-remove { flex: none; border: 0; padding: 0 6px; background: none; color: var(--muted); font-size: 18px; line-height: 19px; cursor: pointer; }
+.own-topic-remove:hover { color: var(--ink); }
+.own-topic-form { display: flex; gap: 8px; margin: 6px 16px 8px; }
+.own-topic-form input { flex: 1; min-width: 0; padding: 6px 10px; border: 1px solid var(--line-strong); border-radius: 8px; background: transparent; color: inherit; font: inherit; font-size: 13px; }
+.own-topic-form button { padding: 6px 12px; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: inherit; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+[data-platform="instagram"] .own-topic-form { margin-right: 0; margin-left: 0; }
+[data-platform="instagram"] .trends .own-topics { padding-left: 0; }
 [data-platform="instagram"] .trends h3,
 [data-platform="instagram"] .trends-scope { margin-right: 0; margin-left: 0; }
 [data-platform="instagram"] .trends ul { padding-left: 16px; padding-right: 0; }
@@ -2598,4 +2607,58 @@ svg.verified {
 @media (max-width: 700px) {
   [data-platform="youtube"] .feed { grid-template-columns: minmax(0, 1fr); }
   [data-platform="tiktok"] .post { grid-template-columns: minmax(0, 1fr) 48px; }
+}
+
+/* Instagram's Create flow: pick files, then caption beside the preview, then Share. */
+.create {
+  width: min(760px, calc(100vw - 32px));
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  overflow: hidden;
+}
+.create::backdrop { background: rgb(0 0 0 / 65%); }
+.create-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line-strong);
+}
+.create-head h2 { flex: 1; margin: 0; font-size: 16px; font-weight: 600; text-align: center; }
+.create-nav { border: 0; padding: 6px 4px; background: none; color: inherit; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.create-share { color: var(--accent); }
+.create-share:disabled { cursor: default; opacity: 0.4; }
+.create-pick {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  min-height: 420px;
+  padding: 24px;
+  text-align: center;
+}
+.create-pick.is-over { background: var(--hover); }
+.create-pick svg { width: 84px; height: 84px; fill: none; stroke: currentColor; stroke-width: 1; stroke-linejoin: round; }
+.create-pick p { margin: 0; font-size: 20px; }
+.create-select { border: 0; border-radius: 8px; padding: 8px 16px; background: var(--accent); color: var(--on-accent); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.create-select:hover { background: var(--accent-strong); }
+.create .create-note { margin: 0; color: var(--muted); font-size: 12px; }
+.create .create-note.is-error { color: #ed4956; }
+.create-edit { display: grid; grid-template-columns: minmax(0, 1fr) 300px; min-height: 420px; }
+.create-edit[hidden], .create-pick[hidden] { display: none; }
+.create-edit .media-grid { align-self: center; margin: 0; border-radius: 0; }
+.create-side { display: grid; align-content: start; gap: 10px; padding: 16px; border-left: 1px solid var(--line-strong); }
+.create-author { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 14px; }
+.create-author .avatar { width: 28px; height: 28px; font-size: 12px; }
+.create-side textarea { width: 100%; border: 0; padding: 0; background: transparent; color: inherit; font: inherit; font-size: 15px; resize: none; outline: none; }
+.create-count { margin: 0; color: var(--muted); font-size: 12px; text-align: right; }
+.create-hook { display: grid; gap: 4px; padding-top: 10px; border-top: 1px solid var(--line-strong); font-size: 13px; font-weight: 600; }
+.create-hook input { border: 0; padding: 4px 0; background: transparent; color: inherit; font: inherit; font-size: 14px; font-weight: 400; outline: none; }
+@media (max-width: 640px) {
+  .create-edit { grid-template-columns: 1fr; }
+  .create-side { border-left: 0; border-top: 1px solid var(--line-strong); }
 }
