@@ -1158,6 +1158,7 @@ function renderTrends() {
   trendsCard.querySelector("[data-trends-listed]").hidden = !trends;
   if (trendsCard.hidden) return;
   renderOwnTopics();
+  renderLiveTrends();
   if (!trends) {
     trendsCard.querySelector("[data-trends-scope]").textContent = `Jev is given your topics with every ${platform().noun}, so it can tell what is new.`;
     return;
@@ -1179,6 +1180,39 @@ function renderTrends() {
   trendsCard.querySelector("[data-trends-formats]").replaceChildren(...items(trends.formats));
   trendsCard.querySelector("[data-trends-gaps]").replaceChildren(...items(trends.gaps));
   trendsCard.querySelector("[data-trends-source]").textContent = `Source: ${trends.source.label}.`;
+}
+
+// Today's live topics, fetched by the server at most once per source per interval. Jev is given the same list.
+const liveTrends = new Map();
+
+function renderLiveTrends() {
+  const id = platformId;
+  const paint = () => {
+    const sources = liveTrends.get(id) || [];
+    trendsCard.querySelector("[data-trends-live]").hidden = sources.length === 0;
+    trendsCard.querySelector("[data-trends-live-list]").replaceChildren(...sources.flatMap((source) => {
+      const list = document.createElement("ul");
+      list.replaceChildren(...source.topics.map((topic) => {
+        const item = document.createElement("li");
+        item.textContent = topic;
+        return item;
+      }));
+      const from = document.createElement("p");
+      from.className = "trends-scope";
+      from.textContent = `${source.experimental ? "Experimental. " : ""}${source.label}, fetched ${timeAgo(source.fetchedAt) === "now" ? "just now" : `${timeAgo(source.fetchedAt)} ago`}.`;
+      return [list, from];
+    }));
+  };
+  paint();
+  if (liveTrends.has(id)) return;
+  liveTrends.set(id, []);
+  fetch(`/api/viral/trends?platform=${encodeURIComponent(id)}`)
+    .then((response) => (response.ok ? response.json() : { sources: [] }))
+    .then((body) => {
+      liveTrends.set(id, (Array.isArray(body.sources) ? body.sources : []).filter((source) => Array.isArray(source.topics) && source.topics.every((topic) => typeof topic === "string")));
+      if (platformId === id) paint();
+    })
+    .catch(() => liveTrends.delete(id));
 }
 
 // Topics the visitor adds for their own niche. They lead the list Jev reads.

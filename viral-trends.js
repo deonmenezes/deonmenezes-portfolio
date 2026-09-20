@@ -105,6 +105,7 @@ export function trendsFor(platformId, now = Date.now()) {
 }
 
 export const MAX_OWN_TOPICS = 8;
+export const MAX_LIVE_TOPICS = 14;
 export const MAX_OWN_TOPIC_CHARS = 80;
 
 /** Topics a visitor added for their own niche: short plain strings, a handful at most. */
@@ -124,8 +125,10 @@ export function cleanTopics(list) {
 
 /** What is added to the state Jev reads, so it can judge timeliness. Empty when stale and the visitor added nothing.
     X gets neither: its ranker was not part of this research. */
-export function trendContext(platformId, now = Date.now(), ownTopics = []) {
+export function trendContext(platformId, now = Date.now(), ownTopics = [], liveTopics = []) {
   if (!Object.hasOwn(TRENDS, platformId)) return {};
-  const topics = [...cleanTopics(ownTopics), ...(trendsFor(platformId, now)?.topics || [])];
+  // The visitor's own topics lead, then what is live today, then the researched list. Capped: it rides along with every request.
+  const live = (Array.isArray(liveTopics) ? liveTopics : []).filter((topic) => typeof topic === "string" && topic).slice(0, MAX_LIVE_TOPICS);
+  const topics = [...new Set([...cleanTopics(ownTopics), ...live, ...(trendsFor(platformId, now)?.topics || [])])];
   return topics.length ? { today: new Date(now).toISOString().slice(0, 10), trendingNow: topics } : {};
 }

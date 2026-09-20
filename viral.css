@@ -2854,3 +2854,5 @@ button.post-more svg { width: 100%; height: 100%; }
 }
 .share-target:hover { background: var(--hover); }
 .share-target:last-child { grid-column: 1 / -1; }
+
+.trends [data-trends-live-list] .trends-scope { margin-top: 4px; margin-bottom: 8px; }

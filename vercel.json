@@ -64,6 +64,10 @@
       "destination": "/api/stats?route=viral-ideas"
     },
     {
+      "source": "/api/viral/trends",
+      "destination": "/api/stats?route=viral-trends"
+    },
+    {
       "source": "/api/viral/comments",
       "destination": "/api/stats?route=viral-comments"
     },
