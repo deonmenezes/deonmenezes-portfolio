@@ -857,6 +857,12 @@ function fillStats(node, post) {
     const worst = Math.max(...risky.map((item) => item.probability));
     rows.push(stat("Risk of putting people off", worst >= 0.4 ? "High" : worst >= 0.25 ? "Medium" : "Low", worst >= 0.4 ? "bad" : worst >= 0.25 ? "warn" : "good"));
   }
+  // The same post scored with no account behind it, when Jev was given a track record to weigh.
+  if (post.content) {
+    const gap = post.viralScore - post.content.viralScore;
+    rows.push(stat("Post on its own", `${post.content.viralScore} (${post.content.verdict})`, post.content.viralScore >= 35 ? "good" : post.content.viralScore >= 15 ? "warn" : "bad"));
+    rows.push(stat("What your account adds", `${gap > 0 ? "+" : ""}${gap}`, gap >= 0 ? "good" : gap > -15 ? "warn" : "bad"));
+  }
   if (post.reach) rows.push(stat("Views from", `${compact(post.reach.followers)} followers · ${compact(post.reach.discovery)} discovery`));
   node.querySelector("[data-stats]").replaceChildren(...rows);
 }

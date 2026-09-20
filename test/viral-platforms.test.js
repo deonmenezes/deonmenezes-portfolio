@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { createViralHandler, describeCreator, scorePost } from "../lib/viral.js";
+import { accountTip, createViralHandler, describeCreator, scorePost } from "../lib/viral.js";
 import { cleanAuthor, createViralFeedHandler, savePost } from "../lib/viral-store.js";
 import { PLATFORM_IDS, PLATFORMS, questionsFor } from "../viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "../viral-practices.js";
@@ -370,4 +370,44 @@ test("Jev is told who is posting from the looked-up profile, not from what the v
   assert.deepEqual(describeCreator("youtube", { followers: 200, creator: { followers: 200, verified: false, lifetimePosts: 50, viewsPerPost: 1200 } }), {
     subscribers: 200, verifiedPublicFigure: false, trackRecord: "Across 50 videos they average 1,200 views a video.",
   });
+});
+
+test("with a track record, the post is also scored on its own, paid for up front, and the gap is explained", async () => {
+  const known = { followers: 1200, verified: false, recentPosts: 12, medianLikes: 40, recentVideos: 9, medianViews: 600, breakouts: 0 };
+  const run = async ({ contentFails = false, creator = known } = {}) => {
+    const states = [];
+    const queries = [];
+    const handler = createViralHandler({
+      queryFn: async (_sql, params) => { queries.push(params); return claimed(); },
+      creatorFn: async () => creator,
+      fetchFn: async (_url, options) => {
+        const { state } = JSON.parse(options.body);
+        states.push(state);
+        if (!state.creator && contentFails) return new Response("{}", { status: 500 });
+        return gateway(everyAction("instagram", state.creator ? 0.2 : 0.9));
+      },
+    });
+    const res = response();
+    await handler(request({ platform: "instagram", text: "a perfectly good reel about something", handle: "deon_tech" }), res);
+    return { res, states, queries };
+  };
+
+  const both = await run();
+  assert.equal(both.states.length, 2);
+  assert.equal(both.states.filter((state) => state.creator).length, 1, "one call knows the account, one does not");
+  assert.ok(both.res.body.content.viralScore - both.res.body.viralScore >= 15);
+  assert.match(both.res.body.tips[0], /^The account is holding this back, not the post/u);
+  assert.ok(both.res.body.tips.length <= 3);
+
+  const single = await run({ creator: { followers: 1200, verified: false } });
+  assert.equal(single.states.length, 1, "no track record, no second call");
+  assert.equal(single.res.body.content, undefined);
+  assert.ok(both.queries[0][2] > single.queries[0][2] * 1.5, "both calls are reserved before either is made");
+
+  const degraded = await run({ contentFails: true });
+  assert.equal(degraded.res.statusCode, 200);
+  assert.equal(degraded.res.body.content, undefined, "a failed second opinion costs the visitor nothing");
+
+  assert.equal(accountTip(50, 55), null);
+  assert.match(accountTip(80, 40), /^Your account is carrying this one/u);
 });
