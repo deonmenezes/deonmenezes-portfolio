@@ -25,7 +25,9 @@ const RSS = `<rss><channel><title>Daily Search Trends</title>
 function database(docs = []) {
   const collection = {
     async findOneAndUpdate(filter, change) {
-      const doc = docs.find((entry) => entry._id === filter._id && entry.nextAt <= filter.nextAt.$lte);
+      const doc = docs.find((entry) => entry._id === filter._id && (filter.nextAt
+        ? entry.nextAt <= filter.nextAt.$lte
+        : typeof entry.runId === "string" && entry.collecting !== true));
       if (!doc) return null;
       Object.assign(doc, change.$set);
       return doc;
@@ -51,14 +53,17 @@ function database(docs = []) {
 
 function network() {
   const calls = [];
+  const state = { runStatus: "RUNNING" };
   const fetchFn = async (url, options = {}) => {
     calls.push({ url, options });
     if (url.startsWith("https://trends.google.com/")) return new Response(RSS, { status: 200 });
-    if (url.includes("tiktok-trends")) return new Response(JSON.stringify([{ name: "garbanight" }, { name: "#h1b" }, { nope: 1 }]), { status: 200 });
+    if (url.includes("tiktok-trends")) return new Response(JSON.stringify({ data: { id: "run12345abc" } }), { status: 201 });
+    if (url.includes("/actor-runs/run12345abc")) return new Response(JSON.stringify({ data: { status: state.runStatus, defaultDatasetId: "set1" } }), { status: 200 });
+    if (url.includes("/datasets/set1/items")) return new Response(JSON.stringify([{ name: "garbanight" }, { name: "#h1b" }, { nope: 1 }]), { status: 200 });
     if (url.includes("instagram-trending")) return new Response(JSON.stringify([{ topic: "  Navratri\noutfits " }]), { status: 200 });
     return new Response("[]", { status: 200 });
   };
-  return { calls, fetchFn };
+  return { calls, fetchFn, state };
 }
 
 test("Google's feed is read into short, harmless topics", () => {
@@ -68,11 +73,19 @@ test("Google's feed is read into short, harmless topics", () => {
 
 test("each source runs once per interval however many visitors ask, with a charge ceiling on the paid ones", async () => {
   const db = database();
-  const { calls, fetchFn } = network();
+  const { calls, fetchFn, state } = network();
+  const started = () => calls.filter((call) => call.url.startsWith("https://api.apify.com/v2/acts/"));
   await Promise.all([refreshDue(db, { fetchFn, now: NOW }), refreshDue(db, { fetchFn, now: NOW }), refreshDue(db, { fetchFn, now: NOW })]);
-  await refreshDue(db, { fetchFn, now: NOW + 3_600_000 });
 
-  const apify = calls.filter((call) => call.url.startsWith("https://api.apify.com/"));
+  // The slow TikTok run is only started; its topics arrive on a later request, once it has finished.
+  assert.deepEqual((await liveTrendsFor("tiktok", { getDatabaseFn: async () => db, now: NOW })).map((source) => source.id), ["google"]);
+  await refreshDue(db, { fetchFn, now: NOW + 60_000 });
+  assert.equal(db.docs.find((doc) => doc._id === "tiktok-creative").runId, "run12345abc", "still running: keep waiting");
+  state.runStatus = "SUCCEEDED";
+  await refreshDue(db, { fetchFn, now: NOW + 3_600_000 });
+  assert.equal(db.docs.find((doc) => doc._id === "tiktok-creative").runId, undefined);
+
+  const apify = started();
   assert.equal(apify.length, 2, "one TikTok run and one Instagram run, not one per visitor");
   for (const call of apify) {
     assert.match(call.url, /maxTotalChargeUsd=0\.(?:04|5)(?:&|$)/u);
@@ -84,10 +97,10 @@ test("each source runs once per interval however many visitors ask, with a charg
 
   await refreshDue(db, { fetchFn, now: NOW + 7 * 3_600_000 });
   assert.equal(calls.filter((call) => call.url.includes("google")).length, 4, "Google is due again after six hours");
-  assert.equal(calls.filter((call) => call.url.startsWith("https://api.apify.com/")).length, 2, "the paid sources are not");
+  assert.equal(started().length, 2, "the paid sources are not");
 
   const tiktok = await liveTrendsFor("tiktok", { getDatabaseFn: async () => db, now: NOW + 7 * 3_600_000 });
-  assert.deepEqual(tiktok.map((source) => source.id), ["tiktok-trending", "google"], "the platform's own source leads");
+  assert.deepEqual(tiktok.map((source) => source.id), ["tiktok-creative", "google"], "the platform's own source leads");
   assert.deepEqual(tiktok[0].topics, ["#garbanight", "#h1b"]);
   const instagram = await liveTrendsFor("instagram", { getDatabaseFn: async () => db, now: NOW });
   assert.deepEqual(instagram[0].topics, ["Navratri outfits"]);
@@ -97,7 +110,7 @@ test("each source runs once per interval however many visitors ask, with a charg
 });
 
 test("a failed or switched-off run keeps the old topics and does not retry until the next interval", async () => {
-  const old = { _id: "tiktok-trending", nextAt: new Date(NOW - 1000), topics: ["#older"], fetchedAt: new Date(NOW - 3_600_000) };
+  const old = { _id: "tiktok-creative", nextAt: new Date(NOW - 1000), topics: ["#older"], fetchedAt: new Date(NOW - 3_600_000) };
   const db = database([old]);
   let runs = 0;
   const fetchFn = async (url) => {
