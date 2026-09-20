@@ -16,6 +16,8 @@ test.afterEach(() => {
 });
 
 const NOW = Date.parse("2026-09-20T12:00:00Z");
+// The TikTok source is paused in production; the machinery behind it is still tested, with the pause lifted.
+const ALL = Object.fromEntries(Object.entries(SOURCES).map(([id, source]) => [id, { ...source, paused: false }]));
 const RSS = `<rss><channel><title>Daily Search Trends</title>
   <item><title>h1b fee</title><ht:news_item><ht:news_item_title>Trump extends $100,000 H-1B fee &amp; tech reacts</ht:news_item_title></ht:news_item></item>
   <item><title>garba &lt;script&gt;</title></item>
@@ -75,14 +77,14 @@ test("each source runs once per interval however many visitors ask, with a charg
   const db = database();
   const { calls, fetchFn, state } = network();
   const started = () => calls.filter((call) => call.url.startsWith("https://api.apify.com/v2/acts/"));
-  await Promise.all([refreshDue(db, { fetchFn, now: NOW }), refreshDue(db, { fetchFn, now: NOW }), refreshDue(db, { fetchFn, now: NOW })]);
+  await Promise.all([refreshDue(db, { fetchFn, now: NOW, sources: ALL }), refreshDue(db, { fetchFn, now: NOW, sources: ALL }), refreshDue(db, { fetchFn, now: NOW, sources: ALL })]);
 
   // The slow TikTok run is only started; its topics arrive on a later request, once it has finished.
   assert.deepEqual((await liveTrendsFor("tiktok", { getDatabaseFn: async () => db, now: NOW })).map((source) => source.id), ["google"]);
-  await refreshDue(db, { fetchFn, now: NOW + 60_000 });
+  await refreshDue(db, { fetchFn, now: NOW + 60_000, sources: ALL });
   assert.equal(db.docs.find((doc) => doc._id === "tiktok-creative").runId, "run12345abc", "still running: keep waiting");
   state.runStatus = "SUCCEEDED";
-  await refreshDue(db, { fetchFn, now: NOW + 3_600_000 });
+  await refreshDue(db, { fetchFn, now: NOW + 3_600_000, sources: ALL });
   assert.equal(db.docs.find((doc) => doc._id === "tiktok-creative").runId, undefined);
 
   const apify = started();
@@ -95,7 +97,7 @@ test("each source runs once per interval however many visitors ask, with a charg
   }
   assert.equal(calls.filter((call) => call.url.includes("google")).length, 2, "US and India, once");
 
-  await refreshDue(db, { fetchFn, now: NOW + 7 * 3_600_000 });
+  await refreshDue(db, { fetchFn, now: NOW + 7 * 3_600_000, sources: ALL });
   assert.equal(calls.filter((call) => call.url.includes("google")).length, 4, "Google is due again after six hours");
   assert.equal(started().length, 2, "the paid sources are not");
 
@@ -117,8 +119,8 @@ test("a failed or switched-off run keeps the old topics and does not retry until
     if (url.includes("apify")) { runs++; return new Response("nope", { status: 500 }); }
     return new Response(RSS, { status: 200 });
   };
-  await refreshDue(db, { fetchFn, now: NOW });
-  await refreshDue(db, { fetchFn, now: NOW + 60_000 });
+  await refreshDue(db, { fetchFn, now: NOW, sources: ALL });
+  await refreshDue(db, { fetchFn, now: NOW + 60_000, sources: ALL });
   assert.deepEqual(old.topics, ["#older"]);
   assert.match(old.error, /apify/u);
   assert.ok(runs <= 2, "TikTok once, Instagram once");
@@ -147,4 +149,13 @@ test("the endpoint serves the cache, and scoring gets live topics between the vi
   assert.deepEqual(context.trendingNow.slice(0, 2), ["mine", "live one"]);
   assert.equal(context.trendingNow.filter((topic) => topic === TRENDS.instagram.topics[0]).length, 1, "no duplicates");
   assert.ok(context.trendingNow.length <= 1 + MAX_LIVE_TOPICS + TRENDS.instagram.topics.length);
+});
+
+test("a paused source is never run", async () => {
+  const db = database();
+  const { calls, fetchFn } = network();
+  await refreshDue(db, { fetchFn, now: NOW });
+  assert.equal(SOURCES["tiktok-creative"].paused, true);
+  assert.equal(calls.filter((call) => call.url.includes("tiktok")).length, 0);
+  assert.equal(calls.filter((call) => call.url.includes("instagram-trending")).length, 1);
 });
