@@ -1330,26 +1330,32 @@ svg.verified {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .post.is-new,
-  .is-pulsing svg,
-  .floater,
-  .verdict.is-revealed,
-  .toast,
-  .is-pending .verdict-pending::after {
+  :root:not([data-motion="full"]) .post.is-new,
+  :root:not([data-motion="full"]) .is-pulsing svg,
+  :root:not([data-motion="full"]) .is-pulsing > svg:first-child,
+  :root:not([data-motion="full"]) .is-pulsing [data-metric],
+  :root:not([data-motion="full"]) .verdict.is-revealed,
+  :root:not([data-motion="full"]) .toast,
+  :root:not([data-motion="full"]) .is-pending .verdict-pending::after {
     animation: none;
   }
 
-  .floater,
-  .spark,
-  .like-burst {
+  :root:not([data-motion="full"]) .floater,
+  :root:not([data-motion="full"]) .spark,
+  :root:not([data-motion="full"]) .like-burst {
     display: none;
   }
-
-  .is-pulsing [data-metric],
-  .is-pulsing > svg:first-child {
-    animation: none;
-  }
 }
+
+.motion-note button {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+.motion-note button:hover { text-decoration: underline; }
 
 .why {
   display: flex;

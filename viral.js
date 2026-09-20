@@ -85,6 +85,11 @@ const rankTemplate = document.querySelector("#leaderboard-template");
 const resultTemplate = document.querySelector("#result-template");
 const toast = document.querySelector("[data-toast]");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+// A device that asks for less motion still sees the numbers count up, without the
+// moving effects, unless the visitor turns them on here.
+const STORAGE_MOTION = "viral_motion";
+let fullMotion = false;
+const calm = () => reducedMotion.matches && !fullMotion;
 
 /* -------------------------------------------------------------- storage */
 
@@ -448,7 +453,7 @@ function animateMetrics(node, post) {
     });
     // Browsers pause requestAnimationFrame in a background tab, which would leave
     // the post stuck mid-count, so a hidden page gets the final numbers at once.
-    if (reducedMotion.matches || document.hidden) {
+    if (document.hidden) {
       for (const cell of cells) {
         cell.value.textContent = compact(cell.target);
         cell.item.classList.toggle("is-active", cell.target > 0);
@@ -467,7 +472,7 @@ function animateMetrics(node, post) {
         cell.shown = next;
         cell.value.textContent = compact(next);
         cell.item.classList.add("is-active");
-        if (cell.metric.from !== "views" && now - cell.lastFloater > 420) {
+        if (!calm() && cell.metric.from !== "views" && now - cell.lastFloater > 420) {
           cell.lastFloater = now;
           pulse(cell.item);
           spawnFloater(cell.item, gained);
@@ -904,7 +909,7 @@ function renderIdeas(panel, post) {
         textarea.value = rewrite.text;
         syncComposer();
         textarea.focus();
-        textarea.scrollIntoView({ block: "center", behavior: reducedMotion.matches ? "auto" : "smooth" });
+        textarea.scrollIntoView({ block: "center", behavior: calm() ? "auto" : "smooth" });
         showToast("Loaded into the composer. Simulate it to see how it scores.");
       });
       item.append(tag, text, use);
@@ -980,6 +985,28 @@ async function showIdeas(node, post) {
     button.textContent = "Ideas";
   }
 }
+
+/* --------------------------------------------------------------- motion */
+
+const motionNote = document.querySelector("[data-motion-note]");
+
+function renderMotion() {
+  document.documentElement.dataset.motion = fullMotion ? "full" : "auto";
+  motionNote.hidden = !reducedMotion.matches;
+  motionNote.querySelector("[data-motion-text]").textContent = fullMotion
+    ? "Effects are on, though your device asks for less motion."
+    : "Your device asks for less motion, so the numbers count up without the effects.";
+  motionNote.querySelector("[data-motion-toggle]").textContent = fullMotion ? "Turn effects off" : "Turn effects on";
+}
+
+fullMotion = load(STORAGE_MOTION, "") === "full";
+motionNote.querySelector("[data-motion-toggle]").addEventListener("click", () => {
+  fullMotion = !fullMotion;
+  save(STORAGE_MOTION, fullMotion ? "full" : "");
+  renderMotion();
+});
+reducedMotion.addEventListener("change", renderMotion);
+renderMotion();
 
 /* --------------------------------------------------------- shared video */
 
