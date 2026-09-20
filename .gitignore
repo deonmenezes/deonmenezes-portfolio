@@ -10,3 +10,5 @@ node_modules
 # Subscriber addresses. This repository is public; never commit personal data.
 *.csv
 subscribers*.csv
+
+.env*

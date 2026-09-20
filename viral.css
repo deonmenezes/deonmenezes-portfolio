@@ -2662,3 +2662,7 @@ svg.verified {
   .create-edit { grid-template-columns: 1fr; }
   .create-side { border-left: 0; border-top: 1px solid var(--line-strong); }
 }
+
+/* Someone else's shared video: the cover is the play button. */
+.post-cover.is-playable { cursor: pointer; }
+.post-cover.is-playable:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

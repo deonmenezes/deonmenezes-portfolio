@@ -202,7 +202,12 @@ function fakeCollection(docs = []) {
   const calls = [];
   return {
     calls,
-    async updateOne(filter, update, options) { calls.push({ filter, update, options }); },
+    // Like the driver: an upsert reports an insert only the first time an id is seen.
+    async updateOne(filter, update, options) {
+      const seen = calls.some((call) => call.filter.clientId === filter.clientId);
+      calls.push({ filter, update, options });
+      return { upsertedCount: seen ? 0 : 1 };
+    },
     find(filter) {
       let rows = docs.filter((doc) => doc.platform === filter.platform && (!filter.createdAt || doc.createdAt >= filter.createdAt.$gte));
       return {
@@ -227,9 +232,10 @@ test("saving is an idempotent upsert keyed by the browser's post id, and ignores
   assert.deepEqual(update.$setOnInsert.poll, []);
   assert.equal(update.$setOnInsert.breakdown, undefined);
 
+  assert.equal(await savePost(post, { collection }), false, "replaying an id that exists is not a publish, so it earns no media key");
   assert.equal(await savePost({ ...post, id: "../../etc" }, { collection }), false);
   assert.equal(await savePost({ ...post, id: { $ne: null } }, { collection }).catch(() => false), false);
-  assert.equal(collection.calls.length, 1);
+  assert.equal(collection.calls.length, 2);
 });
 
 test("the feed is off without a database and returns a platform's recent posts and leaders with one", async () => {
@@ -309,4 +315,29 @@ test("a visitor's own topics lead the list Jev reads, cleaned and capped", async
   });
   await handler(request({ platform: "instagram", text: "Garba in the Bay", topics: ["Garba night", { not: "text" }] }), response());
   assert.deepEqual(upstream.state.trendingNow.slice(0, 2), ["Garba night", TRENDS.instagram.topics[0]]);
+});
+
+test("the media key goes only to the request that created a public video post", async () => {
+  const before = process.env.BLOB_READ_WRITE_TOKEN;
+  process.env.BLOB_READ_WRITE_TOKEN = "vercel_blob_rw_StoreABC123_secretpart";
+  try {
+    const run = async (body, created) => {
+      const handler = createViralHandler({
+        queryFn: async () => claimed(),
+        fetchFn: async () => gateway({ ...everyAction("instagram", 0.5), report: { probability: 0 } }),
+        saveFn: async () => created,
+        storeEnabledFn: () => true,
+      });
+      const res = response();
+      await handler(request({ platform: "instagram", text: "my reel", id: "1789820000000-abc123", publish: true, author: { handle: "deon" }, ...body }), res);
+      return res.body;
+    };
+    assert.match((await run({ attachments: ["video"] }, true)).mediaKey, /^[0-9a-f]{64}$/u);
+    assert.equal((await run({ attachments: ["video"] }, false)).mediaKey, undefined, "replaying an existing post's id earns nothing");
+    assert.equal((await run({ attachments: ["image"] }, true)).mediaKey, undefined);
+    assert.equal((await run({ attachments: ["video"], publish: false }, true)).mediaKey, undefined);
+  } finally {
+    if (before === undefined) delete process.env.BLOB_READ_WRITE_TOKEN;
+    else process.env.BLOB_READ_WRITE_TOKEN = before;
+  }
 });

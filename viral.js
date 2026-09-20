@@ -959,6 +959,92 @@ async function showIdeas(node, post) {
   }
 }
 
+/* --------------------------------------------------------- shared video */
+
+const MAX_SHARED_VIDEO_BYTES = 50 * 1024 * 1024;
+const BLOB_API = "https://vercel.com/api/blob/";
+
+// A public post's video goes straight from the browser to the site's file store,
+// with a short-lived token that only the post's publisher can get. Any failure
+// leaves the post as it was: playable here, a cover for everyone else.
+async function shareVideo(post, mediaKey) {
+  try {
+    const video = (await getMedia(post.id)).find((file) => file.kind === "video");
+    if (!video) return;
+    if (video.blob.size > MAX_SHARED_VIDEO_BYTES) {
+      showToast("That video is over 50 MB, so only you can play it.");
+      return;
+    }
+    const ask = (body) => fetch("/api/viral/media", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: post.id, mediaKey, ...body }),
+    });
+    const granted = await ask({ action: "grant", contentType: video.blob.type, size: video.blob.size });
+    const grant = await granted.json().catch(() => ({}));
+    if (!granted.ok) {
+      showToast(grant.message || "Couldn't share the video, so only you can play it.");
+      return;
+    }
+    const uploaded = await fetch(`${BLOB_API}?pathname=${encodeURIComponent(grant.pathname)}`, {
+      method: "PUT",
+      headers: {
+        authorization: `Bearer ${grant.token}`,
+        "x-api-version": "12",
+        "x-vercel-blob-access": "public",
+        "x-content-type": grant.contentType,
+        "x-add-random-suffix": "0",
+        "x-allow-overwrite": "0",
+      },
+      body: video.blob,
+    });
+    const { url } = await uploaded.json().catch(() => ({}));
+    if (!uploaded.ok || !url) throw new Error(`upload ${uploaded.status}`);
+    const attached = await ask({ action: "attach", url });
+    if (!attached.ok) throw new Error(`attach ${attached.status}`);
+    showToast("Your video is up. Everyone can play it now.");
+    refreshLive();
+  } catch {
+    showToast("Couldn't share the video, so only you can play it.");
+  }
+}
+
+// Someone else's video: nothing is downloaded until they press play.
+function armRemoteVideo(cover, media, post) {
+  cover.classList.add("is-playable");
+  cover.setAttribute("role", "button");
+  cover.tabIndex = 0;
+  cover.setAttribute("aria-label", "Play video");
+  const play = () => {
+    cover.hidden = true;
+    const cell = document.createElement("div");
+    cell.className = "media-cell is-reel";
+    const video = document.createElement("video");
+    video.playsInline = true;
+    video.loop = post.platform !== "x";
+    video.controls = true;
+    video.autoplay = true;
+    video.src = post.mediaUrl;
+    video.addEventListener("error", () => {
+      cell.remove();
+      media.hidden = true;
+      cover.hidden = false;
+    }, { once: true });
+    cell.append(video);
+    media.className = "media-grid media-1";
+    media.replaceChildren(cell);
+    media.hidden = false;
+    cover.closest(".post").dataset.watching = "";
+  };
+  cover.addEventListener("click", play, { once: true });
+  cover.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      play();
+    }
+  }, { once: true });
+}
+
 /* --------------------------------------------------------------- trends */
 
 const TREND_BASIS = { measured: "Measured", reported: "Reported", inferred: "Our read" };
@@ -1117,6 +1203,7 @@ function renderPost(post) {
   find("[data-private]").hidden = !post.private;
   buildMetrics(find("[data-metrics]"), post);
 
+  if (!post.mediaCount && post.mediaUrl) armRemoteVideo(find("[data-cover]"), find("[data-media]"), post);
   if (post.mediaCount) getMedia(post.id).then((files) => renderMedia(find("[data-media]"), files, { reel: post.platform !== "x" }));
 
   const verdict = find("[data-verdict]");
@@ -1174,7 +1261,10 @@ function renderFeed({ announce = false } = {}) {
   const visible = feedPosts();
   // A live refresh must not slam shut a breakdown someone is reading.
   const open = new Set([...feed.querySelectorAll("details[open]")].map((details) => details.closest(".post").dataset.postId));
+  // Nor restart a shared video someone is watching.
+  const watching = new Map([...feed.querySelectorAll(".post[data-watching]")].map((node) => [node.dataset.postId, node]));
   feed.replaceChildren(...visible.map((post) => {
+    if (watching.has(post.id)) return watching.get(post.id);
     const node = renderPost(post);
     if (open.has(post.id)) node.querySelector("details").open = true;
     if (announce && !shownIds.has(post.id)) node.classList.add("is-new");
@@ -1185,7 +1275,7 @@ function renderFeed({ announce = false } = {}) {
   feedEmpty.hidden = visible.length > 0;
   feedEmpty.textContent = `Nothing simulated on ${platform().name} yet. Write the first one.`;
   feedEnd.textContent = remote.enabled
-    ? "Public posts join the shared feed for everyone, live. Private ones and all attached media stay in your browser; if you leave analysis on, a few small frames are and a video's opening sound are described by AI models and not kept."
+    ? "Public posts join the shared feed for everyone, live. Private posts and all photos stay in your browser. A public post's video is uploaded so others can play it, unless you untick that. If you leave analysis on, a few small frames and a video's opening sound are described by AI models and not kept."
     : "Posts live only in this browser. Nothing is published anywhere.";
 }
 
@@ -1302,7 +1392,8 @@ async function simulate(post) {
     return;
   }
 
-  const { remainingToday, published, ...scored } = result;
+  // The media key is a one-time permission slip, not part of the post: never stored.
+  const { remainingToday, published, mediaKey, ...scored } = result;
   Object.assign(post, scored, { state: "done" });
   delete post.error;
   pending = pending.filter((entry) => entry.id !== post.id);
@@ -1332,6 +1423,7 @@ async function simulate(post) {
   renderLeaderboard();
   renderHistory();
   if (published) refreshLive();
+  if (published && mediaKey && post.shareMedia) shareVideo(post, mediaKey);
   showToast(post.private ? `${post.verdict}: ${compact(post.metrics.views)} views. Private, only you can see it.` : `${post.verdict}: ${compact(post.metrics.views)} views. ${remainingToday} simulations left today.`);
 }
 
@@ -1634,6 +1726,8 @@ const composerMedia = document.querySelector("[data-composer-media]");
 const checkList = document.querySelector("[data-checks]");
 const lookToggle = document.querySelector("[data-look]");
 const lookInput = document.querySelector("[data-look-input]");
+const shareToggle = document.querySelector("[data-share]");
+const shareInput = document.querySelector("[data-share-input]");
 const pollEditor = document.querySelector("[data-poll-editor]");
 const pollInputs = [...document.querySelectorAll("[data-poll-option]")];
 const emojiPop = document.querySelector("[data-emoji-pop]");
@@ -1669,6 +1763,7 @@ function syncComposer() {
   simulateButton.disabled = !textarea.value.trim() || !pollReady;
   lookToggle.hidden = attached.length === 0;
   const hasVideo = attached.some((file) => file.kind === "video");
+  shareToggle.hidden = !hasVideo || isPrivate;
   document.querySelector("[data-look-label]").textContent = hasVideo ? "Analyse the video." : "Analyse the pictures.";
   document.querySelector("[data-look-note]").textContent = hasVideo
     ? "A few small frames and the first 40 seconds of sound go to AI models, which describe them to Jev. They are not stored."
@@ -1817,6 +1912,7 @@ composer.addEventListener("submit", (event) => {
     createdAt: Date.now(),
     attachments: attached.map((file) => file.kind),
     mediaCount: attached.length,
+    ...(!isPrivate && shareInput.checked && attached.some((file) => file.kind === "video") ? { shareMedia: true } : {}),
     // Held in memory only, for the vision step; never stored with the post.
     ...(attached.length && lookInput.checked ? { lookFiles: attached } : {}),
     ...(poll.length >= 2 ? { poll } : {}),
@@ -1982,6 +2078,7 @@ visibilityButton.addEventListener("click", () => {
   isPrivate = !isPrivate;
   save(STORAGE_PRIVATE, isPrivate);
   renderVisibility();
+  syncComposer();
 });
 newPostsButton.addEventListener("click", () => {
   renderFeed({ announce: true });

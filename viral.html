@@ -109,6 +109,10 @@
               <input type="checkbox" checked data-look-input>
               <span><strong data-look-label>Analyse the video</strong> <span data-look-note>A few small frames and the first 40 seconds of sound go to AI models, which describe them to Jev. They are not stored.</span></span>
             </label>
+            <label class="look-toggle" data-share hidden>
+              <input type="checkbox" checked data-share-input>
+              <span><strong>Let everyone play the video.</strong> A public post's video (up to 50 MB) is uploaded so others can watch it. Untick to keep the file on this device.</span>
+            </label>
             <fieldset class="poll-editor" data-poll-editor hidden>
               <legend class="sr-only">Poll options</legend>
               <input type="text" maxlength="25" placeholder="Choice 1" aria-label="Choice 1" data-poll-option>
@@ -346,7 +350,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.500h12v10H3zM7 13.500l2.500-2.500 3 3M9 10.500h10.500v9.500H9M15 17l1.500-1.500 3 3"/></svg>
       <p>Drag photos and videos here</p>
       <button class="create-select" type="button" data-create-select>Select from computer</button>
-      <p class="create-note" role="status" data-create-note>Your files stay in this browser.</p>
+      <p class="create-note" role="status" data-create-note>Photos stay in this browser. A public post's video is uploaded so others can play it.</p>
     </div>
     <div class="create-edit" data-create-edit hidden>
       <div class="media-grid" data-create-media></div>
