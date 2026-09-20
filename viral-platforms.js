@@ -41,7 +41,7 @@ export const PLATFORMS = {
     weightsSource: { label: "X's open-source For You ranker", url: "https://github.com/xai-org/x-algorithm/blob/main/home-mixer/params/param.rs" },
     // Words the real app uses for the same places.
     chrome: { home: "Home", explore: "Explore", virality: "Virality", how: "How it works", profile: "Profile", post: "Post", foryou: "For you", following: "Following", handlePrefix: "@", showsName: true },
-    composer: { placeholder: "Will you go viral?", button: "Simulate" },
+    composer: { placeholder: "Write a post…", button: "Simulate" },
     // Weights from home-mixer/params/param.rs in xai-org/x-algorithm, the current For You
     // ranker. Jev answers ten questions at most, so these are the eight signals that can
     // move a text post furthest. Left out: DM share (5), share (2), click (0.4), open link

@@ -1,4 +1,4 @@
-/* Will It Go Viral: profile search, composer (media, GIF, poll, emoji), instant
+/* Virelity post simulator: profile search, composer (media, GIF, poll, emoji), instant
    posting with animated engagement, local feed, leaderboard.
    Everything a visitor makes stays in this browser: posts and the chosen profile
    in localStorage, attached media in IndexedDB. The page CSP forbids inline
@@ -39,7 +39,7 @@ const b = (action, label, weight, probability, contribution) => ({ action, label
 // Real Jev output for two posts, so the feed isn't empty on a first visit.
 const EXAMPLES = [
   {
-    id: "example-banger", example: true, platform: "x", name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
+    id: "example-banger", example: true, platform: "x", name: "Virelity", handle: "sample", verified: true, createdAt: null,
     text: "A 19 year old just open-sourced a tool that does in 4 seconds what our team of 12 spent two years building. I read the code. It is 300 lines. Here is how it works:",
     viralScore: 90, verdict: "Banger", hook: 2.72, emotion: "awe",
     metrics: { views: 134236, likes: 3197, replies: 882, reposts: 631, bookmarks: 799 },
@@ -51,7 +51,7 @@ const EXAMPLES = [
     tips: [],
   },
   {
-    id: "example-mid", example: true, platform: "x", name: "Will It Go Viral", handle: "sample", verified: true, createdAt: null,
+    id: "example-mid", example: true, platform: "x", name: "Virelity", handle: "sample", verified: true, createdAt: null,
     text: "Hot take: tabs are better than spaces.",
     viralScore: 24, verdict: "Mid", hook: 1.57, emotion: "relatable",
     metrics: { views: 819, likes: 5, replies: 3, reposts: 1, bookmarks: 1 },
@@ -738,7 +738,7 @@ async function saveImage(post) {
   const figures = PLATFORMS[post.platform].metrics.map((metric) => `${compact(post.metrics[metric.key] || 0)} ${metric.label.toLowerCase()}`).join("  ·  ");
   context.fillText(figures, 64, 632);
   context.textAlign = "right";
-  context.fillText("Simulated · Will It Go Viral?", 1136, 92);
+  context.fillText("Simulated · Virelity", 1136, 92);
 
   const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) return showToast("Couldn't make the image in this browser.");

@@ -46,7 +46,7 @@ export function createShare({ dialog, isShared, saveImage, showToast }) {
   function open(post) {
     const shared = isShared(post);
     const link = shared ? postLink(post) : `${location.origin}${location.pathname}`;
-    const words = `"${post.text.slice(0, 100)}${post.text.length > 100 ? "…" : ""}" scored ${post.viralScore}/100 (${post.verdict}) on Will It Go Viral?`;
+    const words = `"${post.text.slice(0, 100)}${post.text.length > 100 ? "…" : ""}" scored ${post.viralScore}/100 (${post.verdict}) on Virelity`;
     const encoded = { text: encodeURIComponent(words), link: encodeURIComponent(link), both: encodeURIComponent(`${words} ${link}`) };
     note.textContent = shared
       ? "The link opens this exact post. It is a simulation, and says so."
@@ -54,7 +54,7 @@ export function createShare({ dialog, isShared, saveImage, showToast }) {
 
     const items = [button("Copy link", () => copy(link, "Link copied."))];
     if (navigator.share) {
-      items.push(button("More apps…", () => navigator.share({ title: "Will It Go Viral?", text: words, url: link }).catch(() => {})));
+      items.push(button("More apps…", () => navigator.share({ title: "Virelity", text: words, url: link }).catch(() => {})));
     }
     for (const target of TARGETS) {
       const anchor = document.createElement("a");
