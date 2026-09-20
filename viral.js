@@ -380,6 +380,8 @@ function buildMetrics(list, post) {
     const item = document.createElement("li");
     item.className = `metric tone-${metric.tone || "accent"}`;
     item.title = metric.label;
+    // Each action moves the way it does in the apps: the heart beats, the send flies, the bookmark drops in.
+    item.dataset.icon = metric.icon;
     const value = document.createElement("span");
     value.dataset.metric = metric.key;
     value.textContent = "0";
@@ -409,6 +411,24 @@ function pulse(item) {
   // Reading a layout property restarts the CSS animation.
   void item.offsetWidth;
   item.classList.add("is-pulsing");
+}
+
+// A small copy of the icon drifts up and away, a different way each time.
+function spawnSpark(item, name, count) {
+  const spark = icon(name);
+  spark.classList.add("spark", `spark-${count % 5}`);
+  spark.addEventListener("animationend", () => spark.remove());
+  item.append(spark);
+}
+
+// The first like lands the way a double-tap does: a big heart over the picture.
+function burstHeart(node) {
+  const stage = [node.querySelector("[data-media]"), node.querySelector("[data-cover]")].find((part) => part && !part.hidden);
+  if (!stage) return;
+  const heart = icon("heart");
+  heart.classList.add("like-burst");
+  heart.addEventListener("animationend", () => heart.remove());
+  stage.append(heart);
 }
 
 function spawnFloater(item, amount) {
@@ -451,6 +471,8 @@ function animateMetrics(node, post) {
           cell.lastFloater = now;
           pulse(cell.item);
           spawnFloater(cell.item, gained);
+          spawnSpark(cell.item, cell.metric.icon, cell.sparks = (cell.sparks || 0) + 1);
+          if (cell.metric.icon === "heart" && cell.sparks === 1) burstHeart(node);
         }
       }
       if (progress < 1) requestAnimationFrame(tick); else resolve();
