@@ -992,9 +992,8 @@ async function shareVideo(post, mediaKey) {
         authorization: `Bearer ${grant.token}`,
         "x-api-version": "12",
         "x-vercel-blob-access": "public",
+        // The exact path and no-overwrite rule ride inside the token; Blob's CORS refuses headers for them.
         "x-content-type": grant.contentType,
-        "x-add-random-suffix": "0",
-        "x-allow-overwrite": "0",
       },
       body: video.blob,
     });
