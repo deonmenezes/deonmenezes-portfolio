@@ -7,6 +7,7 @@
 import { draftChecks } from "/viral-checks.js";
 import { DEFAULT_PLATFORM, PLATFORMS } from "/viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "/viral-practices.js";
+import { createComments } from "/viral-comments-ui.js";
 import { MAX_OWN_TOPICS, TRENDS, TRENDS_AS_OF, TRENDS_SCOPE, cleanTopics, trendsFor } from "/viral-trends.js";
 
 const STORAGE_POSTS = "viral_posts";
@@ -81,6 +82,18 @@ const feed = document.querySelector("[data-feed]");
 const leaderboard = document.querySelector("[data-leaderboard]");
 const composerAvatar = document.querySelector("[data-composer-avatar]");
 const template = document.querySelector("#post-template");
+// Real comments from visitors. Everything it needs from the page is looked up when used, not now.
+const comments = createComments({
+  template: document.querySelector("#comment-template"),
+  load,
+  save,
+  paintAvatar,
+  timeAgo,
+  showToast,
+  author: () => me() || ANONYMOUS,
+  sharedPost: (id) => remote.posts.find((entry) => entry.id === id),
+  ownPost: (id) => posts.find((entry) => entry.id === id),
+});
 const rankTemplate = document.querySelector("#leaderboard-template");
 const resultTemplate = document.querySelector("#result-template");
 const toast = document.querySelector("[data-toast]");
@@ -1337,6 +1350,7 @@ function renderPost(post) {
   }
   fillAnalysis(node, post);
   armTools(node, post);
+  comments.arm(node, post);
   return node;
 }
 
@@ -1367,7 +1381,9 @@ function renderFeed({ announce = false } = {}) {
   // A live refresh must not slam shut a breakdown someone is reading.
   const open = new Set([...feed.querySelectorAll("details[open]")].map((details) => details.closest(".post").dataset.postId));
   // Nor restart a shared video someone is watching.
-  const watching = new Map([...feed.querySelectorAll(".post[data-watching]")].map((node) => [node.dataset.postId, node]));
+  // Nor wipe a comment someone is in the middle of typing.
+  const typing = document.activeElement?.matches?.("[data-comment-input]") ? document.activeElement.closest(".post") : null;
+  const watching = new Map([...feed.querySelectorAll(".post[data-watching]"), ...(typing ? [typing] : [])].map((node) => [node.dataset.postId, node]));
   feed.replaceChildren(...visible.map((post) => {
     if (watching.has(post.id)) return watching.get(post.id);
     const node = renderPost(post);

@@ -2445,14 +2445,7 @@ svg.verified {
 [data-platform="instagram"] .post-failed { grid-column: 1 / -1; order: 5; }
 [data-platform="instagram"] .why { grid-column: 1 / -1; order: 7; margin-top: 10px; }
 
-/* The comment prompt that closes every feed post. */
-[data-platform="instagram"] .post::after {
-  grid-column: 1 / -1;
-  order: 6;
-  margin-top: 8px;
-  color: var(--muted);
-  content: "Add a comment…";
-}
+[data-platform="instagram"] .comments { grid-column: 1 / -1; order: 6; }
 
 /* Reels sit in the feed at 4:5; photos and carousels are square. */
 [data-platform="instagram"] .post-cover { aspect-ratio: 4 / 5; }
@@ -2787,3 +2780,20 @@ svg.verified {
 
 .post-tool-danger { color: var(--red, #f4212e); }
 .post-tool-danger[data-armed] { border-color: currentcolor; font-weight: 700; }
+
+/* Real comments from visitors, under a post. */
+.comments { flex-basis: 100%; margin-top: 8px; font-size: 14px; }
+.comments-toggle { border: 0; padding: 0; background: none; color: var(--muted); font: inherit; cursor: pointer; }
+.comments-toggle:hover { text-decoration: underline; }
+.comments-note { margin: 6px 0; color: var(--muted); font-size: 12px; }
+.comments-list { display: grid; gap: 10px; margin: 8px 0; padding: 0; list-style: none; }
+.comment { display: flex; gap: 8px; align-items: flex-start; }
+.comment .avatar { flex: none; width: 28px; height: 28px; font-size: 12px; }
+.comment p { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.comment-meta { display: flex; gap: 10px; color: var(--muted); font-size: 12px; }
+.comment-meta button { border: 0; padding: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.comment-meta button:hover { color: var(--red); }
+.comment-form { display: flex; gap: 8px; align-items: center; border-top: 1px solid var(--line); padding-top: 8px; }
+.comment-form input { flex: 1; min-width: 0; border: 0; padding: 6px 0; background: transparent; color: inherit; font: inherit; outline: none; }
+.comment-form button { border: 0; padding: 4px 0; background: none; color: var(--accent); font: inherit; font-weight: 700; cursor: pointer; }
+.comment-form button:disabled { cursor: default; opacity: 0.4; }

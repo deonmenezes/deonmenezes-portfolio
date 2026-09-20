@@ -245,6 +245,14 @@
     </form>
   </dialog>
 
+  <template id="comment-template">
+    <li class="comment">
+      <span class="avatar" data-avatar aria-hidden="true"></span>
+      <p><strong data-name></strong> <span data-text></span>
+        <span class="comment-meta"><time data-time></time><button type="button" data-comment-delete hidden>Delete</button></span></p>
+    </li>
+  </template>
+
   <template id="post-template">
     <article class="post">
       <div class="avatar" data-avatar aria-hidden="true"></div>
@@ -297,6 +305,18 @@
         <button class="post-tool" type="button" data-ideas hidden>Ideas</button>
         <button class="post-tool post-tool-danger" type="button" data-delete hidden>Delete</button>
         <section class="ideas" aria-label="Ideas" data-ideas-panel hidden></section>
+        <section class="comments" aria-label="Comments from visitors" data-comments hidden>
+          <button class="comments-toggle" type="button" aria-expanded="false" data-comments-toggle></button>
+          <div data-comments-panel hidden>
+            <p class="comments-note">Real comments from visitors, not part of the simulation.</p>
+            <ol class="comments-list" data-comments-list></ol>
+            <form class="comment-form" data-comment-form>
+              <input type="text" maxlength="300" autocomplete="off" aria-label="Your comment" data-comment-input>
+              <button type="submit" disabled>Post</button>
+            </form>
+            <p class="comments-note" role="status" data-comment-status></p>
+          </div>
+        </section>
         </div>
       </div>
     </article>

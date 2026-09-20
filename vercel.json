@@ -64,6 +64,10 @@
       "destination": "/api/stats?route=viral-ideas"
     },
     {
+      "source": "/api/viral/comments",
+      "destination": "/api/stats?route=viral-comments"
+    },
+    {
       "source": "/api/viral/delete",
       "destination": "/api/stats?route=viral-delete"
     },
