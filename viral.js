@@ -1418,7 +1418,19 @@ function showResults(found) {
   select(exact || (found.length === 1 ? found[0] : null));
 }
 
-async function fetchProfile(handle, id = platformId) {
+// A lookup still in the air is shared, so pressing Look up and then Continue
+// never pays for the same scrape twice.
+const pendingProfiles = new Map();
+
+function fetchProfile(handle, id = platformId) {
+  const key = `${id}:${handle.toLowerCase()}`;
+  if (!pendingProfiles.has(key)) {
+    pendingProfiles.set(key, requestProfile(handle, id).finally(() => pendingProfiles.delete(key)));
+  }
+  return pendingProfiles.get(key);
+}
+
+async function requestProfile(handle, id) {
   const response = await fetch(`/api/viral/profile?platform=${encodeURIComponent(id)}&handle=${encodeURIComponent(handle)}`);
   if (!response.ok) {
     const error = new Error("lookup failed");
@@ -1459,7 +1471,7 @@ async function lookUp() {
   const sequence = ++searchSequence;
   const name = platform().name;
   lookupButton.disabled = true;
-  showHint(`Looking up @${handle} on ${name}… this can take up to 20 seconds.`);
+  showHint(`Looking up @${handle} on ${name}… no need to wait. Press Continue and your picture and count fill in when they arrive.`);
   try {
     const profile = await fetchProfile(handle);
     if (sequence !== searchSequence) return;
@@ -1541,15 +1553,24 @@ onboardingForm.addEventListener("submit", (event) => {
   }
   setMe(profile);
 
-  // X results picked before their follower count arrived: fill it in after.
-  if (searchesByName() && !profile.followersKnown && profile.handle !== ANONYMOUS.handle) {
+  // Nobody waits for a lookup: the dialog closes now, and the picture and
+  // follower count are filled in when they arrive.
+  if ((!selected || !profile.followersKnown) && profile.handle !== ANONYMOUS.handle) {
     const chosenOn = platformId;
+    const chosenName = platform().name;
     fetchProfile(profile.handle, chosenOn).then((full) => {
       if (!full || profiles[chosenOn]?.handle !== profile.handle) return;
-      profiles[chosenOn] = full;
+      // A number they typed themselves stays if the lookup found none.
+      profiles[chosenOn] = full.followersKnown || !profile.followersKnown
+        ? full
+        : { ...full, followers: profile.followers, followersKnown: true };
       save(STORAGE_PROFILES, profiles);
       renderMe();
-    }).catch(() => {});
+    }).catch((error) => {
+      if (chosenOn === "x" || profiles[chosenOn]?.handle !== profile.handle) return;
+      if (error.status === 404) showToast(`Couldn't find @${profile.handle} on ${chosenName}. Posting with that handle anyway.`);
+      else if (!profile.followersKnown) showToast(`Couldn't fetch your ${chosenName} profile. Tap your avatar to enter your followers.`);
+    });
   }
 });
 
