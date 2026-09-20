@@ -333,6 +333,10 @@ test("the media key goes only to the request that created a public video post", 
       return res.body;
     };
     assert.match((await run({ attachments: ["video"] }, true)).mediaKey, /^[0-9a-f]{64}$/u);
+    const created = await run({ attachments: [] }, true);
+    assert.match(created.deleteKey, /^[0-9a-f]{64}$/u);
+    assert.notEqual(created.deleteKey, (await run({ attachments: ["video"] }, true)).mediaKey, "the two keys are not interchangeable");
+    assert.equal((await run({ attachments: [] }, false)).deleteKey, undefined, "a replayed id cannot earn the right to delete someone's post");
     assert.equal((await run({ attachments: ["video"] }, false)).mediaKey, undefined, "replaying an existing post's id earns nothing");
     assert.equal((await run({ attachments: ["image"] }, true)).mediaKey, undefined);
     assert.equal((await run({ attachments: ["video"], publish: false }, true)).mediaKey, undefined);

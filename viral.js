@@ -1230,6 +1230,44 @@ function armTools(node, post) {
   ideas.hidden = !mine || !Array.isArray(post.breakdown);
   ideas.onclick = () => showIdeas(node, post);
   if (post.ideas && mine && openIdeas.has(post.id)) renderIdeas(node.querySelector("[data-ideas-panel]"), post);
+
+  // Delete asks twice instead of opening a dialog: the second press, within a few seconds, does it.
+  const remove = node.querySelector("[data-delete]");
+  remove.hidden = !mine;
+  remove.onclick = () => {
+    if (remove.dataset.armed) return deletePost(post);
+    remove.dataset.armed = "true";
+    remove.textContent = "Delete for good?";
+    setTimeout(() => {
+      delete remove.dataset.armed;
+      remove.textContent = "Delete";
+    }, 4000);
+  };
+}
+
+async function deletePost(post) {
+  // A public post comes down from the shared feed first, so it cannot linger there if that fails.
+  if (!post.private && post.deleteKey) {
+    const response = await fetch("/api/viral/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: post.id, deleteKey: post.deleteKey }),
+    }).catch(() => null);
+    if (!response?.ok) {
+      showToast("Couldn't delete it from the public feed. Try again.");
+      return;
+    }
+  }
+  const stillPublic = !post.private && !post.deleteKey && remote.posts.some((entry) => entry.id === post.id);
+  posts = posts.filter((entry) => entry.id !== post.id);
+  remote.posts = remote.posts.filter((entry) => entry.id !== post.id || stillPublic);
+  remote.leaderboard = (remote.leaderboard || []).filter((entry) => entry.id !== post.id || stillPublic);
+  storePosts();
+  deleteMedia(post.id);
+  renderFeed();
+  renderLeaderboard();
+  renderHistory();
+  showToast(stillPublic ? "Removed from this browser. It was shared before posts could be deleted, so the public copy stays." : "Deleted.");
 }
 
 function renderPost(post) {
@@ -1441,6 +1479,7 @@ async function simulate(post) {
   }
 
   // The media key is a one-time permission slip, not part of the post: never stored.
+  // The delete key stays with this browser's copy of the post: it is what lets its author take it down.
   const { remainingToday, published, mediaKey, ...scored } = result;
   Object.assign(post, scored, { state: "done" });
   delete post.error;

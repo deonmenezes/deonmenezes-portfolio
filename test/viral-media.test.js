@@ -240,3 +240,24 @@ test("isOwnMediaUrl is an exact match on this store's host", () => {
   assert.ok(!isOwnMediaUrl(`https://${host}/${path}`, path, null));
   assert.ok(!isOwnMediaUrl(`https://${host}/viral/../x.mp4`, "viral/../x.mp4", host));
 });
+
+test("only the post's author can delete it, and its video goes with it", async () => {
+  const { createViralDeleteHandler, deleteKeyFor } = await import("../lib/viral-media.js");
+  const path = `viral/${ID}-0123456789abcdef01234567.mp4`;
+  const docs = [{ clientId: ID, attachments: ["video"], mediaPath: path, mediaUrl: `${HOST}/${path}` }, { clientId: "someone-else-01", attachments: [] }];
+  const deleted = [];
+  const db = database(docs);
+  db.collection().deleteOne = async ({ clientId }) => { docs.splice(docs.findIndex((doc) => doc.clientId === clientId), 1); };
+  const handler = createViralDeleteHandler({ getDatabaseFn: async () => db, sdkFn: async () => ({ delFn: async (url) => { deleted.push(url); } }) });
+  const good = deleteKeyFor(ID, "test-hash-secret");
+
+  for (const deleteKey of [undefined, "nope", key(), deleteKeyFor("someone-else-01", "test-hash-secret")]) {
+    assert.equal((await send(handler, { id: ID, deleteKey })).statusCode, 403, "the media key and other posts' keys do not delete");
+  }
+  assert.equal((await send(handler, { id: ID, deleteKey: good }, { origin: "https://evil.example" })).statusCode, 403);
+  assert.equal(docs.length, 2);
+
+  assert.equal((await send(handler, { id: ID, deleteKey: good })).statusCode, 200);
+  assert.deepEqual(docs.map((doc) => doc.clientId), ["someone-else-01"]);
+  assert.deepEqual(deleted, [`${HOST}/${path}`]);
+});
