@@ -1152,6 +1152,12 @@ svg.verified {
   background: var(--hover);
 }
 
+/* This visitor's own like and save, which stay on this device. */
+.metric[role="button"] { cursor: pointer; }
+.metric.is-liked { color: var(--pink); }
+.metric.is-liked > svg:first-child,
+.metric.is-saved > svg:first-child { fill: currentcolor; }
+
 .post.is-live {
   background: var(--accent-faint);
 }
@@ -2797,3 +2803,54 @@ svg.verified {
 .comment-form input { flex: 1; min-width: 0; border: 0; padding: 6px 0; background: transparent; color: inherit; font: inherit; outline: none; }
 .comment-form button { border: 0; padding: 4px 0; background: none; color: var(--accent); font: inherit; font-weight: 700; cursor: pointer; }
 .comment-form button:disabled { cursor: default; opacity: 0.4; }
+
+/* The three-dot menu and the share sheet. */
+.post-head { position: relative; }
+button.post-more { display: grid; place-items: center; border: 0; padding: 0; border-radius: 999px; background: none; cursor: pointer; }
+button.post-more:hover { background: var(--hover); }
+button.post-more svg { width: 100%; height: 100%; }
+.post-menu {
+  position: absolute;
+  z-index: 4;
+  top: 100%;
+  right: 0;
+  display: grid;
+  min-width: 190px;
+  padding: 6px 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 18%);
+}
+.post-menu[hidden] { display: none; }
+.post-menu button { border: 0; padding: 10px 16px; background: none; color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+.post-menu button:hover { background: var(--hover); }
+.post-menu .is-danger { color: var(--red); }
+
+.share {
+  width: min(420px, calc(100vw - 32px));
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.share::backdrop { background: rgb(0 0 0 / 50%); }
+.share-note { margin: 12px 16px 0; color: var(--muted); font-size: 13px; }
+.share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px 16px; }
+.share-target {
+  display: block;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.share-target:hover { background: var(--hover); }
+.share-target:last-child { grid-column: 1 / -1; }

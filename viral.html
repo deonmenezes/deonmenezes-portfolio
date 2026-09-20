@@ -266,7 +266,10 @@
           <span class="post-dot" aria-hidden="true">·</span>
           <span class="verdict" data-verdict></span>
           <span class="post-private" data-private hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10.500h12v9.500H6zM8.500 10.500V8a3.500 3.500 0 0 1 7 0v2.500"/></svg>Only you</span>
-          <svg class="post-more solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10.500a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3z"/></svg>
+          <button class="post-more" type="button" aria-label="More options" aria-haspopup="menu" aria-expanded="false" data-more>
+            <svg class="solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10.500a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3zm7 0a1.500 1.500 0 1 0 0 3 1.500 1.500 0 0 0 0-3z"/></svg>
+          </button>
+          <div class="post-menu" role="menu" data-menu hidden></div>
         </header>
         <p class="post-text"><span class="caption-handle" data-caption-handle></span><span data-text></span></p>
         <div class="post-cover" data-cover hidden>
@@ -358,6 +361,17 @@
       <tbody data-compare-rows></tbody>
     </table>
     <p class="compare-note">Probabilities are Jev's estimate that a typical viewer would do each thing. Simulated, not a promise.</p>
+  </dialog>
+
+  <dialog class="share" aria-labelledby="share-title" data-share-dialog>
+    <header class="create-head">
+      <h2 id="share-title">Share</h2>
+      <button class="card-close" type="button" aria-label="Close" data-share-close>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+    <p class="share-note" data-share-note></p>
+    <div class="share-grid" data-share-grid></div>
   </dialog>
 
   <dialog class="create" aria-labelledby="create-title" data-create>

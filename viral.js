@@ -8,6 +8,7 @@ import { draftChecks } from "/viral-checks.js";
 import { DEFAULT_PLATFORM, PLATFORMS } from "/viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "/viral-practices.js";
 import { createComments } from "/viral-comments-ui.js";
+import { armMenu, createShare as createShareSheet } from "/viral-share.js";
 import { MAX_OWN_TOPICS, TRENDS, TRENDS_AS_OF, TRENDS_SCOPE, cleanTopics, trendsFor } from "/viral-trends.js";
 
 const STORAGE_POSTS = "viral_posts";
@@ -82,6 +83,13 @@ const feed = document.querySelector("[data-feed]");
 const leaderboard = document.querySelector("[data-leaderboard]");
 const composerAvatar = document.querySelector("[data-composer-avatar]");
 const template = document.querySelector("#post-template");
+const STORAGE_REACTIONS = "viral_reactions";
+const STORAGE_HIDDEN = "viral_hidden";
+const reactions = load(STORAGE_REACTIONS, {});
+let hiddenIds = new Set(load(STORAGE_HIDDEN, []));
+const isShared = (post) => remote.posts.some((entry) => entry.id === post.id);
+const share = createShareSheet({ dialog: document.querySelector("[data-share-dialog]"), isShared, saveImage: (post) => saveImage(post), showToast: (message) => showToast(message) });
+
 // Real comments from visitors. Everything it needs from the page is looked up when used, not now.
 const comments = createComments({
   template: document.querySelector("#comment-template"),
@@ -259,7 +267,7 @@ const reelWatcher = "IntersectionObserver" in window
 // Coming back to the tab re-runs the check, since nothing starts while hidden.
 document.addEventListener("visibilitychange", () => {
   if (document.hidden || !reelWatcher) return;
-  for (const video of document.querySelectorAll(".is-reel video")) {
+  for (const video of document.querySelectorAll(".is-autoplay video")) {
     reelWatcher.unobserve(video);
     reelWatcher.observe(video);
   }
@@ -273,13 +281,18 @@ function renderMedia(container, files, { onRemove, reel = false } = {}) {
   files.forEach((file, index) => {
     const cell = document.createElement("div");
     cell.className = "media-cell";
-    const url = URL.createObjectURL(file.blob);
+    // A file from this browser, or the address of a video someone else shared.
+    const url = file.url || URL.createObjectURL(file.blob);
     let element;
     if (file.kind === "video") {
       element = document.createElement("video");
       element.muted = true;
       element.playsInline = true;
-      element.preload = "metadata";
+      // A shared video downloads nothing until it scrolls into view and starts playing.
+      element.preload = file.url ? "none" : "metadata";
+      // Like the apps, a video plays silently while it is on screen.
+      cell.classList.add("is-autoplay");
+      if (file.onError) element.addEventListener("error", file.onError, { once: true });
       // Off X a video behaves like a reel: it loops silently while on screen,
       // a tap pauses it, and the corner button turns the sound on.
       if (reel) {
@@ -302,6 +315,7 @@ function renderMedia(container, files, { onRemove, reel = false } = {}) {
         cell.append(sound);
       } else {
         element.controls = true;
+        reelWatcher?.observe(element);
       }
     } else {
       element = document.createElement("img");
@@ -332,7 +346,7 @@ function renderMedia(container, files, { onRemove, reel = false } = {}) {
 // Instagram, TikTok, and YouTube posts are built around a picture. When nothing
 // is attached, a generated cover stands in: the format, and the hook or text.
 function paintCover(cover, post) {
-  const visual = post.platform !== "x" && !post.mediaCount;
+  const visual = post.platform !== "x" && !post.mediaCount && !post.mediaUrl;
   cover.hidden = !visual;
   if (!visual) return;
   const format = post.format || PLATFORMS[post.platform].composer.formats?.[0] || "";
@@ -392,6 +406,45 @@ function icon(name) {
   return svg;
 }
 
+// Every icon under a post does what it does in the apps. Likes and saves are this visitor's own and
+// stay on this device; they never change the simulated numbers beside them.
+function armMetric(item, metric, post) {
+  const kind = { heart: "liked", thumb: "liked", bookmark: "saved" }[metric.icon];
+  const mark = () => {
+    if (kind) item.classList.toggle(`is-${kind}`, Boolean(reactions[post.id]?.[kind]));
+  };
+  item.tabIndex = 0;
+  item.setAttribute("role", "button");
+  item.setAttribute("aria-label", metric.label);
+  const act = () => {
+    const node = item.closest(".post");
+    if (kind) {
+      const mine = reactions[post.id] || {};
+      mine[kind] = !mine[kind];
+      reactions[post.id] = mine;
+      if (!mine.liked && !mine.saved) delete reactions[post.id];
+      save(STORAGE_REACTIONS, reactions);
+      mark();
+      pulse(item);
+      if (mine[kind] && kind === "liked" && !calm()) burstHeart(node);
+      if (kind === "saved") showToast(mine.saved ? "Saved on this device." : "Removed from your saves.");
+    } else if (metric.icon === "comment") {
+      if (!comments.show(node, post)) showToast("Comments open once a post is public.");
+    } else if (metric.from === "views") {
+      const details = node.querySelector("details");
+      if (details.hidden) showToast("The breakdown is only kept for posts simulated in this browser.");
+      else details.open = !details.open;
+    } else share.open(post);
+  };
+  item.addEventListener("click", act);
+  item.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    act();
+  });
+  mark();
+}
+
 function buildMetrics(list, post) {
   const metrics = PLATFORMS[post.platform].metrics;
   list.replaceChildren(...metrics.map((metric) => {
@@ -400,6 +453,7 @@ function buildMetrics(list, post) {
     item.title = metric.label;
     // Each action moves the way it does in the apps: the heart beats, the send flies, the bookmark drops in.
     item.dataset.icon = metric.icon;
+    armMetric(item, metric, post);
     const value = document.createElement("span");
     value.dataset.metric = metric.key;
     value.textContent = "0";
@@ -411,6 +465,8 @@ function buildMetrics(list, post) {
     share.className = "metric tone-accent";
     share.setAttribute("aria-hidden", "true");
     share.append(icon("upload"));
+    share.removeAttribute("aria-hidden");
+    armMetric(share, { icon: "share", label: "Share" }, post);
     list.append(share);
   }
 }
@@ -1089,42 +1145,6 @@ async function shareVideo(post, mediaKey) {
   }
 }
 
-// Someone else's video: nothing is downloaded until they press play.
-function armRemoteVideo(cover, media, post) {
-  cover.classList.add("is-playable");
-  cover.setAttribute("role", "button");
-  cover.tabIndex = 0;
-  cover.setAttribute("aria-label", "Play video");
-  const play = () => {
-    cover.hidden = true;
-    const cell = document.createElement("div");
-    cell.className = "media-cell is-reel";
-    const video = document.createElement("video");
-    video.playsInline = true;
-    video.loop = post.platform !== "x";
-    video.controls = true;
-    video.autoplay = true;
-    video.src = post.mediaUrl;
-    video.addEventListener("error", () => {
-      cell.remove();
-      media.hidden = true;
-      cover.hidden = false;
-    }, { once: true });
-    cell.append(video);
-    media.className = "media-grid media-1";
-    media.replaceChildren(cell);
-    media.hidden = false;
-    cover.closest(".post").dataset.watching = "";
-  };
-  cover.addEventListener("click", play, { once: true });
-  cover.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      play();
-    }
-  }, { once: true });
-}
-
 /* --------------------------------------------------------------- trends */
 
 const TREND_BASIS = { measured: "Measured", reported: "Reported", inferred: "Our read" };
@@ -1321,7 +1341,18 @@ function renderPost(post) {
   find("[data-private]").hidden = !post.private;
   buildMetrics(find("[data-metrics]"), post);
 
-  if (!post.mediaCount && post.mediaUrl) armRemoteVideo(find("[data-cover]"), find("[data-media]"), post);
+  if (!post.mediaCount && post.mediaUrl) {
+    renderMedia(find("[data-media]"), [{
+      kind: "video",
+      url: post.mediaUrl,
+      // A video that has since been deleted gives way to the cover.
+      onError: () => {
+        find("[data-media]").hidden = true;
+        delete post.mediaUrl;
+        paintCover(find("[data-cover]"), post);
+      },
+    }], { reel: post.platform !== "x" });
+  }
   if (post.mediaCount) getMedia(post.id).then((files) => renderMedia(find("[data-media]"), files, { reel: post.platform !== "x" }));
 
   const verdict = find("[data-verdict]");
@@ -1351,7 +1382,34 @@ function renderPost(post) {
   fillAnalysis(node, post);
   armTools(node, post);
   comments.arm(node, post);
+  const own = posts.includes(post);
+  armMenu(find("[data-more]"), find("[data-menu]"), [
+    ["Share…", () => share.open(post)],
+    isShared(post) && ["Copy link", () => share.copyLink(post)],
+    ["Save image", () => saveImage(post)],
+    isShared(post) && ["Comments", () => comments.show(node, post)],
+    !own && ["Hide this post", () => hidePost(post)],
+    !own && isShared(post) && ["Report", () => reportPost(post), { danger: true }],
+    own && ["Delete", () => deletePost(post), { danger: true }],
+  ]);
   return node;
+}
+
+function hidePost(post) {
+  hiddenIds.add(post.id);
+  save(STORAGE_HIDDEN, [...hiddenIds].slice(-200));
+  renderFeed();
+  showToast("Hidden on this device.");
+}
+
+async function reportPost(post) {
+  const response = await fetch("/api/viral/delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "report", id: post.id }) }).catch(() => null);
+  if (!response?.ok) {
+    showToast("Couldn't send the report. Try again.");
+    return;
+  }
+  hidePost(post);
+  showToast("Reported, and hidden for you. Posts reported by several people leave the feed.");
 }
 
 // This browser's copy of a post wins over the shared one: it has the score
@@ -1372,7 +1430,7 @@ let shownIds = new Set();
 // or the samples when there is nothing else.
 function feedPosts() {
   const waiting = pending.filter((post) => post.platform === platformId);
-  const real = visiblePosts();
+  const real = visiblePosts().filter((post) => !hiddenIds.has(post.id));
   return waiting.length || real.length ? [...waiting, ...real] : EXAMPLES.filter((post) => post.platform === platformId);
 }
 
@@ -1383,7 +1441,8 @@ function renderFeed({ announce = false } = {}) {
   // Nor restart a shared video someone is watching.
   // Nor wipe a comment someone is in the middle of typing.
   const typing = document.activeElement?.matches?.("[data-comment-input]") ? document.activeElement.closest(".post") : null;
-  const watching = new Map([...feed.querySelectorAll(".post[data-watching]"), ...(typing ? [typing] : [])].map((node) => [node.dataset.postId, node]));
+  const playing = [...feed.querySelectorAll(".post:not(.is-pending)")].filter((node) => [...node.querySelectorAll("video")].some((video) => !video.paused));
+  const watching = new Map([...playing, ...(typing ? [typing] : [])].map((node) => [node.dataset.postId, node]));
   feed.replaceChildren(...visible.map((post) => {
     if (watching.has(post.id)) return watching.get(post.id);
     const node = renderPost(post);
@@ -1393,6 +1452,7 @@ function renderFeed({ announce = false } = {}) {
   }));
   shownIds = new Set(visible.map((post) => post.id));
   newPostsButton.hidden = true;
+  revealLinkedPost();
   feedEmpty.hidden = visible.length > 0;
   feedEmpty.textContent = `Nothing simulated on ${platform().name} yet. Write the first one.`;
   feedEnd.textContent = remote.enabled
@@ -1419,11 +1479,24 @@ function renderLeaderboard() {
   }));
 }
 
+// A shared link names a post: ask the feed to include it, then bring it into view once.
+let linkedPost = new URLSearchParams(location.search).get("post") || "";
+if (!/^[A-Za-z0-9-]{8,40}$/u.test(linkedPost)) linkedPost = "";
+
+function revealLinkedPost() {
+  if (!linkedPost) return;
+  const node = feed.querySelector(`[data-post-id="${CSS.escape(linkedPost)}"]`);
+  if (!node) return;
+  linkedPost = "";
+  node.classList.add("is-new");
+  node.scrollIntoView({ block: "center", behavior: calm() ? "auto" : "smooth" });
+}
+
 let feedSequence = 0;
 async function refreshRemote() {
   const sequence = ++feedSequence;
   try {
-    const response = await fetch(`/api/viral/feed?platform=${encodeURIComponent(platformId)}`);
+    const response = await fetch(`/api/viral/feed?platform=${encodeURIComponent(platformId)}${linkedPost ? `&post=${encodeURIComponent(linkedPost)}` : ""}`);
     if (!response.ok) throw new Error("feed unavailable");
     const body = await response.json();
     if (sequence !== feedSequence) return;
