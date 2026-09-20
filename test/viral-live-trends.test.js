@@ -87,7 +87,7 @@ test("each source runs once per interval however many visitors ask, with a charg
   assert.equal(calls.filter((call) => call.url.startsWith("https://api.apify.com/")).length, 2, "the paid sources are not");
 
   const tiktok = await liveTrendsFor("tiktok", { getDatabaseFn: async () => db, now: NOW + 7 * 3_600_000 });
-  assert.deepEqual(tiktok.map((source) => source.id), ["tiktok-tags", "google"], "the platform's own source leads");
+  assert.deepEqual(tiktok.map((source) => source.id), ["tiktok-trending", "google"], "the platform's own source leads");
   assert.deepEqual(tiktok[0].topics, ["#garbanight", "#h1b"]);
   const instagram = await liveTrendsFor("instagram", { getDatabaseFn: async () => db, now: NOW });
   assert.deepEqual(instagram[0].topics, ["Navratri outfits"]);
@@ -97,7 +97,7 @@ test("each source runs once per interval however many visitors ask, with a charg
 });
 
 test("a failed or switched-off run keeps the old topics and does not retry until the next interval", async () => {
-  const old = { _id: "tiktok-tags", nextAt: new Date(NOW - 1000), topics: ["#older"], fetchedAt: new Date(NOW - 3_600_000) };
+  const old = { _id: "tiktok-trending", nextAt: new Date(NOW - 1000), topics: ["#older"], fetchedAt: new Date(NOW - 3_600_000) };
   const db = database([old]);
   let runs = 0;
   const fetchFn = async (url) => {
