@@ -95,7 +95,7 @@ test("a simulation meters the visitor's network, not a djev key, and sends only 
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.verdict, "Banger");
   assert.equal(res.body.remainingToday, VIRAL_DAILY_REQUESTS_PER_NETWORK - 5);
-  assert.deepEqual(upstream.state, { post: "hello world" });
+  assert.deepEqual(upstream.state, { post: "hello world", creator: { followers: 10_000, verifiedPublicFigure: false } }, "the post, and who is posting it");
   assert.deepEqual(upstream.questions, QUESTIONS);
   assert.match(queries[0].values[0], /^viral:[a-f0-9]{64}$/u);
   assert.doesNotMatch(queries[0].values[0], /203\.0\.113/u);
@@ -120,10 +120,11 @@ test("attachments and polls are described to Jev, and junk is dropped", async ()
     post: "which one?",
     attachments: ["image", "video", "gif", "image"],
     poll: ["Tabs", "Spaces", "x".repeat(25)],
+    creator: { followers: 1000, verifiedPublicFigure: false },
   });
 
   await handler(request({ text: "solo", poll: ["only one"] }), response());
-  assert.deepEqual(upstream.state, { post: "solo" }, "a poll needs two options to count");
+  assert.deepEqual(upstream.state, { post: "solo", creator: { followers: 1000, verifiedPublicFigure: false } }, "a poll needs two options to count");
 });
 
 test("simulations are same-origin, non-empty, bounded, and rate limited", async () => {

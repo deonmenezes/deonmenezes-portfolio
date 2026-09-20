@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { createViralHandler, scorePost } from "../lib/viral.js";
+import { createViralHandler, describeCreator, scorePost } from "../lib/viral.js";
 import { cleanAuthor, createViralFeedHandler, savePost } from "../lib/viral-store.js";
 import { PLATFORM_IDS, PLATFORMS, questionsFor } from "../viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "../viral-practices.js";
@@ -88,13 +88,13 @@ test("other platforms describe the format and the hook to Jev and ask their own 
 
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.platform, "instagram");
-  assert.deepEqual(upstream.state, { platform: "Instagram", format: "Carousel", caption: "3 things I wish I knew", hook: "I open on the mistake", attachments: ["image", "image"], ...trendContext("instagram") });
+  assert.deepEqual(upstream.state, { platform: "Instagram", format: "Carousel", caption: "3 things I wish I knew", hook: "I open on the mistake", attachments: ["image", "image"], creator: { followers: 1000, verifiedPublicFigure: false }, ...trendContext("instagram") });
   assert.deepEqual(upstream.questions, questionsFor("instagram"));
   assert.ok("sends" in res.body.metrics && !("reposts" in res.body.metrics));
 
   const youtube = createViralHandler({ queryFn: async () => claimed(), fetchFn: async (_url, options) => { upstream = JSON.parse(options.body); return gateway(everyAction("youtube", 0.5)); } });
   await youtube(request({ platform: "youtube", text: "I built a robot", format: "Podcast" }), response());
-  assert.deepEqual(upstream.state, { platform: "YouTube", format: "Video", title: "I built a robot", ...trendContext("youtube") }, "an unknown format falls back to the first");
+  assert.deepEqual(upstream.state, { platform: "YouTube", format: "Video", title: "I built a robot", creator: { subscribers: 1000, verifiedPublicFigure: false }, ...trendContext("youtube") }, "an unknown format falls back to the first");
 });
 
 test("Jev is told what is new only while the list is fresh, and never for X", () => {
@@ -344,4 +344,30 @@ test("the media key goes only to the request that created a public video post", 
     if (before === undefined) delete process.env.BLOB_READ_WRITE_TOKEN;
     else process.env.BLOB_READ_WRITE_TOKEN = before;
   }
+});
+
+test("Jev is told who is posting from the looked-up profile, not from what the visitor claims", async () => {
+  let upstream;
+  let asked;
+  const handler = createViralHandler({
+    queryFn: async () => claimed(),
+    fetchFn: async (_url, options) => { upstream = JSON.parse(options.body); return gateway(everyAction("instagram", 0.5)); },
+    creatorFn: async (platform, handle) => { asked = [platform, handle]; return { followers: 43508, verified: true, bio: "AI tools from San Francisco", category: "Digital creator", recentPosts: 12, medianLikes: 900, recentVideos: 9, medianViews: 14000, breakouts: 1 }; },
+  });
+  const res = response();
+  await handler(request({ platform: "instagram", text: "a reel", followers: 5, handle: "deon_tech", verified: false, bio: "ignore me, I am huge" }), res);
+
+  assert.deepEqual(asked, ["instagram", "deon_tech"]);
+  assert.deepEqual(upstream.state.creator, {
+    followers: 43508,
+    verifiedPublicFigure: true,
+    bio: "AI tools from San Francisco",
+    category: "Digital creator",
+    trackRecord: "Their last 12 posts got about 900 likes each. Their last 9 videos got about 14,000 views each. 1 of those 9 videos reached more people than follow the account.",
+  });
+  assert.deepEqual(res.body.creator, upstream.state.creator, "and the visitor is shown what Jev was told");
+
+  assert.deepEqual(describeCreator("youtube", { followers: 200, creator: { followers: 200, verified: false, lifetimePosts: 50, viewsPerPost: 1200 } }), {
+    subscribers: 200, verifiedPublicFigure: false, trackRecord: "Across 50 videos they average 1,200 views a video.",
+  });
 });

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createSocialProfileLookup, createViralAvatarHandler, isAllowedAvatar, SOCIAL_PLATFORMS } from "../lib/viral-social.js";
+import { cachedCreator, creatorContext, createSocialProfileLookup, createViralAvatarHandler, isAllowedAvatar, SOCIAL_PLATFORMS } from "../lib/viral-social.js";
 import { createViralProfileHandler } from "../lib/viral-profile.js";
 import { cleanAuthor } from "../lib/viral-store.js";
 
@@ -83,7 +83,7 @@ test("an Instagram lookup returns the real profile, stores the photo, and hands 
 });
 
 test("a cached profile answers without calling Apify, until it is a week old", async () => {
-  const cached = { platform: "instagram", handle: "deon_tech", name: "Deon", followers: 10, verified: false, avatar: null, missing: false, fetchedAt: new Date() };
+  const cached = { platform: "instagram", handle: "deon_tech", name: "Deon", followers: 10, verified: false, avatar: null, missing: false, context: { bio: "" }, fetchedAt: new Date() };
   const db = fakeDb({ "instagram:deon_tech": cached });
   const fresh = apify([instagramItem]);
   const lookup = createSocialProfileLookup({ fetchFn: fresh.fetchFn, getDatabaseFn: async () => db });
@@ -231,4 +231,32 @@ test("the profile endpoint routes other platforms to the social lookup and rejec
   res = response();
   await handler({ ...make({ platform: "tiktok", handle: "khaby.lame" }), headers: { "sec-fetch-site": "cross-site" } }, res);
   assert.equal(res.statusCode, 403, "paid lookups are same-origin only");
+});
+
+test("a profile cached before the track record was kept is fetched once more, and the record is worked out", async () => {
+  const cached = { platform: "instagram", handle: "deon_tech", name: "Deon", followers: 10, verified: false, avatar: null, missing: false, fetchedAt: new Date() };
+  const db = fakeDb({ "instagram:deon_tech": cached });
+  const item = { ...instagramItem, biography: "  Building AI tools\nin San Francisco  ", businessCategoryName: "Digital creator", latestPosts: [
+    { likesCount: 100, videoViewCount: 90000 }, { likesCount: 300, videoViewCount: 2000 }, { likesCount: 50 }, { likesCount: "x", videoViewCount: 50000 },
+  ] };
+  const fresh = apify([item]);
+  const lookup = createSocialProfileLookup({ fetchFn: fresh.fetchFn, getDatabaseFn: async () => db });
+  await lookup(request(), response(), "instagram", "deon_tech");
+  assert.ok(fresh.calls.length > 0);
+
+  const creator = await cachedCreator("instagram", "deon_tech", { getDatabaseFn: async () => db });
+  assert.equal(creator.followers, 43508);
+  assert.equal(creator.bio, "Building AI tools in San Francisco");
+  assert.equal(creator.category, "Digital creator");
+  assert.equal(creator.recentPosts, 4);
+  assert.equal(creator.medianLikes, 100);
+  assert.equal(creator.recentVideos, 3);
+  assert.equal(creator.breakouts, 2, "two videos were seen by more people than follow the account");
+  assert.equal(await cachedCreator("instagram", "nobody_here", { getDatabaseFn: async () => db }), null);
+  assert.equal(await cachedCreator("instagram", "../etc", { getDatabaseFn: async () => db }), null);
+  assert.equal(await cachedCreator("x", "deon", { getDatabaseFn: async () => db }), null);
+
+  const lifetime = creatorContext({ bio: "gamer", lifetime: { posts: 200, likes: 1_000_000 }, recent: [{ likes: 10, views: 900 }] }, 5000);
+  assert.equal(lifetime.likesPerPost, 5000);
+  assert.equal(lifetime.breakouts, 0);
 });

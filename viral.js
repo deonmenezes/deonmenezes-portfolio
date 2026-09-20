@@ -494,6 +494,19 @@ function fillAnalysis(node, post) {
   const visual = find("[data-visual]");
   visual.hidden = !post.visual;
   visual.textContent = post.visual ? `What the AI saw and heard: ${post.visual}` : "";
+  // What Jev was told about the account, so a score can be traced to it.
+  const about = find("[data-creator]");
+  const creator = post.creator;
+  about.hidden = !creator;
+  if (creator) {
+    const size = creator.subscribers ?? creator.followers;
+    about.textContent = [
+      `What Jev was told about you: ${compact(size || 0)} ${creator.subscribers != null ? "subscribers" : "followers"}, ${creator.verifiedPublicFigure ? "a verified public figure" : "not a verified public figure"}.`,
+      creator.category ? `Category: ${creator.category}.` : "",
+      creator.bio ? `Bio: ${creator.bio}` : "",
+      creator.trackRecord || "No track record yet: look up your handle to add your recent posts.",
+    ].filter(Boolean).join(" ");
+  }
   find("[data-summary]").textContent = `Jev thinks ${EMOTIONS[post.emotion] || EMOTIONS.nothing}, with a hook of ${Number(post.hook).toFixed(1)} out of 3.`;
 
   find("[data-bars]").replaceChildren(...post.breakdown.map((item) => {
@@ -1461,6 +1474,8 @@ async function simulate(post) {
         extra: post.extra,
         format: post.format,
         followers: post.followers,
+        handle: post.handle,
+        verified: post.verified,
         attachments: post.attachments,
         poll: post.poll,
         visual: post.visual,
