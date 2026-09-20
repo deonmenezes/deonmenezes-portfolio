@@ -220,6 +220,8 @@ export const PLATFORMS = {
 
 export const PLATFORM_IDS = Object.keys(PLATFORMS);
 export const DEFAULT_PLATFORM = "x";
+// What a first-time visitor sees. DEFAULT_PLATFORM stays "x": it labels old posts and API calls that name no platform.
+export const LANDING_PLATFORM = "instagram";
 
 /** The questions sent to Jev for a platform: one per action, plus hook and emotion. */
 export function questionsFor(platformId) {

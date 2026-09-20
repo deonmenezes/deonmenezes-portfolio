@@ -5,7 +5,7 @@
    styles, so layout variants are classes and bars are <meter>/<progress>. */
 
 import { draftChecks } from "/viral-checks.js";
-import { DEFAULT_PLATFORM, PLATFORMS } from "/viral-platforms.js";
+import { DEFAULT_PLATFORM, LANDING_PLATFORM, PLATFORMS } from "/viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "/viral-practices.js";
 import { createComments } from "/viral-comments-ui.js";
 import { armMenu, createShare as createShareSheet } from "/viral-share.js";
@@ -129,8 +129,8 @@ const isPost = (post) => post && typeof post.text === "string" && typeof post.ve
 let posts = load(STORAGE_POSTS, []);
 posts = (Array.isArray(posts) ? posts.filter(isPost) : []).map((post) => ({ ...post, platform: PLATFORMS[post.platform] ? post.platform : DEFAULT_PLATFORM }));
 
-const requestedPlatform = new URLSearchParams(location.search).get("p") || load(STORAGE_PLATFORM, DEFAULT_PLATFORM);
-let platformId = PLATFORMS[requestedPlatform] ? requestedPlatform : DEFAULT_PLATFORM;
+const requestedPlatform = new URLSearchParams(location.search).get("p") || load(STORAGE_PLATFORM, LANDING_PLATFORM);
+let platformId = PLATFORMS[requestedPlatform] ? requestedPlatform : LANDING_PLATFORM;
 const platform = () => PLATFORMS[platformId];
 
 // The shared feed and leaderboard, when the site has a database behind it.
