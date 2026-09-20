@@ -1526,6 +1526,19 @@ function revealLinkedPost() {
   node.scrollIntoView({ block: "center", behavior: calm() ? "auto" : "smooth" });
 }
 
+// The last feed seen for each platform, so a return visit paints at once
+// instead of waiting on the network. The fresh one replaces it moments later.
+const STORAGE_FEED = "viral_feed_cache";
+const cleanRemote = (list) => (Array.isArray(list) ? list : []).filter((post) => post && typeof post.text === "string"
+  && typeof post.verdict === "string" && Number.isFinite(post.viralScore) && post.metrics && PLATFORMS[post.platform]);
+
+function rememberedFeed(id) {
+  const kept = load(STORAGE_FEED, {})?.[id];
+  const posts = cleanRemote(kept?.posts).filter((post) => post.platform === id);
+  const leaderboard = cleanRemote(kept?.leaderboard).filter((post) => post.platform === id);
+  return { enabled: posts.length > 0, posts, leaderboard };
+}
+
 let feedSequence = 0;
 async function refreshRemote() {
   const sequence = ++feedSequence;
@@ -1534,9 +1547,8 @@ async function refreshRemote() {
     if (!response.ok) throw new Error("feed unavailable");
     const body = await response.json();
     if (sequence !== feedSequence) return;
-    const clean = (list) => (Array.isArray(list) ? list : []).filter((post) => post && typeof post.text === "string"
-      && typeof post.verdict === "string" && Number.isFinite(post.viralScore) && post.metrics && PLATFORMS[post.platform]);
-    remote = { enabled: Boolean(body.enabled), posts: clean(body.posts), leaderboard: clean(body.leaderboard) };
+    remote = { enabled: Boolean(body.enabled), posts: cleanRemote(body.posts), leaderboard: cleanRemote(body.leaderboard) };
+    if (remote.enabled) save(STORAGE_FEED, { ...load(STORAGE_FEED, {}), [platformId]: { posts: remote.posts, leaderboard: remote.leaderboard } });
   } catch {
     if (sequence !== feedSequence) return;
     remote = { enabled: false, posts: [], leaderboard: [] };
@@ -2413,7 +2425,7 @@ function setPlatform(id, { persist = true } = {}) {
   mediaTools[1].hidden = platformId !== "x";
   if (platformId !== "x" && !pollEditor.hidden) document.querySelector("[data-poll-remove]").click();
 
-  remote = { enabled: false, posts: [], leaderboard: [] };
+  remote = rememberedFeed(platformId);
   live = false;
   renderMe();
   renderPractices(platformId);
