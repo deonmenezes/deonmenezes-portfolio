@@ -7,6 +7,7 @@
 import { draftChecks } from "/viral-checks.js";
 import { DEFAULT_PLATFORM, LANDING_PLATFORM, PLATFORMS } from "/viral-platforms.js";
 import { BASIS_LABELS, PRACTICES } from "/viral-practices.js";
+import { createAuth } from "/viral-auth-ui.js";
 import { createComments } from "/viral-comments-ui.js";
 import { armMenu, createShare as createShareSheet } from "/viral-share.js";
 import { MAX_OWN_TOPICS, TRENDS, TRENDS_AS_OF, TRENDS_SCOPE, cleanTopics, trendsFor } from "/viral-trends.js";
@@ -1626,6 +1627,11 @@ async function simulate(post) {
       }),
     });
     result = await response.json().catch(() => ({}));
+    // Signed out since the page loaded: sign in again, then this post goes ahead.
+    if (response.status === 401 && result.error === "sign_in_required") {
+      signInRetry = post;
+      auth.open();
+    }
     if (!response.ok) throw new Error(result.message || "Something went wrong. Try again.");
   } catch (error) {
     post.state = "failed";
@@ -2133,10 +2139,48 @@ textarea.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !simulateButton.disabled) composer.requestSubmit();
 });
 
+/* -------------------------------------------------------------- sign in */
+
+// A post turned away because its session had ended, sent again once they're back in.
+let signInRetry = null;
+const auth = createAuth({
+  dialog: document.querySelector("[data-auth]"),
+  account: document.querySelector("[data-auth-account]"),
+  showToast,
+  onSignedIn() {
+    if (signInRetry) {
+      const post = signInRetry;
+      signInRetry = null;
+      simulate(post);
+    } else if (!simulateButton.disabled) {
+      composer.requestSubmit();
+    }
+  },
+  saveDraft(key) {
+    try {
+      sessionStorage.setItem(key, JSON.stringify({ text: textarea.value, extra: extraInput.value }));
+    } catch { /* the words are lost, nothing worse */ }
+  },
+  restoreDraft(key) {
+    let draft = null;
+    try {
+      draft = JSON.parse(sessionStorage.getItem(key) || "null");
+      sessionStorage.removeItem(key);
+    } catch { /* nothing to restore */ }
+    if (typeof draft?.text !== "string" || !draft.text) return false;
+    textarea.value = draft.text;
+    if (typeof draft.extra === "string") extraInput.value = draft.extra;
+    syncComposer();
+    return true;
+  },
+});
+
 composer.addEventListener("submit", (event) => {
   event.preventDefault();
   const text = textarea.value.trim();
   if (!text) return;
+  // Nothing is asked of a visitor until they post; then they sign in once.
+  if (!auth.gate()) return;
   const author = me() || ANONYMOUS;
   const poll = pollOptions();
 

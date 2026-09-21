@@ -84,6 +84,14 @@
       "destination": "/api/stats?route=viral-look"
     },
     {
+      "source": "/api/viral/auth/callback/:provider",
+      "destination": "/api/stats?route=viral-auth&action=callback&provider=:provider"
+    },
+    {
+      "source": "/api/viral/auth",
+      "destination": "/api/stats?route=viral-auth"
+    },
+    {
       "source": "/api/viral",
       "destination": "/api/stats?route=viral"
     },
@@ -223,11 +231,36 @@
         },
         {
           "key": "Cross-Origin-Opener-Policy",
-          "value": "same-origin"
+          "value": "same-origin-allow-popups"
         },
         {
           "key": "Permissions-Policy",
           "value": "camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    },
+    {
+      "source": "/viral-signed-in",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self'"
         },
         {
           "key": "Referrer-Policy",

@@ -222,6 +222,7 @@
         <p class="history-reality" data-history-reality hidden></p>
         <button class="post-tool history-export" type="button" data-history-export>Export CSV</button>
       </section>
+      <p class="auth-account" data-auth-account hidden>Signed in as <strong data-auth-who></strong> · <button type="button" data-auth-signout>Sign out</button></p>
       <p class="side-foot">A fan-made simulator by <a href="/deon">Deon Menezes</a>. Not affiliated with X, Instagram, TikTok, or YouTube.</p>
     </aside>
   </div>
@@ -247,6 +248,41 @@
       <button class="onboarding-continue" type="submit" value="continue" data-onboarding-continue disabled>Continue</button>
       <button class="onboarding-skip" type="submit" value="skip">Skip — post anonymously</button>
     </form>
+  </dialog>
+
+  <dialog class="onboarding auth" data-auth aria-labelledby="auth-title">
+    <div class="onboarding-form">
+      <button class="card-close auth-close" type="button" aria-label="Close" data-auth-close>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <svg class="onboarding-mark solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
+      <h2 id="auth-title">Sign in to post</h2>
+      <p class="onboarding-lead" data-auth-lead>It's free, and your draft stays right here.</p>
+      <div class="auth-options" data-auth-options>
+        <button class="auth-provider" type="button" data-auth-provider="google" hidden>
+          <svg class="solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.480 10.920v3.280h7.840c-.240 1.840-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.400-6.053 2.400-4.827 0-8.600-3.893-8.600-8.720s3.773-8.720 8.600-8.720c2.600 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.440 16.133 0 12.480 0 5.867 0 .307 5.387.307 12s5.560 12 12.173 12c3.573 0 6.267-1.173 8.373-3.360 2.160-2.160 2.840-5.213 2.840-7.667 0-.760-.053-1.467-.173-2.053H12.480z"/></svg>
+          Continue with Google
+        </button>
+        <button class="auth-provider" type="button" data-auth-provider="apple" hidden>
+          <svg class="solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.960-1.040-2.040.027-3.910 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.090 1.013 1.454 2.208 3.090 3.792 3.039 1.520-.065 2.090-.987 3.935-.987 1.831 0 2.350.987 3.960.948 1.637-.026 2.676-1.480 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.220-4.857-.026-3.040 2.480-4.494 2.597-4.559-1.429-2.090-3.623-2.324-4.390-2.376-2-.156-3.675 1.090-4.610 1.090zM15.530 3.830c.843-1.012 1.400-2.427 1.245-3.830-1.207.052-2.662.805-3.532 1.818-.780.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701z"/></svg>
+          Continue with Apple
+        </button>
+        <p class="auth-or" data-auth-or hidden><span>or</span></p>
+        <form class="auth-email" data-auth-email hidden novalidate>
+          <label class="sr-only" for="auth-email">Email</label>
+          <input id="auth-email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com" data-auth-email-input>
+          <button class="onboarding-continue" type="submit">Email me a code</button>
+        </form>
+      </div>
+      <form class="auth-email" data-auth-code hidden novalidate>
+        <label class="auth-code-label" for="auth-code" data-auth-sent>Enter the 6-digit code we emailed you</label>
+        <input id="auth-code" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456" data-auth-code-input>
+        <button class="onboarding-continue" type="submit">Verify and post</button>
+        <button class="onboarding-skip" type="button" data-auth-back>Use a different email</button>
+      </form>
+      <p class="auth-status" role="status" data-auth-status></p>
+      <p class="auth-fine">We keep your name and email for your account. Nothing is posted to any real platform.</p>
+    </div>
   </dialog>
 
   <template id="comment-template">

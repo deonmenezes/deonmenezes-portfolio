@@ -421,7 +421,8 @@ test("Google Analytics loads once via first-party /ga.js on every public page, n
   const rootPages = (await readdir(root)).filter((name) => name.endsWith(".html"));
   assert.deepEqual(
     new Set(rootPages),
-    new Set([...PUBLIC_ROOT_PAGES, "social.html"]),
+    // viral-signed-in.html is the few-hundred-millisecond popup a sign-in ends on: not a page anyone visits.
+    new Set([...PUBLIC_ROOT_PAGES, "social.html", "viral-signed-in.html"]),
     "classify every new root page as public (tagged) or private",
   );
 
@@ -454,6 +455,8 @@ test("Google Analytics loads once via first-party /ga.js on every public page, n
 
   const socialHtml = await readFile(new URL("social.html", root), "utf8");
   assert.doesNotMatch(socialHtml, /googletagmanager|\/ga\.js|gtag/iu);
+  const signedInHtml = await readFile(new URL("viral-signed-in.html", root), "utf8");
+  assert.doesNotMatch(signedInHtml, /googletagmanager|\/ga\.js|gtag/iu);
 });
 
 test("clean URLs expose the static files without rewrites, conflicts, or an unknown catch-all", async () => {

@@ -19,6 +19,7 @@ import { viralLookHandler } from "../lib/viral-look.js";
 import { viralDeleteHandler, viralMediaHandler } from "../lib/viral-media.js";
 import { viralCommentsHandler } from "../lib/viral-comments.js";
 import { viralTrendsHandler } from "../lib/viral-live-trends.js";
+import { viralAuthHandler } from "../lib/viral-auth.js";
 
 const FALLBACK = {
   mantishackStars: 363,
@@ -114,6 +115,7 @@ export default async function handler(req, res) {
   if (req.query?.route === "viral-delete") return viralDeleteHandler(req, res);
   if (req.query?.route === "viral-comments") return viralCommentsHandler(req, res);
   if (req.query?.route === "viral-trends") return viralTrendsHandler(req, res);
+  if (req.query?.route === "viral-auth") return viralAuthHandler(req, res);
 
   const keys = Object.keys(tasks);
   const settled = await Promise.allSettled(keys.map((k) => tasks[k]()));

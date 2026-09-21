@@ -2856,3 +2856,165 @@ button.post-more svg { width: 100%; height: 100%; }
 .share-target:last-child { grid-column: 1 / -1; }
 
 .trends [data-trends-live-list] .trends-scope { margin-top: 4px; margin-bottom: 8px; }
+
+/* ------------------------------------------------------------ sign in */
+
+.signed-in-page {
+  display: grid;
+  min-height: 100vh;
+  margin: 0;
+  place-items: center;
+  background: #fff;
+  color: #0f1419;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.signed-in-card {
+  display: grid;
+  max-width: 360px;
+  padding: 32px 24px;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.signed-in-card h1 {
+  margin: 8px 0 0;
+  font-size: 22px;
+}
+
+.signed-in-card p {
+  margin: 0;
+  color: #536471;
+}
+
+.signed-in-back {
+  margin-top: 12px;
+  color: #0095f6;
+  font-weight: 600;
+}
+
+.auth .onboarding-form {
+  position: relative;
+}
+
+.auth-close {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+}
+
+.auth-options,
+.auth-email {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-provider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.auth-provider:hover:not(:disabled) {
+  background: var(--press);
+}
+
+.auth-provider:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.auth-provider svg {
+  width: 18px;
+  height: 18px;
+}
+
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.auth-or::before,
+.auth-or::after {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+  content: "";
+}
+
+.auth-email input {
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.auth-email input:focus {
+  border-color: var(--accent);
+  outline: 1px solid var(--accent);
+}
+
+.auth-email .onboarding-continue {
+  margin-top: 4px;
+}
+
+.auth-code-label {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.auth-status {
+  min-height: 20px;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.auth-status.is-error {
+  color: #f4212e;
+}
+
+.auth-fine {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.auth-account {
+  margin: 12px 16px 0;
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.auth-account button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+}
+
+[data-platform="instagram"] .auth-provider,
+[data-platform="instagram"] .auth-email .onboarding-continue {
+  border-radius: 8px;
+}
