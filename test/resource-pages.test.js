@@ -13,6 +13,7 @@ const root = new URL("../", import.meta.url);
 const GA_TAGS = Object.freeze([
   `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>`,
   `<script src="/ga.js"></script>`,
+  `<script src="/metricool.js"></script>`,
 ]);
 
 const PUBLIC_ROOT_PAGES = Object.freeze([
@@ -367,7 +368,7 @@ test("Vercel applies the strict security policy to exactly the twenty-four stati
     );
     assert.deepEqual(
       directives.get("script-src"),
-      ["'self'", "https://www.googletagmanager.com"],
+      ["'self'", "https://www.googletagmanager.com", "https://tracker.metricool.com"],
       path,
     );
     assert.deepEqual(
@@ -386,6 +387,7 @@ test("Vercel applies the strict security policy to exactly the twenty-four stati
         "https://*.google-analytics.com",
         "https://*.googletagmanager.com",
         "https://*.google.com",
+        "https://tracker.metricool.com",
       ],
       path,
     );
@@ -417,6 +419,9 @@ test("Google Analytics loads once via first-party /ga.js on every public page, n
     "ga.js must configure the build-script measurement ID",
   );
   assert.doesNotMatch(gaScript, /<script/iu);
+  const metricoolScript = await readFile(new URL("metricool.js", root), "utf8");
+  assert.ok(metricoolScript.includes("https://tracker.metricool.com/resources/be.js"));
+  assert.doesNotMatch(metricoolScript, /<script/iu);
 
   const rootPages = (await readdir(root)).filter((name) => name.endsWith(".html"));
   assert.deepEqual(
@@ -454,9 +459,9 @@ test("Google Analytics loads once via first-party /ga.js on every public page, n
   }
 
   const socialHtml = await readFile(new URL("social.html", root), "utf8");
-  assert.doesNotMatch(socialHtml, /googletagmanager|\/ga\.js|gtag/iu);
+  assert.doesNotMatch(socialHtml, /googletagmanager|\/ga\.js|gtag|metricool/iu);
   const signedInHtml = await readFile(new URL("viral-signed-in.html", root), "utf8");
-  assert.doesNotMatch(signedInHtml, /googletagmanager|\/ga\.js|gtag/iu);
+  assert.doesNotMatch(signedInHtml, /googletagmanager|\/ga\.js|gtag|metricool/iu);
 });
 
 test("clean URLs expose the static files without rewrites, conflicts, or an unknown catch-all", async () => {

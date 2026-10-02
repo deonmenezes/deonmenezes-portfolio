@@ -1077,6 +1077,7 @@ function renderPage(slug, resource) {
   <link rel="stylesheet" href="/resources/detail.css">
   <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
   <script src="/ga.js"></script>
+  <script src="/metricool.js"></script>
 </head>
 <body>
   <div class="paper" aria-hidden="true"></div>
