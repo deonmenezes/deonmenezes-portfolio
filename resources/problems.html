@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Problems Worth Solving: Startup Ideas People Will Pay For · Deon Menezes</title>
+  <meta name="description" content="A free list of real problems people will pay to have solved. Filter by field, from agriculture to biology to software, and sort from the easiest to the hardest.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/problems">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Problems worth solving">
+  <meta property="og:description" content="A free list of real problems people will pay to have solved. Filter by field and sort from the easiest to the hardest.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/problems">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Problems worth solving">
+  <meta name="twitter:description" content="A free list of real problems people will pay to have solved. Filter by field and sort from the easiest to the hardest.">
+  <link rel="stylesheet" href="/assets/fonts/fonts.css">
+  <link rel="stylesheet" href="/resources/site-nav.css">
+  <link rel="stylesheet" href="/resources/problems.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
+  <script src="/ga.js"></script>
+  <script src="/metricool.js"></script>
+</head>
+<body>
+  <div class="paper" aria-hidden="true"></div>
+  <a class="skip-link" href="#list">Skip to the list</a>
+  <header class="nav">
+    <a class="brand" href="/deon">
+      <span class="brand-pin" aria-hidden="true"></span>
+      <span class="brand-name">Deon Menezes</span>
+      <span class="brand-tag">AI Harness Engineer</span>
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href="/deon#work">Work</a>
+      <a href="/deon#built">Projects</a>
+      <a href="/deon#apps">Apps</a>
+      <a href="/resources" aria-current="page">Resources</a>
+      <a href="/deon#connect">Connect</a>
+      <a href="https://virelity.com" target="_blank" rel="noopener noreferrer" class="nav-virelity">Virelity ↗</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="chip chip-ink" href="/resources">All resources</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <header class="hero">
+      <p class="eyebrow">Free list · Startup ideas</p>
+      <h1>Problems worth <em>solving.</em></h1>
+      <p class="lede"><span id="total">122</span> real problems that people would pay to have fixed. Pick your field, sort from the easiest to the hardest, and start on one.</p>
+      <dl class="levels" aria-label="What the difficulty levels mean">
+        <div><dt class="level level-1">Easy</dt><dd>One person, a few weeks, tools that already exist.</dd></div>
+        <div><dt class="level level-2">Medium</dt><dd>A small team, months, and some access to the industry.</dd></div>
+        <div><dt class="level level-3">Hard</dt><dd>Years, capital, and regulation or research.</dd></div>
+        <div><dt class="level level-4">Moonshot</dt><dd>Needs science that does not exist yet.</dd></div>
+      </dl>
+    </header>
+
+    <section class="tool" aria-label="The list of problems">
+      <div class="filters">
+        <label class="search">
+          <span class="group-label">Search</span>
+          <input type="search" id="q" placeholder="farmers, clinics, invoices..." autocomplete="off" enterkeyhint="search">
+        </label>
+        <div class="group">
+          <p class="group-label" id="level-label">Difficulty</p>
+          <div class="chips" id="levels" role="group" aria-labelledby="level-label"></div>
+        </div>
+        <div class="group">
+          <p class="group-label" id="field-label">Field</p>
+          <div class="chips chips-fields" id="fields" role="group" aria-labelledby="field-label"></div>
+        </div>
+      </div>
+
+      <div class="results">
+        <div class="bar">
+          <p class="count" id="count" role="status" aria-live="polite">Loading the list.</p>
+          <div class="bar-actions">
+            <label class="sort">
+              <span>Sort</span>
+              <select id="sort">
+                <option value="easy">Easiest first</option>
+                <option value="hard">Hardest first</option>
+              </select>
+            </label>
+            <button type="button" class="reset" id="reset" hidden>Reset</button>
+          </div>
+        </div>
+        <ol class="list" id="list"></ol>
+        <div class="empty" id="empty" hidden>
+          <p>Nothing matches those filters.</p>
+          <button type="button" class="reset" id="reset-empty">Clear the filters</button>
+        </div>
+        <noscript><p class="empty">This list needs JavaScript to filter and sort. Turn it on and reload the page.</p></noscript>
+      </div>
+    </section>
+
+    <aside class="closing">
+      <p>Picked one?</p>
+      <strong>Do the first step this week. Then talk to the people who have the problem.</strong>
+      <a class="button" href="/resources/start-a-startup">How to start a startup in 2026 →</a>
+    </aside>
+  </main>
+  <footer><span>Collected by Deon Menezes</span><a href="/resources">More free resources →</a></footer>
+  <script src="/resources/problems-data.js" defer></script>
+  <script src="/resources/problems.js" defer></script>
+</body>
+</html>
