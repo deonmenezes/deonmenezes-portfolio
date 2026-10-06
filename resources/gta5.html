@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GTA 5 in a Browser Tab: What Happened · Deon Menezes</title>
+  <meta name="description" content="On 6 October 2026 a site called playgta5.com ran Grand Theft Auto V inside Chrome with no install, went viral and went offline within hours. What it was, how it worked, and where it stands.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/gta5">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="GTA 5 in a browser tab: what happened">
+  <meta property="og:description" content="A site ran GTA V inside Chrome with no install, then went offline within hours. What it was, how it worked, and where it stands.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/gta5">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GTA 5 in a browser tab: what happened">
+  <meta name="twitter:description" content="A site ran GTA V inside Chrome with no install, then went offline within hours. What it was and how it worked.">
+  <link rel="stylesheet" href="/assets/fonts/fonts.css">
+  <link rel="stylesheet" href="/resources/site-nav.css">
+  <link rel="stylesheet" href="/resources/start-a-startup.css">
+  <style>.hero { grid-template-columns: minmax(0, 1fr); }</style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
+  <script src="/ga.js"></script>
+  <script src="/metricool.js"></script>
+</head>
+<body>
+  <div class="paper" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Skip to the explainer</a>
+  <header class="nav">
+    <a class="brand" href="/deon">
+      <span class="brand-pin" aria-hidden="true"></span>
+      <span class="brand-name">Deon Menezes</span>
+      <span class="brand-tag">AI Harness Engineer</span>
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href="/deon#work">Work</a>
+      <a href="/deon#built">Projects</a>
+      <a href="/deon#apps">Apps</a>
+      <a href="/resources" aria-current="page">Resources</a>
+      <a href="/deon#connect">Connect</a>
+      <a href="https://virelity.com" target="_blank" rel="noopener noreferrer" class="nav-virelity">Virelity ↗</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="chip chip-ink" href="/resources">All resources</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <article>
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Explainer · 6 October 2026</p>
+          <h1>GTA 5 in a browser tab:<br><em>what happened.</em></h1>
+          <p class="lede">On 6 October 2026 a site called playgta5.com let people play Grand Theft Auto V inside Chrome, with nothing to install. It spread across X in a morning and was offline within hours. Here is what it was, how it worked, and where it stands now.</p>
+          <nav class="jump" aria-label="On this page">
+            <a href="#what">What happened</a>
+            <a href="#how">How it worked</a>
+            <a href="#status">Where it stands</a>
+            <a href="#play">How to play GTA V</a>
+            <a href="#learn">Build this kind of thing</a>
+            <a href="#sources">Sources</a>
+          </nav>
+        </div>
+      </header>
+
+      <section class="rules" id="what" aria-labelledby="what-title">
+        <p class="section-label">The short version</p>
+        <h2 id="what-title">What happened.</h2>
+        <p class="section-intro">This was an unofficial project. It was not made or released by Rockstar Games.</p>
+
+        <ol class="rule-list">
+          <li>
+            <span class="rule-no" aria-hidden="true">01</span>
+            <div>
+              <h3>It spread in one morning.</h3>
+              <p>Clips of GTA V running inside Google Chrome went viral on X on 6 October. One demo, from the account Pixel Gamer 4K, showed it on an Apple M3 Pro laptop. PCQuest reported that post at 1.5 million views.</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">02</span>
+            <div>
+              <h3>It ran on your own device.</h3>
+              <p>This was not cloud gaming, where the game runs on someone else's computer and you watch a video stream of it. The browser downloaded about 700 MB first, according to the reports, then pulled in more as you played. People reported a Story Mode and a Sandbox Mode, and some said it ran on phones.</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">03</span>
+            <div>
+              <h3>It was offline within hours.</h3>
+              <p>Visitors started getting errors and blank pages the same day. When I checked on 6 October the site returned a Cloudflare 522 error, which means the server behind it was not answering.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="steps" id="how" aria-labelledby="how-title">
+        <p class="section-label">Under the hood</p>
+        <h2 id="how-title">How it worked.</h2>
+        <p class="section-intro">The Internet Archive saved a copy of the site's front page on 6 October. The game itself is not in that copy, but the page's own code and the developer notes inside it describe the design. This is what they say.</p>
+
+        <div class="phase">
+          <h3 class="phase-title"><span>Part 1</span> The engine</h3>
+          <ol class="step-list">
+            <li><strong>The game engine was compiled to WebAssembly.</strong> WebAssembly is a format that lets code written in languages like C++ run inside a browser at close to full speed.</li>
+            <li><strong>It ran in Web Workers, not on the page.</strong> A Web Worker is a background thread in the browser. Each engine thread got its own worker, and the notes put each one at about 20 MB.</li>
+            <li><strong>The page itself did very little.</strong> It showed the loading screen and handed its drawing surface, the canvas, to the workers.</li>
+          </ol>
+        </div>
+
+        <div class="phase">
+          <h3 class="phase-title"><span>Part 2</span> Graphics, sound and controls</h3>
+          <ol class="step-list" start="4">
+            <li><strong>A separate GPU worker drew every frame through WebGPU.</strong> WebGPU is the browser's modern way of talking to the graphics card.</li>
+            <li><strong>Sound went through shared memory.</strong> The engine's audio mixer wrote into a block of memory, and a small audio script in the browser played it.</li>
+            <li><strong>Controls went the other way.</strong> Keyboard and mouse events were written into shared memory for the engine to read.</li>
+          </ol>
+        </div>
+
+        <div class="phase">
+          <h3 class="phase-title"><span>Part 3</span> Fitting a huge game into a tab</h3>
+          <ol class="step-list" start="7">
+            <li><strong>Game data was streamed as needed.</strong> A dedicated worker fetched files on demand and kept its own store in the browser. The notes measure about 1.2 to 1.4 GB of game data for the world to load the first time.</li>
+            <li><strong>Weak devices got a low-memory mode.</strong> On devices reporting 4 GB of memory or less it used fewer threads, lower detail and no shadows. The notes say this cut graphics memory from 1.16 GB to 0.5 GB.</li>
+            <li><strong>The loading screen was rebuilt in HTML.</strong> The notes say it was ported from the game's own start-up screen.</li>
+          </ol>
+        </div>
+
+        <blockquote class="quote">
+          Posts on X said the port was made with AI coding tools.
+          <cite>I could not confirm who made it or which tools were used.</cite>
+        </blockquote>
+      </section>
+
+      <section class="rules" id="status" aria-labelledby="status-title">
+        <p class="section-label">Right now</p>
+        <h2 id="status-title">Where it stands.</h2>
+        <ol class="rule-list">
+          <li>
+            <span class="rule-no" aria-hidden="true">01</span>
+            <div>
+              <h3>Nobody has confirmed why it went down.</h3>
+              <p>Windows Report found no confirmation from Rockstar Games or its owner Take-Two that they ordered it taken down. Other coverage puts it down to the traffic.</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">02</span>
+            <div>
+              <h3>It was never a licensed copy.</h3>
+              <p>Several outlets reported that it was built on leaked GTA V source code. That has not been confirmed. Either way, the site was serving Rockstar's game to anyone for free, and Take-Two has had browser versions of its games removed before, including a Vice City port.</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">03</span>
+            <div>
+              <h3>There is no working link to share.</h3>
+              <p>The live site is down, and the archived copy holds only the title screen, so it never gets past loading. I'm not linking to mirrors. Sites that copy a viral page like this are a common way to spread malware.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="video" id="play" aria-labelledby="play-title">
+        <div class="video-copy">
+          <p class="section-label">If you want to play</p>
+          <h2 id="play-title">How to play GTA V.</h2>
+          <p>The official ways still work.</p>
+        </div>
+        <ul class="video-list">
+          <li><strong>Buy it from Rockstar.</strong> The official page lists every platform it is sold on: <a href="https://www.rockstargames.com/gta-v" target="_blank" rel="noopener noreferrer">rockstargames.com/gta-v</a>.</li>
+          <li><strong>No gaming PC?</strong> Check whether a cloud gaming service you already use carries it. That is the legal way to play on a weak laptop or a phone.</li>
+          <li><strong>Be careful with "play GTA 5 free" sites.</strong> If a site asks you to install something or sign in, close it.</li>
+        </ul>
+      </section>
+
+      <section class="video" id="learn" aria-labelledby="learn-title">
+        <div class="video-copy">
+          <p class="section-label">For builders</p>
+          <h2 id="learn-title">Build this kind of thing.</h2>
+          <p>The same browser technology is open to everyone.</p>
+        </div>
+        <ul class="video-list">
+          <li><strong>WebAssembly.</strong> Start at <a href="https://webassembly.org/" target="_blank" rel="noopener noreferrer">webassembly.org</a>, then use <a href="https://emscripten.org/" target="_blank" rel="noopener noreferrer">Emscripten</a> to compile C or C++ for the browser.</li>
+          <li><strong>WebGPU.</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API" target="_blank" rel="noopener noreferrer">MDN's WebGPU guide</a> covers drawing with the graphics card from a web page.</li>
+          <li><strong>Web Workers.</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API" target="_blank" rel="noopener noreferrer">MDN's Web Workers guide</a> explains running heavy code off the main page.</li>
+          <li><strong>Want to make your own game?</strong> Start with <a href="/resources/make-a-video-game">my game-making resource</a>.</li>
+        </ul>
+      </section>
+
+      <section class="reading" id="sources" aria-labelledby="sources-title">
+        <p class="section-label">Further reading</p>
+        <h2 id="sources-title">Sources.</h2>
+        <ul class="reading-list">
+          <li><a href="https://windowsreport.com/playgta5-goes-down-after-free-gta-5-browser-port-takes-the-internet-by-storm/" target="_blank" rel="noopener noreferrer"><strong>PlayGTA5 Goes Down After Free GTA 5 Browser Port Takes the Internet by Storm</strong><em>Windows Report ↗</em></a></li>
+          <li><a href="https://www.talkesport.com/news/gta-5-web-browser-port/" target="_blank" rel="noopener noreferrer"><strong>GTA 5 Web Browser Port Appears Online, Then Goes Offline</strong><em>TalkEsport ↗</em></a></li>
+          <li><a href="https://www.pcquest.com/gaming/gta-5-runs-in-browser-briefly-before-takedown-raises-hopes-for-gta-6-early-pc-launch-12629339" target="_blank" rel="noopener noreferrer"><strong>GTA 5 Runs in Browser Briefly Before Takedown</strong><em>PCQuest ↗</em></a></li>
+          <li><a href="https://www.androidsage.com/2026/10/06/play-gta-5-in-your-browser/" target="_blank" rel="noopener noreferrer"><strong>This Website Lets You Play GTA 5 in Your Browser</strong><em>AndroidSage ↗</em></a></li>
+        </ul>
+      </section>
+
+      <aside class="closing">
+        <p>Checked on 6 October 2026.</p>
+        <strong>A full open-world game ran in a browser tab. That part is real, even if the site is gone.</strong>
+        <a class="button" href="https://www.instagram.com/deon_tech/" target="_blank" rel="noopener noreferrer">Follow @deon_tech for more ↗</a>
+      </aside>
+    </article>
+  </main>
+  <footer><span>Written by Deon Menezes</span><a href="/resources">More free resources →</a></footer>
+</body>
+</html>
