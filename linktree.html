@@ -2,94 +2,323 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Deon Menezes · Links</title>
-<meta name="description" content="Connect with Deon Menezes · Instagram, X, LinkedIn, GitHub, Discord, YouTube." />
+<meta name="description" content="Deon Menezes, founder of Virelity. Instagram, X, LinkedIn, YouTube, GitHub, Discord, his apps and the companies he has worked with." />
+<meta name="theme-color" content="#0d1640" />
 <meta property="og:title" content="Deon Menezes · Links" />
 <meta property="og:description" content="Founder · Builder · Creator. Pick a platform to connect." />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-weight='bold'>🜂</text></svg>" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Archivo+Black&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<meta property="og:image" content="https://deonmenezes.com/assets/img/deon-linkedin.jpg" />
+<link rel="icon" type="image/jpeg" href="/assets/img/deon-linkedin.jpg" />
+<link rel="apple-touch-icon" href="/assets/img/deon-linkedin.jpg" />
+<link rel="preload" as="image" href="/assets/img/deon-linkedin.jpg" />
 <style>
-  :root{ --bg:#0c0a07; --panel:#141009; --ink:#fff; --ink-dim:#b6ae9e; --ink-faint:#7d7666; --amber:#f59e0b; --line:#2a2418; --ease:cubic-bezier(.2,.9,.3,1); }
+  :root{
+    --ink:#fff; --ink-2:rgba(255,255,255,.88); --ink-3:rgba(255,255,255,.72);
+    --glass:rgba(18,22,48,.42); --glass-line:rgba(255,255,255,.16);
+    --pad:16px; --gap:12px; --top:14px; --wp:12px; --sg:11px; --rowgap:12px;
+    --avatar:74px; --h1:23px; --statb:18px; --chip:30px; --tile:46px;
+    --icon:clamp(52px,15.4vw,62px); --dicon:clamp(48px,13.6vw,54px);
+    --ease:cubic-bezier(.2,.9,.3,1);
+    --wall:
+      radial-gradient(62% 44% at 12% 6%,rgba(72,120,255,.95) 0%,transparent 70%),
+      radial-gradient(56% 40% at 98% 24%,rgba(139,92,246,.9) 0%,transparent 70%),
+      radial-gradient(60% 42% at 0% 74%,rgba(14,165,233,.75) 0%,transparent 70%),
+      radial-gradient(72% 44% at 92% 100%,rgba(255,122,89,.9) 0%,transparent 70%),
+      linear-gradient(180deg,#0e1640,#1a0e38);
+  }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:"Archivo",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:52px 18px 40px;overflow-x:hidden;position:relative}
-  .bg{position:fixed;inset:0;z-index:-2;background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px) 0 0/100% 56px,linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px) 0 0/56px 100%,radial-gradient(120% 80% at 80% -10%,#1a1408,#0c0a07 60%),#0c0a07}
-  .shape{position:fixed;z-index:-1;border:3px solid var(--amber);opacity:.5}
-  .s1{width:90px;height:90px;top:12vh;right:8vw;transform:rotate(16deg);animation:spin 24s linear infinite}
-  .s2{width:60px;height:60px;background:#ef4444;border-color:#ef4444;bottom:14vh;left:7vw;transform:rotate(-12deg);opacity:.8}
-  .s3{width:70px;height:70px;border-color:#a855f7;bottom:24vh;right:12vw;transform:rotate(10deg)}
-  @keyframes spin{to{transform:rotate(376deg)}}
-  .wrap{width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;animation:rise .7s var(--ease) both}
-  @keyframes rise{from{opacity:0;transform:translateY(22px)}}
-  .avatar{width:92px;height:92px;display:grid;place-items:center;font-family:"Archivo Black";font-size:32px;color:#000;background:var(--amber);border:3px solid #000;box-shadow:6px 6px 0 0 #000;margin-bottom:22px}
-  h1{font-family:"Archivo Black",sans-serif;font-size:28px;text-transform:uppercase;letter-spacing:-.01em}
-  .tagline{color:var(--amber);font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin:9px 0 16px;text-align:center}
-  .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
-  .badge{font-size:11px;font-weight:800;text-transform:uppercase;color:var(--ink);padding:6px 12px;border:2px solid var(--line)}
-  .links{width:100%;display:flex;flex-direction:column;gap:14px}
-  .link{display:flex;align-items:center;gap:14px;width:100%;padding:17px 18px;background:var(--panel);border:2px solid var(--line);box-shadow:5px 5px 0 0 rgba(0,0,0,.5);transition:all .15s var(--ease)}
-  .link:hover{transform:translate(-3px,-3px);box-shadow:8px 8px 0 0 var(--amber);border-color:var(--amber)}
-  .link .ic{width:38px;height:38px;display:grid;place-items:center;font-size:16px;font-weight:900;color:#000;background:var(--amber);border:2px solid #000;flex-shrink:0}
-  .link .ic.ic-img{padding:0;overflow:hidden;background:#000}
-  .link .ic.ic-img img{width:100%;height:100%;object-fit:cover;display:block}
-  .link .tx{display:flex;flex-direction:column;line-height:1.3}
-  .link .tx b{font-family:"Archivo Black";font-size:14px;text-transform:uppercase}
-  .link .tx span{font-size:12px;color:var(--ink-faint)}
-  .link .go{margin-left:auto;color:var(--amber);font-weight:900;font-size:18px;transition:transform .2s var(--ease)}
-  .link:hover .go{transform:translateX(4px)}
-  .link.feat{background:var(--amber);border-color:#000}
-  .link.feat .ic{background:#000;color:var(--amber)}
-  .link.feat .tx b,.link.feat .tx span{color:#000}
-  .link.feat .go{color:#000}
-  a{text-decoration:none;color:inherit}
-  .foot{margin-top:32px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-faint);letter-spacing:.03em}
-  .foot a{color:var(--amber)}
+  html{background:#0b1230;-webkit-text-size-adjust:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+  a{color:inherit;text-decoration:none}
+  img{display:block}
+  ul{list-style:none}
+  a:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:14px}
+
+  .phone{position:relative;width:100%;max-width:430px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+  .wall{position:fixed;inset:0;height:100lvh;z-index:-1;background:var(--wall)}
+  .statusbar,.home-bar{display:none}
+  .screen{flex:1;display:flex;flex-direction:column;gap:var(--gap);padding:max(var(--top),env(safe-area-inset-top)) var(--pad) max(12px,env(safe-area-inset-bottom))}
+  .screen > *{flex-shrink:0}
+
+  .widget{background:var(--glass);border:1px solid var(--glass-line);border-radius:26px;-webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%);box-shadow:0 10px 30px rgba(4,6,24,.28),inset 0 1px 0 rgba(255,255,255,.14)}
+  .w-title{display:flex;justify-content:space-between;align-items:baseline;gap:6px;white-space:nowrap;font-size:11px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  .w-title b{font-weight:700;color:var(--ink-2);letter-spacing:.02em}
+
+  /* profile */
+  .profile{padding:calc(var(--wp) + 2px) 16px var(--wp)}
+  .who{display:flex;align-items:center;gap:14px}
+  .avatar{flex:0 0 auto;width:var(--avatar);height:var(--avatar);border-radius:50%;padding:2.5px;background:linear-gradient(140deg,#fff,rgba(255,255,255,.35))}
+  .avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;background:#b9bcc4}
+  .who h1{font-size:var(--h1);line-height:1.1;font-weight:750;letter-spacing:-.02em}
+  .who .role{margin-top:4px;font-size:13.5px;font-weight:550;color:var(--ink-2)}
+  .who .loc{margin-top:3px;font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:4px}
+  .who .loc svg{width:11px;height:11px;fill:currentColor}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:var(--sg);padding-top:calc(var(--sg) - 2px);border-top:1px solid rgba(255,255,255,.12);text-align:center}
+  .stats li+li{border-left:1px solid rgba(255,255,255,.12)}
+  .stats b{display:block;font-size:var(--statb);font-weight:750;letter-spacing:-.01em}
+  .stats span{font-size:11px;color:var(--ink-3)}
+
+  /* home-screen icons */
+  .apps{display:grid;grid-template-columns:repeat(4,1fr);row-gap:var(--rowgap);padding:2px 4px 0}
+  .app{display:flex;flex-direction:column;align-items:center;gap:5px;transition:transform .18s var(--ease),filter .18s}
+  .app:active{transform:scale(.9);filter:brightness(.82)}
+  .ic{position:relative;width:var(--icon);height:var(--icon);border-radius:23%;display:grid;place-items:center;box-shadow:0 6px 16px rgba(4,6,24,.3)}
+  .ic svg{width:54%;height:54%;fill:#fff}
+  .ic img{width:100%;height:100%;border-radius:23%;object-fit:cover}
+  .app > span:last-child{font-size:11.5px;font-weight:500;letter-spacing:-.01em;text-shadow:0 1px 3px rgba(0,0,0,.5);white-space:nowrap}
+  .badge{position:absolute;top:-6px;right:-8px;min-width:21px;height:21px;padding:0 6px;border-radius:11px;background:#ff3b30;font-size:11.5px;font-weight:650;line-height:21px;text-align:center;font-style:normal;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+  .ig{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285aeb 90%)}
+  .xx{background:#000;box-shadow:0 6px 16px rgba(4,6,24,.3),inset 0 0 0 1px rgba(255,255,255,.16)}
+  .li{background:linear-gradient(180deg,#1b82e0,#0a66c2)}
+  .yt{background:#fff}
+  .yt svg{fill:#f00;width:60%;height:60%}
+  .gh{background:linear-gradient(180deg,#30363d,#0d1117);box-shadow:0 6px 16px rgba(4,6,24,.3),inset 0 0 0 1px rgba(255,255,255,.12)}
+  .dc{background:linear-gradient(180deg,#6e7bff,#5865f2)}
+  .nl{background:linear-gradient(180deg,#ffb84d,#ff7a00)}
+  .rs{background:linear-gradient(180deg,#c56bff,#7d3cff)}
+  .ph{background:linear-gradient(180deg,#6cf07a,#0bbd2a)}
+  .ml{background:linear-gradient(180deg,#4fc3ff,#0a6cff)}
+  .web{background:#fff}
+  .nl svg,.rs svg,.ml svg,.web svg{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .web svg{stroke:#0a7aff;width:62%;height:62%}
+  .web svg polygon{fill:#ff3b30;stroke:none}
+
+  /* companies rail */
+  .rail{padding:var(--wp) 0 calc(var(--wp) + 1px);overflow:hidden}
+  .rail .w-title{padding:0 16px}
+  .rail-view{margin-top:calc(var(--wp) - 2px);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+  .rail-track{display:flex;width:max-content;animation:slide 30s linear infinite}
+  .rail-view:hover .rail-track,.rail-view:active .rail-track{animation-play-state:paused}
+  @keyframes slide{to{transform:translateX(-50%)}}
+  .chip{display:inline-flex;align-items:center;gap:8px;margin-right:8px;padding:5px 13px 5px 5px;border-radius:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.12);font-size:13px;font-weight:600;white-space:nowrap}
+  .chip img{width:var(--chip);height:var(--chip);border-radius:9px;background:#fff;object-fit:contain;padding:2px}
+  .chip img.full{padding:0;object-fit:cover}
+
+  /* folders */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+  .folder{padding:var(--wp) 12px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:calc(var(--wp) - 3px)}
+  .tile{height:var(--tile);border-radius:13px;background:#fff;display:grid;place-items:center;padding:8px 10px}
+  .tile img{max-width:100%;width:auto;height:calc(var(--tile) - 18px);object-fit:contain}
+  .tile img.wide{height:auto;width:100%}
+  .mini{display:grid;place-items:center;height:var(--tile);transition:transform .18s var(--ease),filter .18s}
+  .mini:active{transform:scale(.9);filter:brightness(.82)}
+  .mini img{width:var(--tile);height:var(--tile);border-radius:23%;object-fit:cover;box-shadow:0 4px 10px rgba(4,6,24,.3)}
+
+  /* dock */
+  .dock{position:-webkit-sticky;position:sticky;bottom:max(12px,env(safe-area-inset-bottom));z-index:5;margin-top:auto;display:grid;grid-template-columns:repeat(4,1fr);padding:calc(var(--wp) - 1px) 6px calc(var(--wp) - 4px);border-radius:30px;background:rgba(44,48,92,.42)}
+  .dock .app > span:last-child{font-size:10.5px}
+  .dock .ic{--icon:var(--dicon)}
+
+  .rise{animation:rise .6s var(--ease) backwards;animation-delay:calc(var(--i,0)*60ms)}
+  .pop{animation:pop .5s cubic-bezier(.2,1.2,.4,1) backwards;animation-delay:calc(160ms + var(--i,0)*30ms)}
+  @keyframes rise{from{opacity:0;transform:translateY(16px) scale(.98)}}
+  @keyframes pop{from{opacity:0;transform:scale(.55)}}
+
+  /* shorter screens: tighten so the whole home screen still fits above the dock */
+  @media (max-height:750px){
+    :root{--gap:10px;--top:10px;--wp:10px;--sg:9px;--rowgap:10px;--avatar:64px;--h1:22px;--tile:42px;--icon:clamp(52px,14.8vw,58px);--dicon:clamp(46px,13vw,52px)}
+  }
+  @media (max-height:690px){
+    :root{--gap:9px;--top:8px;--wp:9px;--sg:7px;--rowgap:8px;--avatar:58px;--h1:21px;--statb:16px;--chip:26px;--tile:39px;--icon:clamp(50px,13.8vw,54px);--dicon:clamp(44px,12.3vw,48px)}
+  }
+  @media (max-width:380px){
+    .w-title{font-size:10px;letter-spacing:.04em}
+  }
+
+  /* wider screens: the same home screen, inside a phone */
+  @media (min-width:560px) and (min-height:560px){
+    :root{--icon:60px;--dicon:52px}
+    html{background:#05060f}
+    body{display:grid;place-items:center;padding:24px;background:radial-gradient(50% 60% at 20% 10%,rgba(72,120,255,.28),transparent 70%),radial-gradient(50% 60% at 85% 90%,rgba(255,122,89,.2),transparent 70%),#05060f}
+    .phone{width:393px;max-width:none;height:min(852px,calc(100vh - 48px));min-height:0;margin:0;border-radius:58px;border:11px solid #0b0b0f;overflow:hidden;isolation:isolate;box-shadow:0 0 0 2px #2c2c34,0 40px 90px rgba(0,0,0,.6)}
+    .wall{position:absolute;height:auto}
+    .statusbar{position:relative;display:flex;justify-content:space-between;align-items:center;height:50px;padding:6px 30px 0 36px;font-size:15.5px;font-weight:650;letter-spacing:-.01em;flex:0 0 auto}
+    .statusbar::after{content:"";position:absolute;left:50%;top:11px;width:112px;height:32px;margin-left:-56px;border-radius:20px;background:#000}
+    .statusbar .sys{display:flex;align-items:center;gap:6px}
+    .statusbar svg{height:12px;width:auto;fill:#fff}
+    .screen{min-height:0;overflow-y:auto;scrollbar-width:none;padding-top:8px;padding-bottom:22px}
+    .screen::-webkit-scrollbar{display:none}
+    .dock{bottom:0}
+    .home-bar{display:block;position:absolute;left:50%;bottom:7px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:rgba(255,255,255,.85);z-index:6}
+    .app:hover .ic,.mini:hover img{filter:brightness(1.12)}
+  }
+
+  @media (min-width:560px) and (min-height:560px) and (max-height:880px){
+    :root{--gap:10px;--wp:10px;--sg:9px;--rowgap:10px;--avatar:64px;--h1:22px;--tile:42px;--icon:57px;--dicon:50px}
+  }
+  @media (min-width:560px) and (min-height:560px) and (max-height:830px){
+    :root{--gap:9px;--wp:9px;--sg:7px;--rowgap:8px;--avatar:58px;--h1:21px;--statb:16px;--chip:26px;--tile:39px;--icon:54px;--dicon:48px}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .rise,.pop{animation:none}
+    .rail-track{animation:none}
+    .rail-view{overflow-x:auto}
+    .rail-track .dup{display:none}
+  }
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
 <script src="/ga.js"></script>
 <script src="/metricool.js"></script>
 </head>
 <body>
-<div class="bg"></div>
-<div class="shape s1"></div><div class="shape s2"></div><div class="shape s3"></div>
+<div class="phone">
+  <div class="wall" aria-hidden="true"></div>
 
-<div class="wrap">
-  <div class="avatar">DM</div>
-  <h1>Deon Menezes</h1>
-  <p class="tagline">Founder · Builder · Creator. Pick a platform 👇</p>
+  <div class="statusbar" aria-hidden="true">
+    <span id="clock">9:41</span>
+    <span class="sys">
+      <svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx=".8"/><rect x="5" y="5.5" width="3" height="6.5" rx=".8"/><rect x="10" y="3" width="3" height="9" rx=".8"/><rect x="15" y="0" width="3" height="12" rx=".8"/></svg>
+      <svg viewBox="0 0 16 12"><path d="M8 2.4c2.3 0 4.4.9 6 2.4l1.1-1.2A10.3 10.3 0 0 0 8 .7C5.300.7 2.800 1.800.9 3.600L2 4.800a8.700 8.700 0 0 1 6-2.400zm0 3.500c1.400 0 2.700.5 3.700 1.400l1.100-1.200A7.100 7.100 0 0 0 8 4.200c-1.800 0-3.500.7-4.800 1.900l1.100 1.200c1-.9 2.300-1.400 3.700-1.400zm0 3.300c-.8 0-1.500.3-2 .800L8 12l2-2c-.5-.5-1.200-.8-2-.8z"/></svg>
+      <svg viewBox="0 0 27 12"><rect x=".5" y=".5" width="22" height="11" rx="3.2" fill="none" stroke="#fff" stroke-opacity=".45"/><rect x="2" y="2" width="19" height="8" rx="1.9"/><path d="M24 4v4c.8-.3 1.500-1.100 1.500-2S24.800 4.300 24 4z" fill-opacity=".5"/></svg>
+    </span>
+  </div>
 
-  <nav class="links">
-    <a class="link" href="https://www.instagram.com/deon_tech/" target="_blank" rel="noopener">
-      <span class="ic">◎</span><span class="tx"><b>Instagram</b><span data-live="ig">@deon_tech · 32.6K</span></span><span class="go">→</span>
-    </a>
-    <a class="link" href="https://x.com/DeonMen" target="_blank" rel="noopener">
-      <span class="ic">𝕏</span><span class="tx"><b>X</b><span data-live="x">@DeonMen · 1,345 followers</span></span><span class="go">→</span>
-    </a>
-    <a class="link" href="https://www.linkedin.com/in/deon-menezes-a82552254/" target="_blank" rel="noopener">
-      <span class="ic">in</span><span class="tx"><b>LinkedIn</b><span>Deon Menezes</span></span><span class="go">→</span>
-    </a>
-    <a class="link" href="https://github.com/deonmenezes" target="_blank" rel="noopener">
-      <span class="ic">⌥</span><span class="tx"><b>GitHub</b><span data-live="gh-followers">@deonmenezes · 102 followers</span></span><span class="go">→</span>
-    </a>
-    <a class="link" href="https://discord.gg/Sz6VMY5Jm" target="_blank" rel="noopener">
-      <span class="ic">✶</span><span class="tx"><b>Discord</b><span data-live="discord">1,088 builders</span></span><span class="go">→</span>
-    </a>
-    <a class="link" href="https://www.youtube.com/@DeonMenezes" target="_blank" rel="noopener">
-      <span class="ic">▶</span><span class="tx"><b>YouTube</b><span>@DeonMenezes</span></span><span class="go">→</span>
-    </a>
-    <a class="link" href="mailto:deon.menezes@virelity.com">
-      <span class="ic">✉</span><span class="tx"><b>Email</b><span>deon.menezes@virelity.com</span></span><span class="go">→</span>
-    </a>
-    <a class="link" href="tel:+16282466113">
-      <span class="ic">☎</span><span class="tx"><b>Phone</b><span>+1 (628) 246-6113</span></span><span class="go">→</span>
-    </a>
-  </nav>
+  <main class="screen">
+    <header class="widget profile rise" style="--i:0">
+      <div class="who">
+        <div class="avatar"><img src="/assets/img/deon-linkedin.jpg" alt="Deon Menezes" width="400" height="400" /></div>
+        <div>
+          <h1>Deon Menezes</h1>
+          <p class="role">Founder &amp; CEO, Virelity</p>
+          <p class="loc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.200 7 13 7 13s7-7.800 7-13a7 7 0 0 0-7-7zm0 9.500A2.500 2.500 0 1 1 12 6.500a2.500 2.500 0 0 1 0 5z"/></svg>San Francisco Bay Area</p>
+        </div>
+      </div>
+      <ul class="stats">
+        <li><b>15+</b><span>hackathon wins</span></li>
+        <li><b>25+</b><span>apps shipped</span></li>
+        <li><b>100+</b><span>global clients</span></li>
+      </ul>
+    </header>
 
-  <p class="foot">© <span id="y"></span> Deon Menezes · <a href="https://virelity.com" target="_blank" rel="noopener">virelity.com</a></p>
+    <nav class="apps" aria-label="Social links">
+      <a class="app pop" style="--i:0" href="https://www.instagram.com/deon_tech/" target="_blank" rel="noopener" aria-label="Instagram, @deon_tech">
+        <span class="ic ig"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg><i class="badge" data-badge="igFollowers">32.6K</i></span>
+        <span>Instagram</span>
+      </a>
+      <a class="app pop" style="--i:1" href="https://x.com/DeonMen" target="_blank" rel="noopener" aria-label="X, @DeonMen">
+        <span class="ic xx"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg><i class="badge" data-badge="xFollowers">1.3K</i></span>
+        <span>X</span>
+      </a>
+      <a class="app pop" style="--i:2" href="https://www.linkedin.com/in/deon-menezes-a82552254/" target="_blank" rel="noopener" aria-label="LinkedIn, Deon Menezes">
+        <span class="ic li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg><i class="badge" data-badge="liFollowers">7K</i></span>
+        <span>LinkedIn</span>
+      </a>
+      <a class="app pop" style="--i:3" href="https://www.youtube.com/@DeonMenezes" target="_blank" rel="noopener" aria-label="YouTube, @DeonMenezes">
+        <span class="ic yt"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.930.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.930 24 12 24 12s0-3.930-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span>
+        <span>YouTube</span>
+      </a>
+      <a class="app pop" style="--i:4" href="https://github.com/deonmenezes" target="_blank" rel="noopener" aria-label="GitHub, @deonmenezes">
+        <span class="ic gh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><i class="badge" data-badge="ghFollowers">102</i></span>
+        <span>GitHub</span>
+      </a>
+      <a class="app pop" style="--i:5" href="https://discord.gg/Sz6VMY5Jm" target="_blank" rel="noopener" aria-label="Discord community">
+        <span class="ic dc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg><i class="badge" data-badge="discordMembers">1.1K</i></span>
+        <span>Discord</span>
+      </a>
+      <a class="app pop" style="--i:6" href="/newsletter" aria-label="Newsletter">
+        <span class="ic nl"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></span>
+        <span>Newsletter</span>
+      </a>
+      <a class="app pop" style="--i:7" href="/resources" aria-label="Free resources">
+        <span class="ic rs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+        <span>Resources</span>
+      </a>
+    </nav>
+
+    <section class="widget rail rise" style="--i:2" aria-label="Companies I've worked with">
+      <p class="w-title"><span>Companies I've worked with</span></p>
+      <div class="rail-view">
+        <div class="rail-track">
+          <span class="chip"><img class="full" src="/assets/img/clients/virelity-256.jpg" alt="" loading="lazy" />Virelity</span>
+          <span class="chip"><img class="full" src="/assets/img/clients/callbook.png" alt="" loading="lazy" />Callbook.ai</span>
+          <span class="chip"><img class="full" src="/assets/img/clients/rentahuman.png" alt="" loading="lazy" />RentAHuman</span>
+          <span class="chip"><img src="/assets/img/clients/tenkara.png" alt="" loading="lazy" />Tenkara</span>
+          <span class="chip"><img src="/assets/img/clients/securenet.png" alt="" loading="lazy" />SecureNetMe</span>
+          <span class="chip"><img class="full" src="/assets/img/clients/naytive.png" alt="" loading="lazy" />Naytive</span>
+          <span class="chip"><img src="/assets/img/clients/arqio.png" alt="" loading="lazy" />Arqio</span>
+          <span class="chip dup" aria-hidden="true"><img class="full" src="/assets/img/clients/virelity-256.jpg" alt="" loading="lazy" />Virelity</span>
+          <span class="chip dup" aria-hidden="true"><img class="full" src="/assets/img/clients/callbook.png" alt="" loading="lazy" />Callbook.ai</span>
+          <span class="chip dup" aria-hidden="true"><img class="full" src="/assets/img/clients/rentahuman.png" alt="" loading="lazy" />RentAHuman</span>
+          <span class="chip dup" aria-hidden="true"><img src="/assets/img/clients/tenkara.png" alt="" loading="lazy" />Tenkara</span>
+          <span class="chip dup" aria-hidden="true"><img src="/assets/img/clients/securenet.png" alt="" loading="lazy" />SecureNetMe</span>
+          <span class="chip dup" aria-hidden="true"><img class="full" src="/assets/img/clients/naytive.png" alt="" loading="lazy" />Naytive</span>
+          <span class="chip dup" aria-hidden="true"><img src="/assets/img/clients/arqio.png" alt="" loading="lazy" />Arqio</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="duo">
+      <section class="widget folder rise" style="--i:3" aria-label="Hackathon wins">
+        <p class="w-title"><span>Hackathon wins</span><b>15+</b></p>
+        <div class="grid">
+          <span class="tile"><img src="/assets/img/brands/hp.svg" alt="HP" loading="lazy" /></span>
+          <span class="tile"><img src="/assets/img/brands/nvidia.svg" alt="NVIDIA" loading="lazy" /></span>
+          <span class="tile"><img class="wide" src="/assets/img/brands/apify.svg" alt="Apify" loading="lazy" /></span>
+          <span class="tile"><img src="/assets/img/brands/lovable.svg" alt="Lovable" loading="lazy" /></span>
+        </div>
+      </section>
+      <section class="widget folder rise" style="--i:4" aria-label="My apps on the App Store">
+        <p class="w-title"><span>My apps</span><b>App Store</b></p>
+        <div class="grid">
+          <a class="mini" href="https://apps.apple.com/us/app/learnify-addictive-learning/id6774788081" target="_blank" rel="noopener"><img src="/assets/img/apps/learnify.jpg" alt="Learnify" loading="lazy" /></a>
+          <a class="mini" href="https://apps.apple.com/us/app/vibe-check-selfie-score/id6784058417" target="_blank" rel="noopener"><img src="/assets/img/apps/vibecheck.jpg" alt="Vibe Check" loading="lazy" /></a>
+          <a class="mini" href="https://apps.apple.com/us/app/stylewhizai/id6778610702" target="_blank" rel="noopener"><img src="/assets/img/apps/stylewhiz.jpg" alt="StyleWhizAI" loading="lazy" /></a>
+          <a class="mini" href="https://apps.apple.com/us/app/gridpath-clean-energy/id6781073342" target="_blank" rel="noopener"><img src="/assets/img/apps/gridpath.jpg" alt="GridPath" loading="lazy" /></a>
+        </div>
+      </section>
+    </div>
+
+    <nav class="widget dock rise" style="--i:5" aria-label="Contact">
+      <a class="app" href="tel:+16282466113" aria-label="Call +1 (628) 246-6113">
+        <span class="ic ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.920v3a2 2 0 0 1-2.180 2 19.790 19.790 0 0 1-8.630-3.070 19.500 19.500 0 0 1-6-6 19.790 19.790 0 0 1-3.070-8.670A2 2 0 0 1 4.110 2h3a2 2 0 0 1 2 1.720 12.840 12.840 0 0 0 .7 2.810 2 2 0 0 1-.45 2.110L8.090 9.910a16 16 0 0 0 6 6l1.270-1.270a2 2 0 0 1 2.110-.45 12.840 12.840 0 0 0 2.810.7A2 2 0 0 1 22 16.920z"/></svg></span>
+        <span>Call</span>
+      </a>
+      <a class="app" href="mailto:deon.menezes@virelity.com" aria-label="Email deon.menezes@virelity.com">
+        <span class="ic ml"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2.5"/><polyline points="22 6.500 12 13.500 2 6.500"/></svg></span>
+        <span>Email</span>
+      </a>
+      <a class="app" href="/deon" aria-label="Portfolio, deonmenezes.com">
+        <span class="ic web"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.240 7.760 14.120 14.120 7.760 16.240 9.880 9.880 16.240 7.760"/></svg></span>
+        <span>Portfolio</span>
+      </a>
+      <a class="app" href="https://virelity.com" target="_blank" rel="noopener" aria-label="Virelity, virelity.com">
+        <span class="ic"><img src="/assets/img/clients/virelity-256.jpg" alt="" /></span>
+        <span>Virelity</span>
+      </a>
+    </nav>
+  </main>
+  <div class="home-bar" aria-hidden="true"></div>
 </div>
-<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
-<script src="/deon/live.js" defer></script>
+<script>
+(function () {
+  "use strict";
+  var clock = document.getElementById("clock");
+  function tick() {
+    var d = new Date();
+    clock.textContent = (d.getHours() % 12 || 12) + ":" + ("0" + d.getMinutes()).slice(-2);
+  }
+  if (window.matchMedia("(min-width:560px)").matches) {
+    tick();
+    setInterval(tick, 20000);
+  }
+
+  function compact(n) {
+    if (n >= 999950) return (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M";
+    return n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "K" : String(n);
+  }
+  fetch("/deon/api/stats")
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      document.querySelectorAll("[data-badge]").forEach(function (el) {
+        var n = Number(d[el.getAttribute("data-badge")]);
+        if (isFinite(n) && n > 0) el.textContent = compact(n);
+      });
+    })
+    .catch(function () { /* static numbers stay */ });
+})();
+</script>
 </body>
 </html>
