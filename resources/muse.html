@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meta's Muse Explained: What It Is and What to Use It For · Deon Menezes</title>
+  <meta name="description" content="Muse is Meta's AI agent: you tell it what you need done and it does the task. Six slides on what it is, seven things people use it for, and how to add it on Instagram.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/muse">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Meta's Muse, explained in six slides">
+  <meta property="og:description" content="What Muse is, what people use it for, and how to add it on Instagram.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/muse">
+  <meta property="og:image" content="https://deonmenezes.com/assets/img/muse/agent.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="800">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Meta's Muse, explained in six slides">
+  <meta name="twitter:description" content="What Muse is, what people use it for, and how to add it on Instagram.">
+  <meta name="twitter:image" content="https://deonmenezes.com/assets/img/muse/agent.jpg">
+  <link rel="stylesheet" href="/assets/fonts/fonts.css">
+  <link rel="stylesheet" href="/resources/site-nav.css">
+  <link rel="stylesheet" href="/resources/start-a-startup.css">
+  <style>
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .deck { display: flex; gap: 18px; margin: 2rem 0 0; padding: 6px 4px 24px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .slide { flex: 0 0 min(84vw, 440px); margin: 0; overflow: hidden; scroll-snap-align: center; border: 1px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: var(--shadow-sm); }
+    .slide img { display: block; width: 100%; height: auto; aspect-ratio: 9 / 8; }
+    .slide figcaption { padding: 1.1rem 1.2rem 1.4rem; }
+    .slide .slide-no { color: var(--accent); font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; }
+    .slide h3 { margin-top: 0.4rem; font-size: 1.45rem; line-height: 1.15; }
+    .slide p { margin-top: 0.6rem; color: var(--ink-soft); }
+    .deck-hint { margin-top: 0.2rem; color: var(--ink-faint); font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
+  <script src="/ga.js"></script>
+  <script src="/metricool.js"></script>
+</head>
+<body>
+  <div class="paper" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Skip to the explainer</a>
+  <header class="nav">
+    <a class="brand" href="/deon">
+      <span class="brand-pin" aria-hidden="true"></span>
+      <span class="brand-name">Deon Menezes</span>
+      <span class="brand-tag">AI Harness Engineer</span>
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href="/deon#work">Work</a>
+      <a href="/deon#built">Projects</a>
+      <a href="/deon#apps">Apps</a>
+      <a href="/resources" aria-current="page">Resources</a>
+      <a href="/deon#connect">Connect</a>
+      <a href="https://virelity.com" target="_blank" rel="noopener noreferrer" class="nav-virelity">Virelity ↗</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="chip chip-ink" href="/resources">All resources</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <article>
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Explainer · 8 October 2026</p>
+          <h1>Meta's Muse,<br><em>in plain words.</em></h1>
+          <p class="lede">Muse is Meta's new AI agent. You tell it what you need done, and it does the task itself. Here is what it is, what people use it for, and how to add it on Instagram.</p>
+          <nav class="jump" aria-label="On this page">
+            <a href="#slides">The six slides</a>
+            <a href="#uses">What to use it for</a>
+            <a href="#control">What it asks you first</a>
+            <a href="#get">How to get it</a>
+            <a href="#sources">Sources</a>
+          </nav>
+        </div>
+      </header>
+
+      <section class="rules" id="slides" aria-labelledby="slides-title">
+        <p class="section-label">The short version</p>
+        <h2 id="slides-title">Muse in six slides.</h2>
+        <p class="section-intro">Swipe through. Each slide is one thing to know.</p>
+
+        <div class="deck" tabindex="0" aria-label="Six slides about Muse. Scroll sideways.">
+          <figure class="slide">
+            <img src="/assets/img/muse/agent.jpg" width="900" height="800" alt="Cartoon of Muse at a desk ticking off a task list, with a 24/7 badge.">
+            <figcaption>
+              <span class="slide-no">1 / 6</span>
+              <h3>It does the task.</h3>
+              <p>A chatbot answers your question. An AI agent does the job for you. Muse is an agent.</p>
+            </figcaption>
+          </figure>
+          <figure class="slide">
+            <img src="/assets/img/muse/vs-chat.jpg" width="900" height="800" alt="Split cartoon: a sleeping chatbot on the left, Muse still working on the right.">
+            <figcaption>
+              <span class="slide-no">2 / 6</span>
+              <h3>It doesn't wait for you.</h3>
+              <p>A chatbot stops when you leave. Muse keeps going after you close the app, and comes back when it is done or needs a yes from you.</p>
+            </figcaption>
+          </figure>
+          <figure class="slide">
+            <img src="/assets/img/muse/computer.jpg" width="900" height="800" alt="Cartoon of Muse standing on a cloud next to its own computer.">
+            <figcaption>
+              <span class="slide-no">3 / 6</span>
+              <h3>It has its own computer.</h3>
+              <p>Each Muse runs on its own computer in the cloud, with its own browser. Testers measured about 8 GB of memory and 100 GB of storage. Meta has not published those numbers.</p>
+            </figcaption>
+          </figure>
+          <figure class="slide">
+            <img src="/assets/img/muse/night.jpg" width="900" height="800" alt="Cartoon of a person waking up while Muse shows a finished task.">
+            <figcaption>
+              <span class="slide-no">4 / 6</span>
+              <h3>It works while you sleep.</h3>
+              <p>Give it something slow, like tracking a price or waiting on a reply. It carries on overnight and tells you what changed.</p>
+            </figcaption>
+          </figure>
+          <figure class="slide">
+            <img src="/assets/img/muse/free.jpg" width="900" height="800" alt="Cartoon of Muse holding a FREE tag next to a computer behind a shield.">
+            <figcaption>
+              <span class="slide-no">5 / 6</span>
+              <h3>Free to start.</h3>
+              <p>Free with a usage limit. Paid plans are $20 and $100 a month. Meta says your chats are not shared with its ad systems.</p>
+            </figcaption>
+          </figure>
+          <figure class="slide">
+            <img src="/assets/img/muse/world.jpg" width="900" height="800" alt="Cartoon world map with the US and Canada ticked and question marks everywhere else.">
+            <figcaption>
+              <span class="slide-no">6 / 6</span>
+              <h3>US and Canada only, for now.</h3>
+              <p>Meta has not said which country is next, or when.</p>
+            </figcaption>
+          </figure>
+        </div>
+        <p class="deck-hint">Swipe sideways →</p>
+      </section>
+
+      <section class="rules" id="uses" aria-labelledby="uses-title">
+        <p class="section-label">Use cases</p>
+        <h2 id="uses-title">What to use it for.</h2>
+        <p class="section-intro">These are the jobs Meta shows Muse doing in its own announcement. The example asks are mine, to show how you would say it.</p>
+
+        <ol class="rule-list">
+          <li>
+            <span class="rule-no" aria-hidden="true">01</span>
+            <div>
+              <h3>Email.</h3>
+              <p>It can read your mail and write replies. You choose whether it can only read, or also send for you.</p>
+              <p class="how"><strong>Example:</strong> "Reply to the school and say Kiran will be there on Friday."</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">02</span>
+            <div>
+              <h3>Travel.</h3>
+              <p>It can book travel. In Meta's demo it also collects the quotes for a trip and keeps a running list of what each part costs.</p>
+              <p class="how"><strong>Example:</strong> "Find flights to Boston for the first weekend of November and show me the three cheapest."</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">03</span>
+            <div>
+              <h3>Shopping.</h3>
+              <p>It finds the item and fills the cart. Before it pays, it shows you the order with two buttons: Allow and Deny. It pays with a one-time card, so the shop never sees your real card number.</p>
+              <p class="how"><strong>Example:</strong> "Find a travel stroller under $100 and show me before you buy."</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">04</span>
+            <div>
+              <h3>Forms and paperwork.</h3>
+              <p>It opens a browser and fills in forms for you, like a school permission slip that came by email.</p>
+              <p class="how"><strong>Example:</strong> "Fill in the field trip form from my inbox and send it back."</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">05</span>
+            <div>
+              <h3>Bills and deals.</h3>
+              <p>Meta says it can negotiate for you. Its examples are lowering a bill and selling a car for more.</p>
+              <p class="how"><strong>Example:</strong> "My internet bill went up. Ask them for a better price."</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">06</span>
+            <div>
+              <h3>Food and plans.</h3>
+              <p>It can turn a recipe reel you saved on Instagram into a grocery list, suggest a menu for a dinner, and remember what your friends can't eat before it sends the invites.</p>
+              <p class="how"><strong>Example:</strong> "Make a grocery list from the pasta reel I saved yesterday."</p>
+            </div>
+          </li>
+          <li>
+            <span class="rule-no" aria-hidden="true">07</span>
+            <div>
+              <h3>Long goals.</h3>
+              <p>Tell it a goal and it makes a plan, then keeps the plan moving week by week. Meta's example is a training plan that changes when the rest of your life does.</p>
+              <p class="how"><strong>Example:</strong> "I want to run 10 km by January. Plan my weeks around my work calendar."</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="video" id="control" aria-labelledby="control-title">
+        <div class="video-copy">
+          <p class="section-label">You stay in charge</p>
+          <h2 id="control-title">What it asks you first.</h2>
+          <p>This is what Meta says about control.</p>
+        </div>
+        <ul class="video-list">
+          <li><strong>It asks before it sends or pays.</strong> Sending an email and making a purchase both need your yes.</li>
+          <li><strong>It can't see your passwords or cards.</strong> They go into a locked store. Muse can use them, but not read them.</li>
+          <li><strong>You pick the apps.</strong> You choose what it connects to and how much it can do there. You can disconnect any of them later.</li>
+          <li><strong>You can see everything it did.</strong> It keeps a full list of what it has done and what it plans to do.</li>
+          <li><strong>Training is on unless you turn it off.</strong> Meta says you can opt out of your chats being used to train its AI.</li>
+        </ul>
+      </section>
+
+      <section class="video" id="get" aria-labelledby="get-title">
+        <div class="video-copy">
+          <p class="section-label">Try it</p>
+          <h2 id="get-title">How to get it.</h2>
+          <p>You need to be in the US or Canada.</p>
+        </div>
+        <ul class="video-list">
+          <li><strong>On Instagram.</strong> Open your profile and tap "+ Add your Muse". It has also started showing up in the share menu.</li>
+          <li><strong>On its own.</strong> The Muse app on iPhone and Android, or <a href="https://muse.ai/" target="_blank" rel="noopener noreferrer">muse.ai</a> in a browser.</li>
+          <li><strong>On WhatsApp.</strong> You can message it there like any other chat.</li>
+          <li><strong>Anywhere else?</strong> Not yet. If you are outside the US and Canada, there is no date.</li>
+        </ul>
+      </section>
+
+      <section class="reading" id="sources" aria-labelledby="sources-title">
+        <p class="section-label">Further reading</p>
+        <h2 id="sources-title">Sources.</h2>
+        <ul class="reading-list">
+          <li><a href="https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/" target="_blank" rel="noopener noreferrer"><strong>Introducing Muse: The World's First Personal AI Agent Built for Everyone</strong><em>Meta ↗</em></a></li>
+          <li><a href="https://about.fb.com/news/2026/09/introducing-muse-small-business/" target="_blank" rel="noopener noreferrer"><strong>The Future Is for Everyone: Muse for Small Business</strong><em>Meta ↗</em></a></li>
+          <li><a href="https://www.meta.com/help/subscriptions/1021145227643680/" target="_blank" rel="noopener noreferrer"><strong>Muse plans and the free usage limit</strong><em>Meta Help ↗</em></a></li>
+          <li><a href="https://www.digit.in/news/general/meta-muse-ai-agent-now-available-on-instagram-here-is-how-to-set-it-up.html" target="_blank" rel="noopener noreferrer"><strong>Meta Muse AI agent now available on Instagram, here is how to set it up</strong><em>Digit ↗</em></a></li>
+          <li><a href="https://www.geo.tv/latest/685460-metas-muse-ai-pops-up-on-instagram-share-button-heres-what-it-does" target="_blank" rel="noopener noreferrer"><strong>Meta's Muse AI pops up on Instagram share button</strong><em>Geo News ↗</em></a></li>
+          <li><a href="https://www.starkinsider.com/2026/09/meta-muse-specs-what-it-runs-on.html" target="_blank" rel="noopener noreferrer"><strong>Meta Muse Specs: What Meta's Free AI Agent Runs On</strong><em>Stark Insider ↗</em></a></li>
+        </ul>
+      </section>
+
+      <aside class="closing">
+        <p>Checked on 8 October 2026.</p>
+        <strong>The short version: you say what you need, Muse does it, and it asks before it sends or pays.</strong>
+        <a class="button" href="https://www.instagram.com/deon_tech/" target="_blank" rel="noopener noreferrer">Follow @deon_tech for more ↗</a>
+      </aside>
+    </article>
+  </main>
+  <footer><span>Written by Deon Menezes</span><a href="/resources">More free resources →</a></footer>
+</body>
+</html>
