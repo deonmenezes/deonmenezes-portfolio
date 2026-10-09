@@ -245,7 +245,7 @@ test("every resource page and the hub carry the site navbar in the home theme", 
   }
   await access(new URL("resources/site-nav.css", root));
   const detail = await readFile(new URL("resources/detail.css", root), "utf8");
-  for (const token of ["--paper: #f1eadd", "--accent: #e0502d", '"Fraunces"', '"Hanken Grotesk"']) {
+  for (const token of ["--bg: #ffffff", "--accent: #0071e3", "-apple-system"]) {
     assert.ok(detail.includes(token), `detail.css is missing the home-theme token ${token}`);
   }
 });
@@ -522,8 +522,8 @@ test("shared detail stylesheet is responsive, accessible, and script-free", asyn
     "utf8",
   );
 
-  assert.match(css, /--accent:\s*#e0502d/u);
-  assert.match(css, /--paper:\s*#f1eadd/u);
+  assert.match(css, /--accent:\s*#0071e3/u);
+  assert.match(css, /--bg:\s*#ffffff/u);
   assert.match(css, /a:focus-visible/u);
   assert.match(css, /outline:\s*3px solid var\(--accent\)/u);
   assert.match(css, /@media \(max-width: 880px\)/u);

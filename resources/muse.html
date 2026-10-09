@@ -18,19 +18,18 @@
   <meta name="twitter:title" content="Meta's Muse, explained in six slides">
   <meta name="twitter:description" content="What Muse is, what people use it for, and how to add it on Instagram.">
   <meta name="twitter:image" content="https://deonmenezes.com/assets/img/muse/agent.jpg">
-  <link rel="stylesheet" href="/assets/fonts/fonts.css">
   <link rel="stylesheet" href="/resources/site-nav.css">
   <link rel="stylesheet" href="/resources/start-a-startup.css">
   <style>
-    .hero { grid-template-columns: minmax(0, 1fr); }
-    .deck { display: flex; gap: 18px; margin: 2rem 0 0; padding: 6px 4px 24px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-    .slide { flex: 0 0 min(84vw, 440px); margin: 0; overflow: hidden; scroll-snap-align: center; border: 1px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: var(--shadow-sm); }
-    .slide img { display: block; width: 100%; height: auto; aspect-ratio: 9 / 8; }
-    .slide figcaption { padding: 1.1rem 1.2rem 1.4rem; }
-    .slide .slide-no { color: var(--accent); font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; }
-    .slide h3 { margin-top: 0.4rem; font-size: 1.45rem; line-height: 1.15; }
-    .slide p { margin-top: 0.6rem; color: var(--ink-soft); }
-    .deck-hint { margin-top: 0.2rem; color: var(--ink-faint); font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; }
+    /* The slides: a sideways shelf that runs to both edges of the window. */
+    .deck { display: flex; gap: var(--gap); margin: var(--head-gap) calc(var(--gutter) * -1) 0; padding: 4px var(--gutter) 22px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: #c7c7cc transparent; }
+    .slide { flex: 0 0 min(82vw, 480px); margin: 0; overflow: hidden; scroll-snap-align: start; border-radius: var(--radius); background: var(--surface); }
+    .slide img { width: 100%; aspect-ratio: 9 / 8; object-fit: cover; }
+    .slide figcaption { padding: 20px 24px 26px; }
+    .slide .slide-no { color: var(--ink-faint); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .slide h3 { margin-top: 6px; font-size: 24px; line-height: 1.14; }
+    .slide p { margin-top: 8px; color: var(--ink-soft); font-size: 16px; line-height: 1.45; }
+    .deck-hint { margin-top: 4px; color: var(--ink-faint); font-size: 13px; }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
   <script src="/ga.js"></script>
@@ -60,7 +59,7 @@
 
   <main id="main">
     <article>
-      <header class="hero">
+      <header class="hero hero-solo">
         <div class="hero-copy">
           <p class="eyebrow">Explainer · 8 October 2026</p>
           <h1>Meta's Muse,<br><em>in plain words.</em></h1>

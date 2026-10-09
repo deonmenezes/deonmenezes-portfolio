@@ -14,16 +14,15 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="GTA 5 in a browser tab: what happened">
   <meta name="twitter:description" content="A site ran GTA V inside Chrome with no install, then went offline within hours. What it was and how it worked.">
-  <link rel="stylesheet" href="/assets/fonts/fonts.css">
   <link rel="stylesheet" href="/resources/site-nav.css">
   <link rel="stylesheet" href="/resources/start-a-startup.css">
   <style>
-    .arcade { margin-top: clamp(3.4rem, 8vw, 6rem); padding: clamp(1.5rem, 4.5vw, 3.2rem); border-radius: 28px; background: radial-gradient(120% 90% at 0% 0%, #2c2620 0%, var(--ink) 55%); color: var(--paper); box-shadow: var(--shadow); }
-    .arcade .section-label { color: #ff9a7d; }
-    .arcade h2 { color: #fffdf7; }
-    .arcade .aside { color: rgba(241, 234, 221, 0.74); }
-    .more-actions { margin-top: 1.6rem; }
-    .more-actions .button { display: inline-block; border-radius: 999px; background: var(--paper); color: var(--ink); }
+    /* The pointer to /resources/browser-games: a black band with one pill button. */
+    article > section.arcade { padding-top: clamp(64px, 10vw, 120px); padding-bottom: clamp(64px, 10vw, 120px); background: #000; color: #f5f5f7; text-align: center; }
+    .arcade .section-label { color: #a1a1a6; }
+    .arcade h2 { max-width: 19ch; margin-inline: auto; }
+    .arcade .aside { max-width: 620px; margin: 18px auto 0; color: #a1a1a6; font-size: clamp(18px, 2vw, 21px); line-height: 1.4; }
+    .more-actions { margin-top: 30px; }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
   <script src="/ga.js"></script>
@@ -53,7 +52,7 @@
 
   <main id="main">
     <article>
-      <header class="hero">
+      <header class="hero hero-solo">
         <div class="hero-copy">
           <p class="eyebrow">Explainer · 6 October 2026 · updated 9 October</p>
           <h1>GTA 5 in a browser tab:<br><em>what happened.</em></h1>

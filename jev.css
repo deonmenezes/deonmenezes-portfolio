@@ -1,88 +1,115 @@
-/* Deon X Jev page. Rides on /resources/detail.css for the shell, header, hero,
-   footer, and .prompt-text code blocks; adds the key box, try-it form, results. */
+/* Deon X Jev page. Rides on /resources/detail.css for the tokens, hero, buttons, footer and
+   .prompt-text code blocks; adds the key box, the try-it form, the results and the reference.
+   Same Apple-style look as the /resources hub. 2026-10-09 redesign. */
 
+/* Each section is a full-width band with its content on a centred reading column */
 .jev-section {
-  padding: clamp(2rem, 5vw, 4.5rem);
-  border-top: 1px solid var(--line);
+  --measure: 820px;
+  padding: var(--band) max(var(--gutter), calc((100% - var(--measure)) / 2));
+  border-top: 1px solid var(--hair);
 }
 
-.jev-key {
-  background: var(--paper-2);
+.jev-key,
+.jev-reference {
+  border-top: 0;
+  background: var(--bg-soft);
+}
+
+.jev-key + .jev-section,
+.jev-reference + .jev-section {
+  border-top: 0;
+}
+
+.jev-section > .section-label {
+  color: var(--ink-soft);
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  text-transform: none;
 }
 
 .jev-section h2 {
   max-width: 24ch;
-}
-
-.jev-reference {
-  background: var(--paper-2);
+  margin-top: 8px;
+  font-size: clamp(34px, 5.4vw, 56px);
+  letter-spacing: -0.03em;
+  line-height: 1.07;
 }
 
 .jev-section h3 {
-  margin: 2.25rem 0 0.75rem;
-  font-size: 1.05rem;
-  font-weight: 750;
+  margin: 36px 0 12px;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .jev-lead {
-  max-width: 52ch;
-  margin: 1.1rem 0 1.75rem;
+  max-width: 60ch;
+  margin: 14px 0 28px;
   color: var(--ink-soft);
+  font-size: clamp(18px, 2vw, 21px);
+  line-height: 1.4;
 }
 
 code {
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.9em;
+  font-family: var(--mono);
+  font-size: 0.88em;
+  letter-spacing: 0;
 }
 
 .jev-lead code,
 .jev-types code,
 .jev-list code {
-  padding: 0.1rem 0.35rem;
-  border-radius: 0.35rem;
+  padding: 2px 7px;
+  border-radius: 7px;
+  background: var(--bg-soft);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.jev-reference code {
   background: var(--card);
 }
 
+/* The two real buttons on the page: filled blue pills */
 .jev-button {
-  min-height: 3.25rem;
-  padding: 0 1.5rem;
-  border: 1.5px solid var(--ink);
-  border-radius: 0.85rem;
+  min-height: 46px;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 980px;
   background: var(--accent);
   color: #fff;
   cursor: pointer;
   font: inherit;
-  font-weight: 750;
-  transition: transform 160ms ease, box-shadow 200ms ease;
+  line-height: 1.25;
+  transition: background 0.2s;
 }
 
 .jev-button:hover:not(:disabled) {
-  box-shadow: var(--shadow);
-  transform: translateY(-2px);
+  background: #0077ed;
 }
 
 .jev-button:disabled {
   cursor: progress;
-  opacity: 0.65;
+  opacity: 0.55;
 }
 
 .jev-button:focus-visible,
 .jev-copy:focus-visible,
 .jev-form textarea:focus-visible {
-  outline: 3px solid var(--ink);
-  outline-offset: 2px;
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .jev-key-box {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
-  max-width: 44rem;
-  margin: 1.25rem 0 0;
-  padding: 0.9rem 1rem;
-  border: 1.5px dashed var(--accent);
-  border-radius: 0.85rem;
+  gap: 12px;
+  margin: 20px 0 0;
+  padding: 16px 16px 16px 20px;
+  border-radius: 18px;
   background: var(--card);
 }
 
@@ -94,112 +121,157 @@ code {
 .jev-key-value {
   flex: 1 1 16rem;
   overflow-wrap: anywhere;
-  font-weight: 650;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .jev-copy {
-  padding: 0.4rem 0.9rem;
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  background: var(--card);
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 980px;
+  background: var(--bg-soft);
   color: var(--ink);
   cursor: pointer;
   font: inherit;
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.3;
+  transition: background 0.2s;
 }
 
 .jev-copy:hover {
-  border-color: var(--accent);
+  background: #e3e3e8;
 }
 
 .jev-status {
-  min-height: 1.4rem;
-  margin: 0.75rem 0 0;
-  color: var(--ink);
-  font-size: 0.9rem;
-  font-weight: 700;
+  min-height: 1.47em;
+  margin: 12px 0 0;
+  color: var(--ink-soft);
+  font-size: 15px;
 }
 
 .jev-status.is-error {
-  color: #a3282d;
+  color: #b3261e;
 }
 
 /* ---------------------------------------------------------------- try it */
 
 .jev-form {
   display: grid;
-  gap: 0.6rem;
-  max-width: 46rem;
+  gap: 8px;
 }
 
 .jev-form label {
-  margin-top: 0.6rem;
-  font-weight: 700;
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.jev-form label:first-child {
+  margin-top: 0;
 }
 
 .jev-form textarea {
   width: 100%;
-  padding: 0.85rem 1rem;
-  border: 1.5px solid var(--line);
-  border-radius: 0.85rem;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
   background: var(--card);
   color: var(--ink);
   font: inherit;
-  line-height: 1.5;
+  line-height: 1.47;
   resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.jev-form textarea:hover {
+  border-color: var(--ink-faint);
 }
 
 .jev-form textarea[name="questions"] {
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.85rem;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0;
+  line-height: 1.6;
 }
 
 .jev-form .jev-button {
   justify-self: start;
-  margin-top: 0.75rem;
+  margin-top: 12px;
 }
 
 .jev-results {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
-  margin: 1.75rem 0 0;
+  gap: clamp(14px, 1.8vw, 22px);
+  margin: 28px 0 0;
 }
 
 .jev-answer {
-  padding: 1.1rem 1.2rem;
-  border: 1px solid var(--line);
-  border-radius: 1rem;
-  background: var(--paper-2);
+  min-width: 0;
+  padding: 22px 24px 24px;
+  border-radius: var(--radius);
+  background: var(--bg-soft);
 }
 
 .jev-answer-name {
   margin: 0;
   color: var(--ink-soft);
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.8rem;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .jev-answer-verdict {
-  margin: 0.15rem 0 0.8rem;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.6rem;
-  line-height: 1.15;
+  margin: 4px 0 14px;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.14;
+  overflow-wrap: anywhere;
 }
 
 .jev-meter-row {
   display: grid;
   grid-template-columns: minmax(4.5rem, auto) 1fr auto;
   align-items: center;
-  gap: 0.6rem;
-  margin-top: 0.35rem;
-  font-size: 0.85rem;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 14px;
 }
 
+/* The bars are <meter>s (the page CSP forbids inline widths): a thin grey track, a blue fill */
 .jev-meter-row meter {
   width: 100%;
-  height: 0.7rem;
+  height: 6px;
+  border: 0;
+  border-radius: 980px;
+  background: var(--line);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.jev-meter-row meter::-webkit-meter-inner-element {
+  display: block;
+}
+
+.jev-meter-row meter::-webkit-meter-bar {
+  height: 6px;
+  border: 0;
+  border-radius: 980px;
+  background: var(--line);
+}
+
+.jev-meter-row meter::-webkit-meter-optimum-value,
+.jev-meter-row meter::-webkit-meter-suboptimum-value,
+.jev-meter-row meter::-webkit-meter-even-less-good-value {
+  border-radius: 980px;
+  background: var(--accent);
+}
+
+.jev-meter-row meter::-moz-meter-bar {
+  border-radius: 980px;
+  background: var(--accent);
 }
 
 .jev-figure {
@@ -211,57 +283,104 @@ code {
 
 .jev-snippet {
   position: relative;
-  max-width: 52rem;
 }
 
 .jev-snippet .jev-copy {
   position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
+  top: 12px;
+  right: 12px;
+  background: var(--card);
 }
 
+.jev-snippet .jev-copy:hover {
+  background: #e3e3e8;
+}
+
+/* Code keeps its line breaks; a long line scrolls inside its own block, never the page */
 .jev-snippet .prompt-text {
-  padding-top: 2.75rem;
+  overflow-x: auto;
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: var(--bg-soft);
   white-space: pre;
+  overflow-wrap: normal;
+}
+
+.jev-snippet .jev-copy + .prompt-text {
+  padding-top: 52px;
 }
 
 /* ------------------------------------------------------------- reference */
 
 .jev-types {
   display: grid;
-  gap: 1.1rem;
-  max-width: 52rem;
-  margin: 1.75rem 0 0;
+  gap: clamp(14px, 1.8vw, 22px);
+  margin: clamp(24px, 3.4vw, 40px) 0 0;
+}
+
+.jev-types > div {
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: var(--card);
 }
 
 .jev-types dt {
-  font-weight: 750;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.jev-types dt code {
+  padding: 0;
+  background: none;
+  font-size: 1em;
 }
 
 .jev-types dd {
-  margin: 0.25rem 0 0;
+  margin: 6px 0 0;
   color: var(--ink-soft);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.jev-types dd code {
+  background: var(--bg-soft);
 }
 
 .jev-tip {
-  max-width: 50rem;
-  margin: 2rem 0 0;
-  padding: 1rem 1.2rem;
-  border-left: 0.3rem solid var(--accent);
-  background: var(--card);
-  font-weight: 650;
+  margin: clamp(20px, 2.6vw, 28px) 0 0;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 
 .jev-list {
-  display: grid;
-  gap: 0.85rem;
-  max-width: 54rem;
-  margin: 1.75rem 0 0;
+  margin: clamp(24px, 3.4vw, 40px) 0 0;
   color: var(--ink-soft);
+}
+
+.jev-list li {
+  padding: 16px 0;
+  border-top: 1px solid var(--hair);
+}
+
+.jev-list li:last-child {
+  padding-bottom: 0;
 }
 
 .jev-list strong {
   color: var(--ink);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .jev-snippet .prompt-text {
+    padding: 18px;
+  }
+
+  .jev-snippet .jev-copy + .prompt-text {
+    padding-top: 50px;
+  }
 }
 
 @media (max-width: 420px) {
@@ -272,5 +391,13 @@ code {
   .jev-meter-row meter {
     grid-column: 1 / -1;
     order: 3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jev-button,
+  .jev-copy,
+  .jev-form textarea {
+    transition: none;
   }
 }
