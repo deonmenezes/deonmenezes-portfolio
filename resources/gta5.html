@@ -22,26 +22,8 @@
     .arcade .section-label { color: #ff9a7d; }
     .arcade h2 { color: #fffdf7; }
     .arcade .aside { color: rgba(241, 234, 221, 0.74); }
-    .arcade-count { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.2rem; padding: 0.4rem 0.85rem; border: 1px solid rgba(241, 234, 221, 0.22); border-radius: 999px; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; }
-    .arcade-count b { width: 8px; height: 8px; border-radius: 50%; background: #5fd08a; box-shadow: 0 0 0 4px rgba(95, 208, 138, 0.18); }
-    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: clamp(0.8rem, 1.6vw, 1.2rem); margin: 1.8rem 0 0; padding: 0; list-style: none; }
-    .game { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; border: 1px solid rgba(241, 234, 221, 0.14); border-radius: 18px; background: #14110e; color: inherit; text-decoration: none; transition: transform 0.25s var(--ease), border-color 0.25s, box-shadow 0.25s; }
-    .game:hover, .game:focus-visible { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 22px 34px -20px rgba(224, 80, 45, 0.75); }
-    .game img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; background: #0c0a08; }
-    .g-meta { display: flex; flex: 1; flex-direction: column; justify-content: space-between; gap: 0.5rem; padding: 0.75rem 0.9rem 0.9rem; }
-    .g-meta strong { font-family: "Fraunces", Georgia, serif; font-size: 1.05rem; font-weight: 600; line-height: 1.15; color: #fffdf7; }
-    .g-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; }
-    .g-host { flex: 1 1 auto; min-width: 0; overflow: hidden; color: rgba(241, 234, 221, 0.55); text-overflow: ellipsis; white-space: nowrap; }
-    .g-play { flex: none; padding: 0.22rem 0.55rem; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 700; }
-    .g-badge { position: absolute; top: 0.6rem; left: 0.6rem; padding: 0.22rem 0.55rem; border-radius: 999px; background: rgba(20, 17, 14, 0.88); border: 1px solid rgba(241, 234, 221, 0.3); color: #ffd9a8; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 10.5px; font-weight: 700; }
-    .more-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.2rem; margin-top: 2rem; }
-    .more-actions .button { border-radius: 999px; background: var(--paper); color: var(--ink); }
-    .more-actions em { color: rgba(241, 234, 221, 0.7); font-size: 0.95rem; }
-    .more-notes { display: grid; gap: 0.8rem; max-width: 860px; margin: 1.8rem 0 0; padding: 0; list-style: none; }
-    .more-notes li { padding: 0.9rem 1.2rem; border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; background: rgba(255, 253, 247, 0.06); color: rgba(241, 234, 221, 0.78); }
-    .more-notes strong { color: #fffdf7; }
-    @media (max-width: 520px) { .game-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g-meta strong { font-size: 0.95rem; } }
-    @media (prefers-reduced-motion: reduce) { .game { transition: none; } .game:hover { transform: none; } }
+    .more-actions { margin-top: 1.6rem; }
+    .more-actions .button { display: inline-block; border-radius: 999px; background: var(--paper); color: var(--ink); }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
   <script src="/ga.js"></script>
@@ -80,7 +62,7 @@
             <a href="#what">What happened</a>
             <a href="#how">How it worked</a>
             <a href="#status">Where it stands</a>
-            <a href="#more">Games still online</a>
+            <a href="/resources/browser-games">Games still online</a>
             <a href="#play">How to play GTA V</a>
             <a href="#learn">Build this kind of thing</a>
             <a href="#sources">Sources</a>
@@ -186,45 +168,11 @@
 
       <section class="arcade" id="more" aria-labelledby="more-title">
         <p class="section-label">Update · 9 October 2026</p>
-        <h2 id="more-title">GTA 5 is offline. These are still online.</h2>
-        <p class="aside">On 8 October the X account Radiant Optimizer (@RadiantOpti) posted a list of older games that people have rebuilt to run in a browser. Tap a game to open it in a new tab.</p>
-        <p class="arcade-count"><b aria-hidden="true"></b>22 of 24 links answered on 9 October 2026</p>
-        <ul class="game-grid">
-          <li><a class="game" href="https://vel.gg/bo1z" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/bo1-zombies.jpg" alt="Black Ops 1 Zombies, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Black Ops 1 Zombies</strong><span class="g-row"><span class="g-host">vel.gg</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://moon-zombies.pages.dev/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/moon.jpg" alt="Zombies: Moon, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Zombies: Moon</strong><span class="g-row"><span class="g-host">moon-zombies.pages.dev</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://kino-der-toten.pages.dev/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/kino-der-toten.jpg" alt="Zombies: Kino der Toten, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Zombies: Kino der Toten</strong><span class="g-row"><span class="g-host">kino-der-toten.pages.dev</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://cheese-cube.pages.dev/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/bo3-cheese-cube.jpg" alt="Black Ops 3 Cheese Cube, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Black Ops 3 Cheese Cube</strong><span class="g-row"><span class="g-host">cheese-cube.pages.dev</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://vibeslops.luckeysystems.com/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/black-ops-2.jpg" alt="Black Ops 2, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Black Ops 2</strong><span class="g-row"><span class="g-host">vibeslops.luckeysystems.com</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://ovz-game-production.up.railway.app/" target="_blank" rel="noopener noreferrer"><span class="g-badge">Busy when checked</span><img src="/assets/img/gta5/games/modern-warfare-2.jpg" alt="Modern Warfare 2, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Modern Warfare 2</strong><span class="g-row"><span class="g-host">ovz-game-production.up.railway.app</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://skate.aaddpp.lol/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/skate-3.jpg" alt="Skate 3, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Skate 3</strong><span class="g-row"><span class="g-host">skate.aaddpp.lol</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://global-terror.net/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/skate-rust.jpg" alt="Skate Rust, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Skate Rust</strong><span class="g-row"><span class="g-host">global-terror.net</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://surfd.net/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/cs-surf.jpg" alt="CS Surf, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>CS Surf</strong><span class="g-row"><span class="g-host">surfd.net</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://mitchellhynes.com/halo/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/halo-ce.jpg" alt="Halo: Combat Evolved, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Halo: Combat Evolved</strong><span class="g-row"><span class="g-host">mitchellhynes.com/halo</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://hcemobile.com/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/halo-ce-mobile.jpg" alt="Halo CE on a phone, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Halo CE on a phone</strong><span class="g-row"><span class="g-host">hcemobile.com</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://pes6.optijuegos.net/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/pes-6.jpg" alt="PES 6, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>PES 6</strong><span class="g-row"><span class="g-host">pes6.optijuegos.net</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://joncodeofficial.github.io/gta-vice-city-wasm/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/gta-vice-city.jpg" alt="GTA Vice City, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>GTA Vice City</strong><span class="g-row"><span class="g-host">joncodeofficial.github.io</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://shar-wasm.cjoseph.workers.dev/?skipmovie" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/simpsons-hit-and-run.jpg" alt="The Simpsons: Hit and Run, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>The Simpsons: Hit &amp; Run</strong><span class="g-row"><span class="g-host">shar-wasm.cjoseph.workers.dev</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://q1.pieter.com/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/quake-1.jpg" alt="Quake, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Quake</strong><span class="g-row"><span class="g-host">q1.pieter.com</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://q2.pieter.com/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/quake-2.jpg" alt="Quake II, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Quake II</strong><span class="g-row"><span class="g-host">q2.pieter.com</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://q3.pieter.com/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/quake-3.jpg" alt="Quake III Arena, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Quake III Arena</strong><span class="g-row"><span class="g-host">q3.pieter.com</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://rtcw.pieter.com/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/return-to-castle-wolfenstein.jpg" alt="Return to Castle Wolfenstein, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Return to Castle Wolfenstein</strong><span class="g-row"><span class="g-host">rtcw.pieter.com</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://ut.pieter.com/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/urban-terror.jpg" alt="Unreal Tournament (the site runs Urban Terror), screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Unreal Tournament (the site runs Urban Terror)</strong><span class="g-row"><span class="g-host">ut.pieter.com</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://pixelsuft.github.io/hl/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/half-life.jpg" alt="Half-Life, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Half-Life</strong><span class="g-row"><span class="g-host">pixelsuft.github.io/hl</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://x8bitrain.github.io/webXash/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/half-life-cs-16.jpg" alt="Half-Life / Counter-Strike 1.6, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Half-Life / Counter-Strike 1.6</strong><span class="g-row"><span class="g-host">x8bitrain.github.io/webXash</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://johnimril.github.io/diablo_web/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/diablo.jpg" alt="Diablo, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Diablo</strong><span class="g-row"><span class="g-host">johnimril.github.io</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://webwars.link/" target="_blank" rel="noopener noreferrer"><span class="g-badge">No answer when checked</span><img src="/assets/img/gta5/games/hedgewars.jpg" alt="Hedgewars, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>Hedgewars</strong><span class="g-row"><span class="g-host">webwars.link</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://wasmarcade.com/" target="_blank" rel="noopener noreferrer"><img src="/assets/img/gta5/games/more-gta-minecraft.jpg" alt="More GTA and Minecraft, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>More GTA and Minecraft</strong><span class="g-row"><span class="g-host">wasmarcade.com</span><span class="g-play">Play ↗</span></span></span></a></li>
-          <li><a class="game" href="https://web.archive.org/web/20261006055917/https://playgta5.com/" target="_blank" rel="noopener noreferrer"><span class="g-badge">Offline</span><img src="/assets/img/gta5/games/gta-5.jpg" alt="GTA 5, screenshot" width="504" height="504" loading="lazy"><span class="g-meta"><strong>GTA 5</strong><span class="g-row"><span class="g-host">saved loading screen only</span><span class="g-play">View ↗</span></span></span></a></li>
-        </ul>
+        <h2 id="more-title">GTA 5 is offline. 24 other games are still online.</h2>
+        <p class="aside">Black Ops Zombies, Halo, Skate 3, GTA Vice City, Quake and more now have their own page, each with a screenshot and a link.</p>
         <p class="more-actions">
-          <a class="button" href="https://x.com/RadiantOpti/status/2108068632991256995" target="_blank" rel="noopener noreferrer">The original list on X ↗</a>
-          <em>List, links and screenshots: Radiant Optimizer, @RadiantOpti.</em>
+          <a class="button" href="/resources/browser-games">See the browser games →</a>
         </p>
-        <ul class="more-notes">
-          <li><strong>What I checked.</strong> I requested all 24 links on 9 October 2026. 22 answered, Modern Warfare 2 said it was getting too many requests, and Hedgewars did not answer. A page answering does not prove the game runs on your device.</li>
-          <li><strong>These are fan ports.</strong> None is made or approved by the games' publishers, and any of them can go offline the way GTA 5 did. They are other people's sites, not mine.</li>
-          <li><strong>From the list's author:</strong> "Some need your own game files. Skip anything that asks you to download a launcher."</li>
-        </ul>
       </section>
 
       <section class="video" id="play" aria-labelledby="play-title">
