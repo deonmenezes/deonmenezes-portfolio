@@ -18,6 +18,18 @@
   <link rel="stylesheet" href="/resources/site-nav.css">
   <link rel="stylesheet" href="/resources/start-a-startup.css">
   <style>.hero { grid-template-columns: minmax(0, 1fr); }</style>
+  <style>
+    .games { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin: 2rem 0 0; padding: 0; list-style: none; }
+    .games li { padding: 1.1rem 1.3rem; border: 1px solid var(--line); border-radius: 16px; background: var(--card); box-shadow: var(--shadow-sm); }
+    .games strong { display: block; font-family: "Fraunces", Georgia, serif; font-size: 1.25rem; line-height: 1.15; }
+    .games span { display: block; margin-top: 0.45rem; color: var(--ink-soft); font-size: 0.97rem; }
+    .more-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.2rem; margin-top: 1.8rem; }
+    .more-actions .button { background: var(--ink); color: var(--paper); border-radius: 999px; }
+    .more-actions em { color: var(--ink-soft); font-size: 0.95rem; }
+    .more-notes { display: grid; gap: 0.8rem; max-width: 820px; margin: 1.8rem 0 0; padding: 0; list-style: none; }
+    .more-notes li { padding: 0.9rem 1.2rem; border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; background: var(--card); color: var(--ink-soft); }
+    .more-notes strong { color: var(--ink); }
+  </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
   <script src="/ga.js"></script>
   <script src="/metricool.js"></script>
@@ -48,13 +60,14 @@
     <article>
       <header class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Explainer · 6 October 2026</p>
+          <p class="eyebrow">Explainer · 6 October 2026 · updated 9 October</p>
           <h1>GTA 5 in a browser tab:<br><em>what happened.</em></h1>
-          <p class="lede">On 6 October 2026 a site called playgta5.com let people play Grand Theft Auto V inside Chrome, with nothing to install. It spread across X in a morning and was offline within hours. Here is what it was, how it worked, and where it stands now.</p>
+          <p class="lede">On 6 October 2026 a site called playgta5.com let people play Grand Theft Auto V inside Chrome, with nothing to install. It spread across X in a morning and was offline within hours. Here is what it was, how it worked, where it stands now, and which other games are still online in a browser.</p>
           <nav class="jump" aria-label="On this page">
             <a href="#what">What happened</a>
             <a href="#how">How it worked</a>
             <a href="#status">Where it stands</a>
+            <a href="#more">Games still online</a>
             <a href="#play">How to play GTA V</a>
             <a href="#learn">Build this kind of thing</a>
             <a href="#sources">Sources</a>
@@ -156,6 +169,32 @@
             </div>
           </li>
         </ol>
+      </section>
+
+      <section class="rules" id="more" aria-labelledby="more-title">
+        <p class="section-label">Update · 9 October 2026</p>
+        <h2 id="more-title">GTA 5 is offline. These are still online.</h2>
+        <p class="aside">On 8 October the X account Radiant Optimizer (@RadiantOpti) posted a list of older games that people have rebuilt to run in a browser. GTA 5 is on it only as the saved loading screen. The rest were still answering when I checked.</p>
+        <ul class="games">
+          <li><strong>Call of Duty</strong><span>Black Ops 1 Zombies, Moon, Kino der Toten, Black Ops 3 Cheese Cube, Black Ops 2, Modern Warfare 2</span></li>
+          <li><strong>Halo</strong><span>Halo: Combat Evolved, and a mobile version</span></li>
+          <li><strong>Skate</strong><span>Skate 3, Skate Rust</span></li>
+          <li><strong>Counter-Strike</strong><span>CS Surf, Counter-Strike 1.6</span></li>
+          <li><strong>Half-Life</strong><span>Half-Life</span></li>
+          <li><strong>Grand Theft Auto</strong><span>GTA Vice City, and more on a site called WASM Arcade</span></li>
+          <li><strong>Quake</strong><span>Quake 1, Quake 2, Quake 3</span></li>
+          <li><strong>More shooters</strong><span>Return to Castle Wolfenstein, Unreal Tournament</span></li>
+          <li><strong>Everything else</strong><span>The Simpsons: Hit &amp; Run, PES 6, Diablo, Hedgewars, Minecraft</span></li>
+        </ul>
+        <p class="more-actions">
+          <a class="button" href="https://x.com/RadiantOpti/status/2108068632991256995" target="_blank" rel="noopener noreferrer">Open the full list with links on X ↗</a>
+          <em>List and credit: Radiant Optimizer, @RadiantOpti.</em>
+        </p>
+        <ul class="more-notes">
+          <li><strong>What I checked.</strong> I requested all 24 links on 9 October 2026. 22 answered, Modern Warfare 2 said it was getting too many requests, and Hedgewars did not answer. A page answering does not prove the game runs on your device.</li>
+          <li><strong>These are fan ports.</strong> None is made or approved by the games' publishers, and any of them can go offline the way GTA 5 did.</li>
+          <li><strong>From the list's author:</strong> "Some need your own game files. Skip anything that asks you to download a launcher."</li>
+        </ul>
       </section>
 
       <section class="video" id="play" aria-labelledby="play-title">
