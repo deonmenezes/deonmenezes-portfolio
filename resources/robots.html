@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learn Robotics for Free · Deon Menezes</title>
+  <meta name="description" content="Six free YouTube videos, in order, from the maths every robot runs on to building and training your own SO-101 robot arm. From Stanford, MIT, Y Combinator and three more teachers.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/robots">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Learn robotics for free">
+  <meta property="og:description" content="Six free YouTube videos, in order, from the maths every robot runs on to building and training your own robot arm.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/robots">
+  <meta property="og:image" content="https://deonmenezes.com/assets/img/robots/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Learn robotics for free: six YouTube lessons, from a Stanford lecture to building an SO-101 robot arm.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Learn robotics for free">
+  <meta name="twitter:description" content="Six free YouTube videos, in order, from the maths every robot runs on to building and training your own robot arm.">
+  <meta name="twitter:image" content="https://deonmenezes.com/assets/img/robots/og.jpg">
+  <link rel="stylesheet" href="/resources/site-nav.css">
+  <link rel="stylesheet" href="/resources.css">
+  <style>
+    .robots-hero { padding: clamp(56px, 9vw, 104px) 0 clamp(44px, 6vw, 72px); text-align: center; }
+    .robots-hero h1 { max-width: 13ch; margin: 14px auto 0; font-size: clamp(42px, 7.6vw, 88px); font-weight: 700; line-height: 1.04; letter-spacing: -0.035em; }
+    .robots-hero .intro { max-width: 680px; margin: 22px auto 0; color: var(--ink-soft); font-size: clamp(19px, 2.2vw, 23px); line-height: 1.4; }
+    .strip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; max-width: 1040px; margin: clamp(36px, 5vw, 56px) auto 0; padding: 0; list-style: none; text-align: left; }
+    .strip a { display: block; color: var(--ink); }
+    .strip img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; background: var(--bg-soft); transition: transform 0.35s var(--ease); }
+    .strip a:hover img { transform: translateY(-3px); }
+    .strip span { display: block; margin-top: 8px; color: var(--ink-soft); font-size: 12px; line-height: 1.3; }
+    .strip b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .lessons { display: grid; gap: clamp(16px, 2vw, 24px); margin: 0; padding: 0; list-style: none; }
+    .lesson { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: center; padding: clamp(16px, 2vw, 22px); border-radius: var(--radius); background: var(--card); scroll-margin-top: 84px; }
+    .frame { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border-radius: 16px; background: #000; }
+    .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .l-body { padding: 4px 8px 4px 0; }
+    .l-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; }
+    .l-num { color: var(--ink-faint); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .level { padding: 4px 11px; border-radius: 980px; background: #e8f1fc; color: var(--accent-ink); font-size: 12px; font-weight: 600; }
+    .lesson h3 { margin: 12px 0 0; font-size: clamp(21px, 2.3vw, 26px); font-weight: 600; line-height: 1.18; letter-spacing: -0.022em; }
+    .l-by { margin: 8px 0 0; color: var(--ink); font-size: 15px; }
+    .l-meta { margin: 4px 0 0; color: var(--ink-faint); font-size: 13px; }
+    .l-why { margin: 14px 0 0; color: var(--ink-soft); font-size: 16px; line-height: 1.45; }
+    .lesson .pill { margin-top: 18px; padding: 10px 20px; font-size: 15px; }
+    .how { counter-reset: how; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.8vw, 22px); margin: 0; padding: 0; list-style: none; }
+    .how li { counter-increment: how; padding: 26px; border-radius: var(--radius); background: var(--bg-soft); color: var(--ink-soft); font-size: 16px; line-height: 1.45; }
+    .how li::before { content: counter(how); display: grid; place-items: center; width: 30px; height: 30px; margin-bottom: 14px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 14px; font-weight: 600; }
+    .how strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
+    .build-note .pill { margin-top: 28px; }
+    @media (max-width: 860px) {
+      .strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .lesson { grid-template-columns: 1fr; }
+      .l-body { padding: 0 6px 6px; }
+      .how { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (prefers-reduced-motion: reduce) { .strip img { transition: none; } .strip a:hover img { transform: none; } }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
+  <script src="/ga.js"></script>
+  <script src="/metricool.js"></script>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/deon">
+      <span class="brand-pin" aria-hidden="true"></span>
+      <span class="brand-name">Deon Menezes</span>
+      <span class="brand-tag">AI Harness Engineer</span>
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href="/deon#work">Work</a>
+      <a href="/deon#built">Projects</a>
+      <a href="/deon#apps">Apps</a>
+      <a href="/resources" aria-current="page">Resources</a>
+      <a href="/deon#connect">Connect</a>
+      <a href="https://virelity.com" target="_blank" rel="noopener noreferrer" class="nav-virelity">Virelity ↗</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="chip chip-ink" href="/resources">All resources</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="robots-hero">
+      <div class="wrap">
+        <p class="kicker">From the Reel · Free robotics course list</p>
+        <h1>Learn robotics for free.</h1>
+        <p class="intro">Six YouTube videos in order, from the maths every robot runs on to building and training your own robot arm. About 9 hours in total, from Stanford, MIT, Y Combinator and three more teachers.</p>
+        <p class="hero-actions">
+          <a class="pill" href="https://www.youtube.com/watch?v=0yD3uBshJB0" target="_blank" rel="noopener noreferrer">Start with lesson 1</a>
+          <a class="more" href="#list">Watch the full list <span aria-hidden="true">›</span></a>
+        </p>
+        <ol class="strip" aria-label="The six lessons">
+          <li><a href="#lesson-1"><img src="/assets/img/robots/lesson-1.jpg" alt="" width="640" height="360"><span><b>01</b> Stanford</span></a></li>
+          <li><a href="#lesson-2"><img src="/assets/img/robots/lesson-2.jpg" alt="" width="640" height="360"><span><b>02</b> ROS 2</span></a></li>
+          <li><a href="#lesson-3"><img src="/assets/img/robots/lesson-3.jpg" alt="" width="640" height="360"><span><b>03</b> Build an SO-101 arm</span></a></li>
+          <li><a href="#lesson-4"><img src="/assets/img/robots/lesson-4.jpg" alt="" width="640" height="360"><span><b>04</b> Robot learning</span></a></li>
+          <li><a href="#lesson-5"><img src="/assets/img/robots/lesson-5.jpg" alt="" width="640" height="360"><span><b>05</b> MIT manipulation</span></a></li>
+          <li><a href="#lesson-6"><img src="/assets/img/robots/lesson-6.jpg" alt="" width="640" height="360"><span><b>06</b> Chelsea Finn at YC</span></a></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="list" aria-labelledby="list-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">The list</p>
+          <h2 id="list-title">Six lessons, beginner to frontier.</h2>
+          <p class="sub">Watch them here or on YouTube. Every video belongs to the channel named under it. View counts as of October 2026.</p>
+        </header>
+        <ol class="lessons">
+          <li class="lesson" id="lesson-1">
+            <div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/0yD3uBshJB0" title="Lecture 1 | Introduction to Robotics" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="l-body">
+              <p class="l-top"><span class="l-num">01</span><span class="level">Beginner</span></p>
+              <h3>Lecture 1 | Introduction to Robotics</h3>
+              <p class="l-by">By Stanford</p>
+              <p class="l-meta">58:11 · 775K views as of Oct 2026 · uploaded July 2008</p>
+              <p class="l-why">The classic first course: Oussama Khatib's Stanford CS223A. Lecture 1 starts a full 16-lecture series on kinematics, dynamics and control, the maths every robot runs on.</p>
+              <a class="pill" href="https://www.youtube.com/watch?v=0yD3uBshJB0" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+            </div>
+          </li>
+          <li class="lesson" id="lesson-2">
+            <div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/HJAE5Pk8Nyw" title="Learn ROS 2: Beginner to Advanced Course (Concepts and Code)" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="l-body">
+              <p class="l-top"><span class="l-num">02</span><span class="level">Beginner</span></p>
+              <h3>Learn ROS 2: Beginner to Advanced Course (Concepts and Code)</h3>
+              <p class="l-by">By Kevin Wood | Robotics &amp; AI</p>
+              <p class="l-meta">2:37:47 · 343K views as of Oct 2026 · uploaded January 2025</p>
+              <p class="l-why">ROS 2 is the software layer real robots are built on. One course takes you from install to topics, services, actions, packages and launch files, with code.</p>
+              <a class="pill" href="https://www.youtube.com/watch?v=HJAE5Pk8Nyw" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+            </div>
+          </li>
+          <li class="lesson" id="lesson-3">
+            <div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/p6YIkDhPNyo" title="SO101 FULL BEGINNER COURSE: build &amp; train AI robotic arms (2.5 hours)" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="l-body">
+              <p class="l-top"><span class="l-num">03</span><span class="level">Beginner to Intermediate</span></p>
+              <h3>SO101 Full Beginner Course: build &amp; train AI robotic arms</h3>
+              <p class="l-by">By Brogan M. Pratt</p>
+              <p class="l-meta">2:34:23 · 32.7K views as of Oct 2026 · uploaded April 2026</p>
+              <p class="l-why">Build an SO-101, the low-cost open-source arm that Hugging Face LeRobot supports: 3D printing, assembly, software setup, then training your first autonomous policy with imitation learning.</p>
+              <a class="pill" href="https://www.youtube.com/watch?v=p6YIkDhPNyo" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+            </div>
+          </li>
+          <li class="lesson" id="lesson-4">
+            <div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/Sa-YQYx3nTU" title="Modern Robot Learning From Scratch | New Course Launch" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="l-body">
+              <p class="l-top"><span class="l-num">04</span><span class="level">Intermediate</span></p>
+              <h3>Modern Robot Learning From Scratch | New Course Launch</h3>
+              <p class="l-by">By Vizuara</p>
+              <p class="l-meta">35:43 · 15.3K views as of Oct 2026 · uploaded November 2025</p>
+              <p class="l-why">The launch lecture of Vizuara's free Modern Robot Learning From Scratch series: imitation learning, transformers for robotics, ACT policy and simulation.</p>
+              <a class="pill" href="https://www.youtube.com/watch?v=Sa-YQYx3nTU" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+            </div>
+          </li>
+          <li class="lesson" id="lesson-5">
+            <div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/QlrRb7X4JvA" title="Lecture 1: MIT 6.4210/6.4212 Robotic Manipulation (Fall 2022)" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="l-body">
+              <p class="l-top"><span class="l-num">05</span><span class="level">Intermediate to Advanced</span></p>
+              <h3>Lecture 1: MIT 6.4210/6.4212 Robotic Manipulation (Fall 2022) | "Anatomy of a manipulation system"</h3>
+              <p class="l-by">By underactuated (Russ Tedrake's MIT course channel)</p>
+              <p class="l-meta">1:29:59 · 27.2K views as of Oct 2026 · uploaded September 2022</p>
+              <p class="l-why">Russ Tedrake's MIT 6.4210 Robotic Manipulation, lecture 1: how a full manipulation system fits together, from perception to planning to control. The whole course is on the same channel.</p>
+              <a class="pill" href="https://www.youtube.com/watch?v=QlrRb7X4JvA" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+            </div>
+          </li>
+          <li class="lesson" id="lesson-6">
+            <div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/a8-QsBHoH94" title="Chelsea Finn: Building Robots That Can Do Anything" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="l-body">
+              <p class="l-top"><span class="l-num">06</span><span class="level">Advanced · Frontier</span></p>
+              <h3>Chelsea Finn: Building Robots That Can Do Anything</h3>
+              <p class="l-by">By Y Combinator</p>
+              <p class="l-meta">44:52 · 107K views as of Oct 2026 · uploaded July 2025</p>
+              <p class="l-why">Chelsea Finn (Stanford, co-founder of Physical Intelligence) at Y Combinator on where robot foundation models are going. The big picture after the basics.</p>
+              <a class="pill" href="https://www.youtube.com/watch?v=a8-QsBHoH94" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band" id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">How to use this list</p>
+          <h2 id="how-title">Go in order. Build at lesson 3.</h2>
+        </header>
+        <ol class="how">
+          <li><strong>Start at lesson 1.</strong>The list runs from beginner to frontier. Stanford's lecture 1 opens a 16-lecture series, so keep going on that course if the maths clicks.</li>
+          <li><strong>Learn ROS 2 next.</strong>Lesson 2 is the software layer real robots are built on: topics, services, actions, packages and launch files, with code you can follow.</li>
+          <li><strong>Build the SO-101 arm at lesson 3.</strong>The course goes from 3D printing and assembly to software setup and training your first autonomous policy with imitation learning.</li>
+          <li><strong>Understand what you trained.</strong>Lesson 4 covers imitation learning, transformers for robotics, ACT policy and simulation. It is the launch lecture of Vizuara's free series of the same name.</li>
+          <li><strong>See the whole system.</strong>Lesson 5 shows how perception, planning and control fit together in a manipulation system. The full MIT course is on the same channel.</li>
+          <li><strong>Finish with the big picture.</strong>Lesson 6 is Chelsea Finn on where robot foundation models are going, once you know the basics.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="links" aria-labelledby="links-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">Links</p>
+          <h2 id="links-title">Everything on this page.</h2>
+        </header>
+        <nav class="paper-list" aria-label="Links">
+          <a href="https://www.youtube.com/watch?v=0yD3uBshJB0" target="_blank" rel="noopener noreferrer"><span>01</span><strong>Lecture 1 | Introduction to Robotics ↗</strong><em>Stanford</em></a>
+          <a href="https://www.youtube.com/watch?v=HJAE5Pk8Nyw" target="_blank" rel="noopener noreferrer"><span>02</span><strong>Learn ROS 2: Beginner to Advanced Course ↗</strong><em>Kevin Wood | Robotics &amp; AI</em></a>
+          <a href="https://www.youtube.com/watch?v=p6YIkDhPNyo" target="_blank" rel="noopener noreferrer"><span>03</span><strong>SO101 Full Beginner Course ↗</strong><em>Brogan M. Pratt</em></a>
+          <a href="https://www.youtube.com/watch?v=Sa-YQYx3nTU" target="_blank" rel="noopener noreferrer"><span>04</span><strong>Modern Robot Learning From Scratch ↗</strong><em>Vizuara</em></a>
+          <a href="https://www.youtube.com/watch?v=QlrRb7X4JvA" target="_blank" rel="noopener noreferrer"><span>05</span><strong>MIT 6.4210 Robotic Manipulation, lecture 1 ↗</strong><em>underactuated</em></a>
+          <a href="https://www.youtube.com/watch?v=a8-QsBHoH94" target="_blank" rel="noopener noreferrer"><span>06</span><strong>Chelsea Finn: Building Robots That Can Do Anything ↗</strong><em>Y Combinator</em></a>
+          <a href="https://github.com/huggingface/lerobot" target="_blank" rel="noopener noreferrer"><span>+</span><strong>Hugging Face LeRobot on GitHub ↗</strong><em>The software that supports the SO-101 arm</em></a>
+          <a href="/resources/modern-robotics-roadmap"><span>+</span><strong>Modern robotics roadmap</strong><em>More reading on this site</em></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="build-note">
+      <div class="wrap">
+        <p>Six videos. About 9 hours. All free.</p>
+        <strong>Watch one tonight. Build the arm next.</strong>
+        <a class="pill" href="https://www.youtube.com/watch?v=0yD3uBshJB0" target="_blank" rel="noopener noreferrer">Start with lesson 1</a>
+      </div>
+    </section>
+  </main>
+  <footer><span>Written by Deon Menezes</span><a href="/resources">More free resources →</a></footer>
+</body>
+</html>
