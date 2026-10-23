@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Automate your content with Claude Code · Deon Menezes</title>
+  <meta name="description" content="The content system from my talk: record, upload to Drive, send one message, and the reel is edited and posted. Every tool and link I showed, plus the Claude Code skills behind it, free to download.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/content-automation">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Automate your content with Claude Code">
+  <meta property="og:description" content="Record. Upload. One message. Edited and posted. The whole system from my talk, plus the Claude Code skills to download.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/content-automation">
+  <meta property="og:image" content="https://deonmenezes.com/assets/img/content-automation/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Illustration of a person on a stage holding up a phone that bursts into film strips, in front of a stadium crowd.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Automate your content with Claude Code">
+  <meta name="twitter:description" content="Record. Upload. One message. Edited and posted. The whole system from my talk, plus the Claude Code skills to download.">
+  <meta name="twitter:image" content="https://deonmenezes.com/assets/img/content-automation/og.jpg">
+  <link rel="stylesheet" href="/resources/site-nav.css">
+  <link rel="stylesheet" href="/resources.css">
+  <style>
+    .ca-hero { padding: clamp(56px, 9vw, 104px) 0 clamp(40px, 6vw, 64px); text-align: center; }
+    .ca-hero h1 { max-width: 14ch; margin: 14px auto 0; font-size: clamp(42px, 7.6vw, 88px); font-weight: 700; line-height: 1.04; letter-spacing: -0.035em; }
+    .ca-hero .intro { max-width: 700px; margin: 22px auto 0; color: var(--ink-soft); font-size: clamp(19px, 2.2vw, 23px); line-height: 1.4; }
+    .ca-hero .art { max-width: 1120px; margin: clamp(36px, 5vw, 56px) auto 0; }
+    .art img, .split img { width: 100%; height: auto; border-radius: 20px; background: var(--bg-soft); }
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: center; }
+    .split .band-head { margin-bottom: 0; }
+    .copy p { margin: 14px 0 0; color: var(--ink-soft); font-size: clamp(17px, 1.8vw, 19px); line-height: 1.47; }
+    .copy p strong { color: var(--ink); font-weight: 600; }
+    .copy .band-head { margin-bottom: 0; }
+    .copy ul, .copy ol { margin: 18px 0 0; padding-left: 1.2em; color: var(--ink-soft); font-size: clamp(17px, 1.8vw, 19px); line-height: 1.5; }
+    .copy li + li { margin-top: 8px; }
+    .copy ul.platforms, .copy ul.quotes { padding-left: 0; list-style: none; }
+    .copy .platforms li + li, .copy .quotes li + li { margin-top: 0; }
+    .four.two { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 760px; }
+    .copy li strong { color: var(--ink); font-weight: 600; }
+    .copy a:not(.pill) { color: var(--accent-ink); }
+    .copy a:not(.pill):hover { text-decoration: underline; }
+    .copy .pill { margin-top: 24px; }
+    .install { counter-reset: how; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.8vw, 22px); margin: 0; padding: 0; list-style: none; }
+    .install li { counter-increment: how; padding: 24px; border-radius: var(--radius); background: var(--card); color: var(--ink-soft); font-size: 16px; line-height: 1.45; }
+    .install li::before { content: counter(how); display: grid; place-items: center; width: 30px; height: 30px; margin-bottom: 14px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 14px; font-weight: 600; }
+    .install strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
+    code { padding: 1px 6px; border-radius: 6px; background: #ececf0; color: var(--ink); font: 0.88em/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+    .note { margin: clamp(18px, 2.4vw, 26px) 0 0; padding: 18px 22px; border-radius: 18px; background: #e8f1fc; color: var(--ink); font-size: 15px; line-height: 1.5; }
+    .all-zip { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 26px; margin-top: clamp(22px, 3vw, 32px); }
+    .all-zip span { color: var(--ink-soft); font-size: 15px; }
+    .skills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.8vw, 22px); margin: clamp(28px, 4vw, 44px) 0 0; padding: 0; list-style: none; }
+    .skill { display: flex; flex-direction: column; padding: 24px; border-radius: var(--radius); background: var(--card); scroll-margin-top: 84px; }
+    .skill-meta { margin: 0; color: #bf4800; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; }
+    .skill h3 { margin: 8px 0 0; font-size: 22px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+    .skill .what { margin: 10px 0 0; color: var(--ink-soft); font-size: 16px; line-height: 1.42; }
+    .skill .size { margin: 12px 0 0; color: var(--ink-faint); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .skill-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: auto 0 0; padding-top: 18px; }
+    .skill-actions .pill { padding: 9px 18px; font-size: 15px; }
+    .skill-actions .more { font-size: 15px; }
+    .four { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 1.8vw, 22px); margin: clamp(28px, 4vw, 40px) 0 0; padding: 0; list-style: none; }
+    .four li { padding: 24px; border-radius: var(--radius); background: var(--bg-soft); color: var(--ink-soft); font-size: 16px; line-height: 1.42; }
+    .four strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+    .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.8vw, 22px); }
+    .cols .resource-card ul { margin-bottom: 8px; }
+    .cols .resource-card em { color: var(--ink-faint); font-size: 13px; font-style: normal; }
+    .platforms { display: grid; gap: 0; margin: 18px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+    .platforms li { padding: 14px 0; border-bottom: 1px solid var(--hair); color: var(--ink-soft); font-size: 17px; line-height: 1.45; }
+    .platforms li strong { color: var(--ink); }
+    .platforms a { color: var(--accent-ink); white-space: nowrap; }
+    .quotes { display: grid; gap: 14px; margin: 18px 0 0; padding: 0; list-style: none; }
+    .quotes li { padding: 18px 20px; border-radius: 18px; background: var(--card); }
+    .quotes q { display: block; color: var(--ink); font-size: 17px; line-height: 1.45; }
+    .quotes span { display: block; margin-top: 8px; color: var(--ink-soft); font-size: 15px; }
+    .tree { margin: 18px 0 0; padding: 18px 20px; overflow-x: auto; border-radius: 16px; background: #1d1d1f; color: #f5f5f7; font: 15px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .band-soft .four li { background: var(--card); }
+    .copy .ship { margin-top: 18px; color: var(--ink); font-size: clamp(22px, 2.6vw, 28px); font-weight: 600; letter-spacing: -0.02em; }
+    .build-note .pill { margin-top: 28px; }
+    @media (max-width: 980px) {
+      .skills, .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .split { grid-template-columns: 1fr; }
+      .split .art-first { order: -1; }
+      .install, .skills, .cols, .four { grid-template-columns: 1fr; }
+      .platforms a { white-space: normal; }
+    }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
+  <script src="/ga.js"></script>
+  <script src="/metricool.js"></script>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/deon">
+      <span class="brand-pin" aria-hidden="true"></span>
+      <span class="brand-name">Deon Menezes</span>
+      <span class="brand-tag">AI Harness Engineer</span>
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href="/deon#work">Work</a>
+      <a href="/deon#built">Projects</a>
+      <a href="/deon#apps">Apps</a>
+      <a href="/resources" aria-current="page">Resources</a>
+      <a href="/deon#connect">Connect</a>
+      <a href="https://virelity.com" target="_blank" rel="noopener noreferrer" class="nav-virelity">Virelity ↗</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="chip chip-ink" href="/resources">All resources</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="ca-hero">
+      <div class="wrap">
+        <p class="kicker">From the talk</p>
+        <h1>Automate your content with Claude Code.</h1>
+        <p class="intro">I walked a room of creators with 10M+ followers between them through how I make my content now. I record, upload to Drive, send one message, and the reel gets edited, animated and posted. Here is the whole system, and the skills that run it.</p>
+        <p class="hero-actions">
+          <a class="pill" href="/assets/skills/content-automation-skills.zip" download>Download all 13 skills</a>
+          <a class="more" href="#skills">See every skill <span aria-hidden="true">›</span></a>
+        </p>
+        <div class="art"><img src="/assets/img/content-automation/cover.jpg" alt="Illustration of a person on a stage holding up a phone that bursts into film strips, in front of a stadium crowd." width="1500" height="599"></div>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="skills" aria-labelledby="skills-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">The skills</p>
+          <h2 id="skills-title">The skills behind my content. Free.</h2>
+          <p class="sub">A skill is a .md playbook that tells Claude how you like things done. These are copies of the ones my setup runs on: editing, motion, posting, comment-to-DM, YouTube and ideas. Each zip has the SKILL.md, its scripts and a README.</p>
+        </header>
+        <ol class="install" aria-label="How to install">
+          <li><strong>Download a zip.</strong>One skill, or all of them in one file.</li>
+          <li><strong>Unzip it into <code>~/.claude/skills/</code></strong>You end up with <code>~/.claude/skills/&lt;name&gt;/SKILL.md</code>.</li>
+          <li><strong>Ask Claude Code for it by name.</strong>For example: "use the video-edit skill on this clip". Read the SKILL.md once and change the parts about my setup to yours.</li>
+        </ol>
+        <p class="note">Made for my own machine and accounts, so paths, ids and account names are placeholders like <code>YOUR_INSTAGRAM_TOKEN</code> and <code>&lt;your-folder&gt;</code>. No keys, tokens or passwords are included. Only text and code: fonts, images, videos and model files are left out, and some steps point at tools or other skills of mine that are not in the zip.</p>
+        <div class="all-zip">
+          <a class="pill" href="/assets/skills/content-automation-skills.zip" download>Download all 13 skills (.zip)</a>
+          <span>100 files · 308 KB</span>
+        </div>
+        <ul class="skills">
+          <li class="skill" id="skill-video-edit">
+            <h3><code>video-edit</code></h3>
+            <p class="what">Edits your own talking video end to end: cuts the pauses, fillers and repeated takes, adds word-timed captions, real source cards, split-screen graphics and B-roll, then checks it and delivers it.</p>
+            <p class="size">42 files · 128 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/video-edit.zip" download>Download .zip</a><a class="more" href="/assets/skills/video-edit/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-motion-designing">
+            <h3><code>motion-designing</code></h3>
+            <p class="what">Plans and fixes anything that moves on screen (titles, product demos, logo reveals) as a brief with frame numbers: what enters, when it lands, how long it stays readable.</p>
+            <p class="size">11 files · 20 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/motion-designing.zip" download>Download .zip</a><a class="more" href="/assets/skills/motion-designing/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-reference-reel-edit">
+            <h3><code>reference-reel-edit</code></h3>
+            <p class="what">Edits your footage to match a reference reel: its captions, graphics, transitions and sound.</p>
+            <p class="size">3 files · 7 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/reference-reel-edit.zip" download>Download .zip</a><a class="more" href="/assets/skills/reference-reel-edit/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-clean-explainer-style">
+            <h3><code>clean-explainer-style</code></h3>
+            <p class="what">A clean animated explainer look (captions fixed at the top, the keyword in a selection box, posts redrawn as cards) with an HTML kit that renders frame by frame and a script that takes a reference video apart.</p>
+            <p class="size">8 files · 29 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/clean-explainer-style.zip" download>Download .zip</a><a class="more" href="/assets/skills/clean-explainer-style/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-carousel">
+            <h3><code>carousel</code></h3>
+            <p class="what">Builds an Instagram carousel out of other people's video clips around one idea: a cover, one slide per clip with the credit, a watermark and an end slide, then checks it and posts it.</p>
+            <p class="size">7 files · 17 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/carousel.zip" download>Download .zip</a><a class="more" href="/assets/skills/carousel/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-post-video">
+            <h3><code>post-video</code></h3>
+            <p class="what">Posts one video to Instagram Reels, YouTube Shorts, TikTok and X: through the API where it works, through the browser where it does not.</p>
+            <p class="size">2 files · 6 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/post-video.zip" download>Download .zip</a><a class="more" href="/assets/skills/post-video/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-reel-automation">
+            <h3><code>reel-automation</code></h3>
+            <p class="what">Sets up comment-to-DM on a reel: someone comments a word and gets one short DM with the link.</p>
+            <p class="size">5 files · 15 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/reel-automation.zip" download>Download .zip</a><a class="more" href="/assets/skills/reel-automation/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-instagram-dm">
+            <h3><code>instagram-dm</code></h3>
+            <p class="what">Finds the right people in your Instagram DMs (story replies, question-box answers, a keyword) and sends them a DM from your signed-in Chrome, with a dry run first and a sent log so nobody gets it twice.</p>
+            <p class="size">4 files · 16 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/instagram-dm.zip" download>Download .zip</a><a class="more" href="/assets/skills/instagram-dm/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-youtube-script">
+            <h3><code>youtube-script</code></h3>
+            <p class="what">Rules and a linter for long-form YouTube narration that sounds like a person telling a story, not like generated text.</p>
+            <p class="size">3 files · 9 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/youtube-script.zip" download>Download .zip</a><a class="more" href="/assets/skills/youtube-script/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-youtube-video">
+            <h3><code>youtube-video</code></h3>
+            <p class="what">Makes a long-form YouTube video end to end: research, fact-check, voice, visuals, a gentle render, QC, then upload with a custom thumbnail and a title test.</p>
+            <p class="size">7 files · 32 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/youtube-video.zip" download>Download .zip</a><a class="more" href="/assets/skills/youtube-video/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-content-ideas">
+            <h3><code>content-ideas</code></h3>
+            <p class="what">Answers "what should I post today" with a short ranked list of ideas based on what is trending now and what worked on your own account.</p>
+            <p class="size">3 files · 8 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/content-ideas.zip" download>Download .zip</a><a class="more" href="/assets/skills/content-ideas/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-viral-project">
+            <h3><code>viral-project</code></h3>
+            <p class="what">The working notes behind the Will It Go Viral? simulator: how scoring works, where everything lives and what must not break.</p>
+            <p class="size">2 files · 12 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/viral-project.zip" download>Download .zip</a><a class="more" href="/assets/skills/viral-project/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+          <li class="skill" id="skill-resources-page">
+            <h3><code>resources-page</code></h3>
+            <p class="what">Builds the web page a reel points at, deploys it to the site and checks that it is live.</p>
+            <p class="size">3 files · 9 KB</p>
+            <p class="skill-actions"><a class="pill" href="/assets/skills/resources-page.zip" download>Download .zip</a><a class="more" href="/assets/skills/resources-page/SKILL.md">Read SKILL.md <span aria-hidden="true">›</span></a></p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band" id="basics" aria-labelledby="basics-title">
+      <div class="wrap">
+        <div class="split">
+          <div class="copy">
+            <header class="band-head">
+              <p class="kicker">1 · The basics</p>
+              <h2 id="basics-title">Claude works best with four things.</h2>
+            </header>
+            <p>Give Claude these and it stops being a chatbot. It becomes your editor, your publisher and your assistant.</p>
+          </div>
+          <img src="/assets/img/content-automation/basics.jpg" alt="Illustration of a door, a plug, a terminal window and a notebook wired together on a table." width="1200" height="670" loading="lazy">
+        </div>
+        <ul class="four">
+          <li><strong>APIs</strong>A door into an app.</li>
+          <li><strong>MCPs</strong>A plug-in made for AI.</li>
+          <li><strong>CLIs</strong>A command in the terminal.</li>
+          <li><strong>Skills</strong>A .md playbook that tells Claude how you like things done.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="connectors" aria-labelledby="connectors-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">2 · The connectors I use</p>
+          <h2 id="connectors-title">What Claude is plugged into.</h2>
+        </header>
+        <div class="cols">
+          <article class="resource-card">
+            <span class="number">APIs</span>
+            <h3>Doors into apps</h3>
+            <ul>
+              <li><a href="https://developers.facebook.com/docs/instagram-platform/" target="_blank" rel="noopener noreferrer">Instagram Graph API</a></li>
+              <li><a href="https://developers.google.com/youtube/v3" target="_blank" rel="noopener noreferrer">YouTube Data API</a></li>
+              <li><a href="https://www.zoho.com/mail/help/api/" target="_blank" rel="noopener noreferrer">Zoho Mail API</a></li>
+              <li><a href="https://developers.google.com/docs/api" target="_blank" rel="noopener noreferrer">Google Docs API</a></li>
+            </ul>
+          </article>
+          <article class="resource-card">
+            <span class="number">MCPs</span>
+            <h3>Plug-ins made for AI</h3>
+            <ul>
+              <li><a href="https://claude.com/connectors/google-drive" target="_blank" rel="noopener noreferrer">Google Drive</a></li>
+              <li><a href="https://claude.com/connectors/gmail" target="_blank" rel="noopener noreferrer">Gmail</a></li>
+              <li><a href="https://claude.com/connectors/slack" target="_blank" rel="noopener noreferrer">Slack</a></li>
+              <li><a href="https://github.com/CursorTouch/Windows-MCP" target="_blank" rel="noopener noreferrer">Windows desktop (Windows-MCP)</a></li>
+            </ul>
+          </article>
+          <article class="resource-card">
+            <span class="number">CLIs</span>
+            <h3>Commands in the terminal</h3>
+            <ul>
+              <li><a href="https://ffmpeg.org/" target="_blank" rel="noopener noreferrer">ffmpeg</a></li>
+              <li><a href="https://rclone.org/drive/" target="_blank" rel="noopener noreferrer">rclone (for Drive)</a></li>
+              <li><a href="https://cli.github.com/" target="_blank" rel="noopener noreferrer">gh (GitHub)</a></li>
+              <li><a href="https://vercel.com/docs/cli" target="_blank" rel="noopener noreferrer">Vercel CLI</a></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="posting" aria-labelledby="posting-title">
+      <div class="wrap">
+        <div class="split">
+          <div class="copy">
+            <header class="band-head">
+              <p class="kicker">3 · Posting to every platform</p>
+              <h2 id="posting-title">One video, four platforms.</h2>
+            </header>
+            <ul class="platforms">
+              <li><strong>Instagram:</strong> the Graph API posts reels and pulls stats. <a href="https://developers.facebook.com/docs/instagram-platform/content-publishing/" target="_blank" rel="noopener noreferrer">Content Publishing docs ↗</a></li>
+              <li><strong>YouTube:</strong> the Data API posts Shorts and full videos. <a href="https://developers.google.com/youtube/v3/docs/videos/insert" target="_blank" rel="noopener noreferrer">videos.insert docs ↗</a></li>
+              <li><strong>TikTok:</strong> API posts stay private until TikTok audits your app. <a href="https://developers.tiktok.com/doc/content-posting-api-get-started" target="_blank" rel="noopener noreferrer">Content Posting API ↗</a></li>
+              <li><strong>X:</strong> API posting costs money (pay-per-use credits). <a href="https://docs.x.com/x-api/getting-started/pricing" target="_blank" rel="noopener noreferrer">X API pricing ↗</a></li>
+            </ul>
+            <p><strong>No free API? Use a Chrome extension.</strong> With <a href="https://claude.com/chrome" target="_blank" rel="noopener noreferrer">Claude in Chrome</a>, Claude opens the page and clicks Post for you. The <code>post-video</code> skill above does exactly this for TikTok and X.</p>
+          </div>
+          <img src="/assets/img/content-automation/posting.jpg" alt="Illustration of one video being sent out to several phones." width="1200" height="670" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="prompts" aria-labelledby="prompts-title">
+      <div class="wrap">
+        <div class="split">
+          <img class="art-first" src="/assets/img/content-automation/prompt.jpg" alt="Illustration of a short typed prompt turning into a finished reel." width="1200" height="670" loading="lazy">
+          <div class="copy">
+            <header class="band-head">
+              <p class="kicker">4 · Prompt in, finished reel out</p>
+              <h2 id="prompts-title">These are real prompts I sent.</h2>
+            </header>
+            <ul class="quotes">
+              <li><q>Do the usual edit, motion graphics... animations like this would be better.</q><span>Plus a link to a cartoon video I liked. That became my Meta Muse reel: 871K views.</span></li>
+              <li><q>Make it more animated please... my face will be there.</q><span>That became my iPhone Duo reel, posted Oct 17.</span></li>
+              <li><q>Show animations of the technology... colour marking and circle how it works, handwritten.</q><span>That became my Quidich visit on YouTube Shorts.</span></li>
+            </ul>
+            <p>That's the whole brief. No timeline, no keyframes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="motion" aria-labelledby="motion-title">
+      <div class="wrap">
+        <div class="split">
+          <div class="copy">
+            <header class="band-head">
+              <p class="kicker">5 · Motion design</p>
+              <h2 id="motion-title">Every animation in my reels is made by Claude.</h2>
+            </header>
+            <p>I learned motion design from an article by <a href="https://x.com/beamnxw/status/2108616740846420354" target="_blank" rel="noopener noreferrer">@beamnxw</a>, turned it into a skill, and now Claude makes every animation. That skill is <code>motion-designing</code>, in the list above.</p>
+          </div>
+          <img src="/assets/img/content-automation/motion.jpg" alt="Illustration of animated shapes moving across a screen." width="1200" height="670" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="paths" aria-labelledby="paths-title">
+      <div class="wrap">
+        <div class="split">
+          <img class="art-first" src="/assets/img/content-automation/paths.jpg" alt="Illustration of three paths to choose between." width="1200" height="670" loading="lazy">
+          <div class="copy">
+            <header class="band-head">
+              <p class="kicker">6 · How Claude Code decides how to edit</p>
+              <h2 id="paths-title">It picks the path with the fewest dependencies.</h2>
+            </header>
+            <p>Give it a prompt and references and it weighs the options:</p>
+            <ul>
+              <li><strong>A.</strong> Install a new app (3 new things to set up)</li>
+              <li><strong>B.</strong> A cloud video API (a key, an upload, a bill)</li>
+              <li><strong>C.</strong> What's already on my PC (ffmpeg, Whisper, HTML)</li>
+            </ul>
+            <p>Almost always C.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="folder" aria-labelledby="folder-title">
+      <div class="wrap">
+        <div class="split">
+          <div class="copy">
+            <header class="band-head">
+              <p class="kicker">7 · Keep a reference folder</p>
+              <h2 id="folder-title">This is how Claude edits in your taste.</h2>
+            </header>
+            <pre class="tree">reference-library/
+  songs/        10 vibes
+  fonts/        titles, captions
+  references/   reels I like</pre>
+            <p>Songs sorted by vibe, my title fonts, my caption font, and reels I want to copy the feel of.</p>
+          </div>
+          <img src="/assets/img/content-automation/folder.jpg" alt="Illustration of a folder holding songs, fonts and reference reels." width="1200" height="670" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="model" aria-labelledby="model-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">8 · Which model?</p>
+          <h2 id="model-title">Opus does the whole job.</h2>
+        </header>
+        <ul class="four two">
+          <li><strong>Opus 5.5</strong>Does the whole job.</li>
+          <li><strong>Sonnet 5.5</strong>Edits really well too.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band" id="loop" aria-labelledby="loop-title">
+      <div class="wrap">
+        <div class="split">
+          <img class="art-first" src="/assets/img/content-automation/loop.jpg" alt="Illustration of the loop: record on a phone, upload to the cloud, a computer edits it at night, a film reel goes out, people cheer." width="1200" height="670" loading="lazy">
+          <div class="copy">
+            <header class="band-head">
+              <p class="kicker">9 · The full automation loop</p>
+              <h2 id="loop-title">Record. Upload. One message.</h2>
+            </header>
+            <ol>
+              <li>My PC is always on</li>
+              <li>Claude Code runs on my phone</li>
+              <li>I record</li>
+              <li>I upload to Drive</li>
+              <li>I message: "Uploaded. Edit it like..."</li>
+              <li>It's edited and posted</li>
+            </ol>
+            <p>On top of that, every reel gets comment-to-DM. Someone comments a word like "GHOST", and they get an auto DM with the link (<a href="/resources/ghost">deonmenezes.com/resources/ghost</a>). That is the <code>reel-automation</code> skill.</p>
+            <p>Every edit ends with one question from Claude:</p>
+            <p class="ship">"Ship it, or change it?"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="simulator" aria-labelledby="simulator-title">
+      <div class="wrap">
+        <div class="split">
+          <div class="copy">
+            <header class="band-head">
+              <p class="kicker">10 · Test before you post</p>
+              <h2 id="simulator-title">Will it go viral?</h2>
+            </header>
+            <p>I built a simulator at <strong>virelity.com/viral</strong>. Type your handle, write a post, and see how it would do on Instagram, X, YouTube or TikTok. The best practices for growing on each platform, built into one tool.</p>
+            <a class="pill" href="https://virelity.com/viral" target="_blank" rel="noopener noreferrer">Try the simulator ↗</a>
+          </div>
+          <img src="/assets/img/content-automation/simulator.jpg" alt="Illustration of a post being tested on a simulator screen." width="1200" height="670" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="credits" aria-labelledby="credits-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">11 · I'm not the only one</p>
+          <h2 id="credits-title">Credit where it's due.</h2>
+        </header>
+        <nav class="paper-list" aria-label="Credits">
+          <a href="https://x.com/trq212/status/2064826394589442448" target="_blank" rel="noopener noreferrer"><span>01</span><strong>"I didn't touch a video editor." ↗</strong><em>Thariq (@trq212), Claude Code team, Jun 10, 2026</em></a>
+          <a href="https://x.com/Remotion/status/2013626968386765291" target="_blank" rel="noopener noreferrer"><span>02</span><strong>Remotion now has Agent Skills: make videos just with Claude Code ↗</strong><em>Remotion (@Remotion), Jan 20, 2026</em></a>
+          <a href="https://x.com/beamnxw/status/2108616740846420354" target="_blank" rel="noopener noreferrer"><span>03</span><strong>Motion Engineering with Opus 5.5: Build Launch Videos You Can Sell ↗</strong><em>beamnxw (@beamnxw), Oct 9, 2026</em></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="links" aria-labelledby="links-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">Sources</p>
+          <h2 id="links-title">Everything on this page.</h2>
+        </header>
+        <nav class="paper-list" aria-label="Sources">
+          <a href="https://developers.facebook.com/docs/instagram-platform/content-publishing/" target="_blank" rel="noopener noreferrer"><span>01</span><strong>Instagram Platform: Content Publishing ↗</strong><em>Meta for Developers</em></a>
+          <a href="https://developers.google.com/youtube/v3/docs/videos/insert" target="_blank" rel="noopener noreferrer"><span>02</span><strong>YouTube Data API: Videos: insert ↗</strong><em>Google for Developers</em></a>
+          <a href="https://developers.tiktok.com/doc/content-posting-api-get-started" target="_blank" rel="noopener noreferrer"><span>03</span><strong>Content Posting API: Get Started ↗</strong><em>TikTok for Developers</em></a>
+          <a href="https://docs.x.com/x-api/getting-started/pricing" target="_blank" rel="noopener noreferrer"><span>04</span><strong>X API pay-per-usage pricing and credits ↗</strong><em>X Developer Platform</em></a>
+          <a href="https://claude.com/chrome" target="_blank" rel="noopener noreferrer"><span>05</span><strong>Claude in Chrome ↗</strong><em>Anthropic</em></a>
+          <a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener noreferrer"><span>06</span><strong>Extend Claude with skills ↗</strong><em>Claude Code Docs</em></a>
+          <a href="https://virelity.com/viral" target="_blank" rel="noopener noreferrer"><span>07</span><strong>Will It Go Viral? simulator ↗</strong><em>virelity.com/viral</em></a>
+          <a href="/linktree"><span>08</span><strong>Every tool, link and resource</strong><em>deonmenezes.com/linktree</em></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="build-note">
+      <div class="wrap">
+        <p>If you make content and you're still editing by hand, start with one thing.</p>
+        <strong>A reference folder and one prompt.</strong>
+        <a class="pill" href="/assets/skills/content-automation-skills.zip" download>Download all 13 skills</a>
+      </div>
+    </section>
+  </main>
+  <footer><span>Written by Deon Menezes</span><a href="/resources">More free resources →</a></footer>
+</body>
+</html>
