@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to Make Claude Edit Your Videos in Instagram Edits · Deon Menezes</title>
+  <meta name="description" content="Instagram Edits for Mac has a built-in connector for AI agents. Turn it on in Settings, paste one command, and Claude Code, Codex or Muse can cut, caption and export your videos for you.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/edits">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="How to make Claude edit your videos in Instagram Edits">
+  <meta property="og:description" content="Turn on the connector in Edits for Mac, paste one command, and your AI agent edits the video for you. The full setup for Claude Code, Codex and Muse.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/edits">
+  <meta property="og:image" content="https://deonmenezes.com/assets/img/edits/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="How to make Claude edit your videos in Instagram Edits: the setup guide.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to make Claude edit your videos in Instagram Edits">
+  <meta name="twitter:description" content="Turn on the connector in Edits for Mac, paste one command, and your AI agent edits the video for you.">
+  <meta name="twitter:image" content="https://deonmenezes.com/assets/img/edits/og.jpg">
+  <link rel="stylesheet" href="/resources/site-nav.css">
+  <link rel="stylesheet" href="/resources.css">
+  <style>
+    .ed-hero { padding: clamp(56px, 9vw, 104px) 0 clamp(44px, 6vw, 72px); text-align: center; }
+    .ed-hero h1 { max-width: 15ch; margin: 14px auto 0; font-size: clamp(40px, 7vw, 80px); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; }
+    .ed-hero .intro { max-width: 680px; margin: 22px auto 0; color: var(--ink-soft); font-size: clamp(19px, 2.2vw, 23px); line-height: 1.4; }
+    .term { max-width: 760px; margin: clamp(36px, 5vw, 56px) auto 0; overflow: hidden; border-radius: 18px; background: #1d1d1f; text-align: left; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.14); }
+    .term-bar { display: flex; gap: 7px; padding: 12px 14px; background: #2c2c2e; }
+    .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
+    .term-bar i:nth-child(2) { background: #febc2e; }
+    .term-bar i:nth-child(3) { background: #28c840; }
+    pre.cmd { margin: 0; padding: 18px 20px; overflow-x: auto; background: #1d1d1f; color: #f5f5f7; font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+    pre.cmd .c { color: #8e8e93; }
+    .step-card pre.cmd { margin-top: 14px; border-radius: 14px; font-size: 13px; }
+    code { padding: 1px 6px; border-radius: 6px; background: #ececf0; color: var(--ink); font: 0.88em/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+    .how { counter-reset: how; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.8vw, 22px); margin: 0; padding: 0; list-style: none; }
+    .how li { counter-increment: how; padding: 26px; border-radius: var(--radius); background: var(--card); color: var(--ink-soft); font-size: 16px; line-height: 1.45; }
+    .how li::before { content: counter(how); display: grid; place-items: center; width: 30px; height: 30px; margin-bottom: 14px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 14px; font-weight: 600; }
+    .how strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
+    .agents { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.8vw, 22px); margin: 0; padding: 0; list-style: none; }
+    .step-card { min-width: 0; padding: 26px; border-radius: var(--radius); background: var(--bg-soft); color: var(--ink-soft); font-size: 16px; line-height: 1.45; }
+    .step-card h3 { margin: 0 0 8px; color: var(--ink); font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+    .tips { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+    .tips li { padding: 16px 0; border-bottom: 1px solid var(--hair); color: var(--ink-soft); font-size: 17px; line-height: 1.45; }
+    .tips li strong { color: var(--ink); font-weight: 600; }
+    .prompt { margin-top: clamp(24px, 3vw, 32px); }
+    .prompt p { margin: 0 0 10px; color: var(--ink); font-size: 17px; font-weight: 600; }
+    .prompt pre.cmd { border-radius: 16px; font-family: var(--font); font-size: 16px; }
+    .note { margin: clamp(22px, 3vw, 30px) 0 0; padding: 18px 22px; border-radius: 18px; background: #e8f1fc; color: var(--ink); font-size: 15px; line-height: 1.5; }
+    .note strong { font-weight: 600; }
+    .build-note .pill { margin-top: 28px; }
+    @media (max-width: 900px) {
+      .how, .agents { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
+  <script src="/ga.js"></script>
+  <script src="/metricool.js"></script>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/deon">
+      <span class="brand-pin" aria-hidden="true"></span>
+      <span class="brand-name">Deon Menezes</span>
+      <span class="brand-tag">AI Harness Engineer</span>
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href="/deon#work">Work</a>
+      <a href="/deon#built">Projects</a>
+      <a href="/deon#apps">Apps</a>
+      <a href="/resources" aria-current="page">Resources</a>
+      <a href="/deon#connect">Connect</a>
+      <a href="https://virelity.com" target="_blank" rel="noopener noreferrer" class="nav-virelity">Virelity ↗</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="chip chip-ink" href="/resources">All resources</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="ed-hero">
+      <div class="wrap">
+        <p class="kicker">From the Reel · Instagram Edits for Mac</p>
+        <h1>How to make Claude edit your videos in Instagram Edits.</h1>
+        <p class="intro">The Edits app for Mac has a built-in connector for AI agents. Switch it on, paste one command, and Claude Code, Codex or Muse can cut, caption, grade and export your videos inside Edits.</p>
+        <p class="hero-actions">
+          <a class="pill" href="https://edits.instagram.com/desktop/" target="_blank" rel="noopener noreferrer">Get Edits for Mac ↗</a>
+          <a class="more" href="#setup">Jump to the setup <span aria-hidden="true">›</span></a>
+        </p>
+        <div class="term" aria-label="The Claude Code command">
+          <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <pre class="cmd"><span class="c"># Edits copies this for you, with your own token filled in</span>
+claude mcp add --transport http --scope user metapilot-native http://127.0.0.1:19501/mcp --header "Authorization: Bearer &lt;YOUR_TOKEN&gt;"</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="setup" aria-labelledby="setup-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">Step 1 · Turn it on</p>
+          <h2 id="setup-title">A few clicks in Edits.</h2>
+          <p class="sub">You need a Mac with Apple silicon (M1 or later). Edits for Mac is free and you sign in with Instagram.</p>
+        </header>
+        <ol class="how">
+          <li><strong>Install Edits for Mac.</strong>Download it from <a class="more" href="https://edits.instagram.com/desktop/" target="_blank" rel="noopener noreferrer">edits.instagram.com/desktop</a>, open it and sign in with your Instagram account.</li>
+          <li><strong>Open Settings, then the Automation tab.</strong>Turn on <b>Enable Automation Server</b>. It lets AI clients control Edits on this Mac over a local connection.</li>
+          <li><strong>Copy the command for your agent.</strong>Under <b>Connect an AI client</b> there is a ready-made setup for Claude Code, Codex and Muse, with your <b>Access token</b> already in it.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band" id="connect" aria-labelledby="connect-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">Step 2 · Connect your agent</p>
+          <h2 id="connect-title">Paste it, then restart the agent.</h2>
+          <p class="sub">The connector is called <code>metapilot-native</code>. It only answers on your Mac, and only while Edits is open.</p>
+        </header>
+        <ul class="agents">
+          <li class="step-card">
+            <h3>Claude Code</h3>
+            Run the copied command in Terminal, then start a new Claude Code session.
+            <pre class="cmd">claude mcp add --transport http --scope user metapilot-native http://127.0.0.1:19501/mcp --header "Authorization: Bearer &lt;YOUR_TOKEN&gt;"</pre>
+          </li>
+          <li class="step-card">
+            <h3>Codex</h3>
+            Run both copied lines in the same Terminal window before you launch Codex.
+            <pre class="cmd">export METAPILOT_TOKEN=&lt;YOUR_TOKEN&gt;
+codex mcp add metapilot-native --url http://127.0.0.1:19501/mcp --bearer-token-env-var METAPILOT_TOKEN</pre>
+          </li>
+          <li class="step-card">
+            <h3>Muse</h3>
+            In Muse settings, replace the <code>edits</code> entry under <code>mcpServers</code> with the block Edits copies, then start a new Muse session.
+          </li>
+        </ul>
+        <p class="note"><strong>Use the command Edits copies, not this page's.</strong> The address above is what my Mac shows (port 19501). Edits lets you change the port, so the copied command is always the right one. <code>&lt;YOUR_TOKEN&gt;</code> is a placeholder. Any other agent that speaks MCP works too: streamable HTTP, that URL, and an <code>Authorization: Bearer</code> header.</p>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="use" aria-labelledby="use-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">Step 3 · Edit</p>
+          <h2 id="use-title">What worked on my edits.</h2>
+          <p class="sub">The tools follow the screen Edits is on. On the home screen the agent sees projects, new project, open project and import. Editing tools appear once a project is open.</p>
+        </header>
+        <ul class="tips">
+          <li><strong>Start with <code>getCapabilities</code>.</strong> It tells the agent how time, the canvas and the tools work before it touches anything.</li>
+          <li><strong>Import video with <code>importMedia</code></strong> and a file path on the Mac. <code>addMedia</code> is for audio only (music, sound effects, voiceover).</li>
+          <li><strong>Captions:</strong> <code>generateCaptions</code> with source <code>video</code>, then <code>setCaptionStyle</code> <code>Word Highlight</code> for the word-by-word look.</li>
+          <li><strong>Cuts, text and looks:</strong> <code>splitAt</code>, <code>trim</code> and <code>delete</code> for cuts, <code>addText</code>, filters, effects, transitions and <code>setColorGrade</code>. <code>previewVideoFrames</code> lets the agent look at its own work.</li>
+          <li><strong>Export:</strong> <code>setExportSettings</code> takes the resolution as width x height, like <code>1080x1920</code>, then <code>export</code>.</li>
+          <li><strong>One app, many agents.</strong> Every connected agent drives the same app. Save the project and check which project is open before exporting.</li>
+        </ul>
+        <div class="prompt">
+          <p>First prompt to try</p>
+          <pre class="cmd">Use the metapilot-native tools. Call getCapabilities first. Make a new Edits project, import ~/Movies/clip.mov with importMedia, cut the silences, add Word Highlight captions, then export at 1080x1920 and tell me where the file is.</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="remote" aria-labelledby="remote-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">Optional · Run it 24/7</p>
+          <h2 id="remote-title">Text your agent, the Mac does the edit.</h2>
+          <p class="sub">The connector never leaves your Mac, so leave the Mac on and reach it safely instead of opening the port.</p>
+        </header>
+        <ol class="how">
+          <li><strong>Keep the Mac awake with Edits open.</strong>Plug it in. Running <code>caffeinate -i</code> in Terminal stops it sleeping while that window is open.</li>
+          <li><strong>Run your agent on the Mac</strong> and message it from your phone through whatever remote chat you use with it. Nothing else to set up.</li>
+          <li><strong>Or connect from another computer.</strong>Turn on Remote Login on the Mac, put both machines on a private network such as Tailscale, open an SSH tunnel, then add the same command there.
+            <pre class="cmd">ssh -N -L 19501:127.0.0.1:19501 you@your-mac</pre></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band band-soft" id="safety" aria-labelledby="safety-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">Keep in mind</p>
+          <h2 id="safety-title">The token is the key to your projects.</h2>
+        </header>
+        <ul class="tips">
+          <li><strong>Keep the Access token private.</strong> Anyone with it can edit your projects while the server is on. If it leaks, regenerate it in the Automation tab and paste the new one into your agent.</li>
+          <li><strong>Never expose port 19501 to the internet.</strong> Edits listens on the Mac itself only. Use an SSH tunnel, not port forwarding.</li>
+          <li><strong>Posting:</strong> Edits shares straight to Instagram from the app. My tests through the connector covered editing and exporting, so check what <code>getCapabilities</code> offers on your version, or tap share yourself.</li>
+          <li><strong>Checked on Edits for Mac 454.0.0, 9 November 2026.</strong> Menu and tool names can change between updates.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band" id="links" aria-labelledby="links-title">
+      <div class="wrap">
+        <header class="band-head">
+          <p class="kicker">Links</p>
+          <h2 id="links-title">Everything on this page.</h2>
+        </header>
+        <nav class="paper-list" aria-label="Links">
+          <a href="https://edits.instagram.com/desktop/" target="_blank" rel="noopener noreferrer"><span>01</span><strong>Edits for Mac ↗</strong><em>Free, by Instagram</em></a>
+          <a href="https://code.claude.com/docs/en/mcp" target="_blank" rel="noopener noreferrer"><span>02</span><strong>Claude Code: connect MCP servers ↗</strong><em>Anthropic docs</em></a>
+          <a href="https://developers.openai.com/codex/mcp" target="_blank" rel="noopener noreferrer"><span>03</span><strong>Codex: MCP servers ↗</strong><em>OpenAI docs</em></a>
+          <a href="/resources/muse"><span>04</span><strong>Meta's Muse explained</strong><em>On this site</em></a>
+          <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer"><span>05</span><strong>What is MCP? ↗</strong><em>The open protocol behind the connector</em></a>
+          <a href="https://support.apple.com/guide/mac-help/allow-a-remote-computer-to-access-your-mac-mchlp1066/mac" target="_blank" rel="noopener noreferrer"><span>06</span><strong>Turn on Remote Login ↗</strong><em>Apple support</em></a>
+          <a href="https://tailscale.com/download" target="_blank" rel="noopener noreferrer"><span>07</span><strong>Tailscale ↗</strong><em>Private network between your devices</em></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="build-note">
+      <div class="wrap">
+        <p>Settings, Automation, one command.</p>
+        <strong>Let Claude do the edit.</strong>
+        <a class="pill" href="https://edits.instagram.com/desktop/" target="_blank" rel="noopener noreferrer">Get Edits for Mac</a>
+      </div>
+    </section>
+  </main>
+  <footer><span>Written by Deon Menezes</span><a href="/resources">More free resources →</a></footer>
+</body>
+</html>
