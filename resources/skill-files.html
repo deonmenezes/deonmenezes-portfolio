@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to build your own Claude skill file · Deon Menezes</title>
+  <meta name="description" content="The full guide from the Reel: how a Claude skill file is laid out, and five tips to make one Claude actually uses. Pushy description, keep it thin, log every failure, add scripts, keep a score.">
+  <meta name="author" content="Deon Menezes">
+  <link rel="canonical" href="https://deonmenezes.com/resources/skill-files">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="How to build your own Claude skill file">
+  <meta property="og:description" content="How a skill file is laid out, and five tips to make one Claude actually uses, with a full example you can copy.">
+  <meta property="og:url" content="https://deonmenezes.com/resources/skill-files">
+  <meta property="og:image" content="https://deonmenezes.com/assets/img/skill-files/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="How to build your own Claude skill file, with the SKILL.md layout">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to build your own Claude skill file">
+  <meta name="twitter:description" content="How a skill file is laid out, and five tips to make one Claude actually uses, with a full example you can copy.">
+  <meta name="twitter:image" content="https://deonmenezes.com/assets/img/skill-files/og.jpg">
+  <link rel="stylesheet" href="/assets/fonts/fonts.css">
+  <link rel="stylesheet" href="/resources/site-nav.css">
+  <link rel="stylesheet" href="/resources/start-a-startup.css">
+  <style>
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .hero .actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.4rem; }
+    .jump { margin-top: 22px; }
+    .code { margin: 0; padding: 22px 24px; border-radius: 18px; background: #1d1d1f; color: #f5f5f7; font: 15px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .code .c { color: #8e8e93; }
+    .code .k { color: #64d2ff; }
+    .code .s { color: #ffd60a; }
+    .code .h { color: #ffffff; font-weight: 700; }
+    .code .bad { color: #ff6961; }
+    .code .good { color: #30d158; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap); margin-top: var(--head-gap); align-items: start; }
+    .parts { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+    .parts li { padding: 20px 22px; border-radius: var(--radius); background: var(--surface); color: var(--ink-soft); font-size: 16px; line-height: 1.45; }
+    .parts li strong { display: block; margin-bottom: 4px; color: var(--ink); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; }
+    .parts li code, .tip p code, .section-intro code, .notes code { padding: 1px 6px; border-radius: 6px; background: var(--inset); color: var(--ink); font: 0.92em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .tip h2 { font-size: clamp(30px, 4.6vw, 48px); }
+    .tip .num { display: block; margin-bottom: 8px; color: var(--accent-ink); font-size: 15px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+    .compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap); margin-top: 28px; }
+    .compare figure { margin: 0; }
+    .compare figcaption { margin-bottom: 10px; color: var(--ink-soft); font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+    .compare .after figcaption { color: #1a7f37; }
+    .compare .before figcaption { color: #c9372c; }
+    .why { margin-top: 18px; color: var(--ink-soft); font-size: 17px; line-height: 1.5; max-width: 60ch; }
+    .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); margin: var(--head-gap) 0 0; padding: 0; list-style: none; }
+    .notes li { padding: 26px; border-radius: var(--radius); background: var(--surface); color: var(--ink-soft); font-size: 16px; line-height: 1.45; }
+    .notes li strong { display: block; margin-bottom: 8px; color: var(--ink); font-size: 21px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; }
+    #skill-example { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .copy-row { display: flex; justify-content: flex-end; margin: 28px 0 10px; }
+    .copy-btn { border: 0; cursor: pointer; font: inherit; }
+    @media (max-width: 880px) {
+      .layout, .compare { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .notes { grid-template-columns: minmax(0, 1fr); }
+      .notes li, .parts li { padding: 20px; }
+      .code { padding: 18px; font-size: 13px; }
+    }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RE7YD03ZNX"></script>
+  <script src="/ga.js"></script>
+  <script src="/metricool.js"></script>
+</head>
+<body>
+  <div class="paper" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Skip to the guide</a>
+  <header class="nav">
+    <a class="brand" href="/deon">
+      <span class="brand-pin" aria-hidden="true"></span>
+      <span class="brand-name">Deon Menezes</span>
+      <span class="brand-tag">AI Harness Engineer</span>
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href="/deon#work">Work</a>
+      <a href="/deon#built">Projects</a>
+      <a href="/deon#apps">Apps</a>
+      <a href="/resources" aria-current="page">Resources</a>
+      <a href="/deon#connect">Connect</a>
+      <a href="https://virelity.com" target="_blank" rel="noopener noreferrer" class="nav-virelity">Virelity ↗</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="chip chip-ink" href="/resources">All resources</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <article>
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">The full guide · from the Reel</p>
+          <h1>How to build your own Claude skill file</h1>
+          <p class="lede">A skill file teaches Claude how you want one job done, like 3D animation, essays or apps. Here is how the file is laid out, five tips that make Claude actually use it, and a full example you can copy.</p>
+          <nav class="jump" aria-label="Sections">
+            <a href="#structure">The structure</a>
+            <a href="#tip-1">1. Description</a>
+            <a href="#tip-2">2. Keep it thin</a>
+            <a href="#tip-3">3. Log failures</a>
+            <a href="#tip-4">4. Scripts</a>
+            <a href="#tip-5">5. Keep a score</a>
+            <a href="#full-example">Full example</a>
+          </nav>
+        </div>
+      </header>
+
+      <section id="structure" aria-labelledby="structure-title">
+        <p class="section-label">The structure</p>
+        <h2 id="structure-title">A skill is a folder with one main file.</h2>
+        <p class="section-intro">The main file is always called <code>SKILL.md</code>. Everything else is optional, and Claude opens it only when the main file points to it.</p>
+        <div class="layout">
+          <pre class="code" aria-label="Skill folder layout"><span class="h">essay-editor/</span>
+├── <span class="k">SKILL.md</span>          <span class="c"># the skill itself</span>
+├── <span class="k">scripts/</span>
+│   └── check.py      <span class="c"># code for the exact steps</span>
+└── <span class="k">references/</span>
+    └── examples.md   <span class="c"># read only when needed</span></pre>
+          <ul class="parts">
+            <li><strong>1. Description</strong>At the top of <code>SKILL.md</code>. It tells Claude when to use the skill.</li>
+            <li><strong>2. Instructions</strong>Only what Claude would get wrong on its own. Short.</li>
+            <li><strong>3. Mistakes</strong>A running list of every failure, so it is not repeated.</li>
+            <li><strong>4. Scripts</strong>Code for anything that must come out the same every time.</li>
+            <li><strong>5. Score</strong>A yes/no checklist of what good looks like.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="tip" id="tip-1" aria-labelledby="tip-1-title">
+        <span class="num">Tip 1</span>
+        <h2 id="tip-1-title">Write a description that is a bit pushy.</h2>
+        <p class="section-intro">Claude reads every skill's description at the start and decides from that alone whether to open the skill. It tends to skip them, so say exactly when to use it and list the words people actually type.</p>
+        <div class="compare">
+          <figure class="before">
+            <figcaption>Gets skipped</figcaption>
+            <pre class="code"><span class="c">---</span>
+<span class="k">name:</span> essay-editor
+<span class="k">description:</span> <span class="s">A helpful tool for
+  improving writing.</span>
+<span class="c">---</span></pre>
+          </figure>
+          <figure class="after">
+            <figcaption>Gets used</figcaption>
+            <pre class="code"><span class="c">---</span>
+<span class="k">name:</span> essay-editor
+<span class="k">description:</span> <span class="s">Edit any essay, blog
+  post or long caption. ALWAYS use
+  this when the user says "edit",
+  "rewrite", "make it sound human"
+  or pastes more than 3 paragraphs.</span>
+<span class="c">---</span></pre>
+          </figure>
+        </div>
+        <p class="why">Anthropic's Claude Code team puts it this way: the description is not a summary, it is a description of when to trigger the skill.</p>
+      </section>
+
+      <section class="tip" id="tip-2" aria-labelledby="tip-2-title">
+        <span class="num">Tip 2</span>
+        <h2 id="tip-2-title">Keep it extremely thin.</h2>
+        <p class="section-intro">Skip what Claude already knows. Write down the mistakes it keeps making instead. Every line should change what Claude does.</p>
+        <div class="compare">
+          <figure class="before">
+            <figcaption>Wasted lines</figcaption>
+            <pre class="code"><span class="h">## Instructions</span>
+<span class="bad">- Use correct grammar.
+- Write clearly and concisely.
+- Make sure the essay flows well.
+- Check for spelling mistakes.</span></pre>
+          </figure>
+          <figure class="after">
+            <figcaption>Lines that matter</figcaption>
+            <pre class="code"><span class="h">## Instructions</span>
+<span class="good">- Keep my words. Cut, don't rewrite.
+- No em dashes. Use commas.
+- Never open with "In today's world".
+- Max 2 sentences per paragraph.</span></pre>
+          </figure>
+        </div>
+      </section>
+
+      <section class="tip" id="tip-3" aria-labelledby="tip-3-title">
+        <span class="num">Tip 3</span>
+        <h2 id="tip-3-title">Every failure becomes a stepping stone.</h2>
+        <p class="section-intro">A skill file is never finished. Each time Claude gets something wrong, note it down in the file and tell Claude not to do it again. The list grows, and the skill gets better every week.</p>
+        <div class="compare">
+          <figure class="before">
+            <figcaption>Week 1</figcaption>
+            <pre class="code"><span class="h">## Mistakes</span>
+- Added a summary nobody asked for.</pre>
+          </figure>
+          <figure class="after">
+            <figcaption>Week 4</figcaption>
+            <pre class="code"><span class="h">## Mistakes</span>
+- Added a summary nobody asked for.
+- Changed my quotes. Never edit a quote.
+- Turned my list into a table.
+- Said "delve". Banned word.
+- Cut the joke in the intro. Keep jokes.</pre>
+          </figure>
+        </div>
+        <p class="why">Anthropic calls this gotchas list the highest-signal part of any skill.</p>
+      </section>
+
+      <section class="tip" id="tip-4" aria-labelledby="tip-4-title">
+        <span class="num">Tip 4</span>
+        <h2 id="tip-4-title">Put script files in your skill.</h2>
+        <p class="section-intro">If code can do it, don't let the AI guess. A script gives the same answer every time, so counting, checking and formatting never get hallucinated. Point to it from <code>SKILL.md</code>.</p>
+        <div class="compare">
+          <figure class="before">
+            <figcaption>In SKILL.md</figcaption>
+            <pre class="code"><span class="h">## Before you reply</span>
+Run <span class="k">python scripts/check.py essay.md</span>
+Fix everything it flags.</pre>
+          </figure>
+          <figure class="after">
+            <figcaption>scripts/check.py</figcaption>
+            <pre class="code"><span class="k">import</span> sys, re
+text = open(sys.argv[1]).read()
+banned = [<span class="s">"delve"</span>, <span class="s">"—"</span>, <span class="s">"In today's world"</span>]
+<span class="k">for</span> word <span class="k">in</span> banned:
+    <span class="k">if</span> word <span class="k">in</span> text:
+        print(<span class="s">"FIX:"</span>, word)
+print(len(re.findall(<span class="s">r"\w+"</span>, text)), <span class="s">"words"</span>)</pre>
+          </figure>
+        </div>
+      </section>
+
+      <section class="tip" id="tip-5" aria-labelledby="tip-5-title">
+        <span class="num">Tip 5</span>
+        <h2 id="tip-5-title">Keep a score.</h2>
+        <p class="section-intro">Write a yes-or-no checklist of what good looks like. Then change one thing at a time in the skill, run it again, and keep the version that scores better. It is your own benchmark.</p>
+        <div class="compare">
+          <figure class="before">
+            <figcaption>The checklist</figcaption>
+            <pre class="code"><span class="h">## Score (yes / no)</span>
+[ ] Still sounds like me?
+[ ] Under 800 words?
+[ ] No banned words?
+[ ] First line makes you read on?
+[ ] Every quote unchanged?</pre>
+          </figure>
+          <figure class="after">
+            <figcaption>One change at a time</figcaption>
+            <pre class="code">v1  <span class="bad">3 / 5</span>
+v2  <span class="good">4 / 5</span>   <span class="c"># added "keep jokes" → keep</span>
+v3  <span class="bad">3 / 5</span>   <span class="c"># shorter intro rule → undo</span>
+v4  <span class="good">5 / 5</span>   <span class="c"># added check.py → keep</span></pre>
+          </figure>
+        </div>
+      </section>
+
+      <section id="full-example" aria-labelledby="full-title">
+        <p class="section-label">Full example</p>
+        <h2 id="full-title">The whole skill file, all five parts.</h2>
+        <p class="section-intro">Save it as <code>~/.claude/skills/essay-editor/SKILL.md</code> for Claude Code, or upload the zipped folder in the Claude app's Skills settings. Then swap in your own job, rules and mistakes.</p>
+        <div class="copy-row"><button class="button copy-btn" type="button" data-copy="skill-example">Copy the skill file</button></div>
+        <pre class="code" id="skill-example"><span class="c">---</span>
+<span class="k">name:</span> essay-editor
+<span class="k">description:</span> <span class="s">Edit any essay, blog post or long caption. ALWAYS use this when the user says "edit", "rewrite", "make it sound human" or pastes more than 3 paragraphs.</span>
+<span class="c">---</span>
+
+<span class="h"># Essay editor</span>
+
+<span class="h">## Instructions</span>
+- Keep my words. Cut, don't rewrite.
+- No em dashes. Use commas.
+- Never open with "In today's world".
+- Max 2 sentences per paragraph.
+
+<span class="h">## Mistakes</span>
+- Added a summary nobody asked for.
+- Changed my quotes. Never edit a quote.
+- Turned my list into a table.
+- Said "delve". Banned word.
+- Cut the joke in the intro. Keep jokes.
+
+<span class="h">## Before you reply</span>
+Run `python scripts/check.py essay.md` and fix everything it flags.
+For examples of my style, read references/examples.md.
+
+<span class="h">## Score (yes / no)</span>
+- Still sounds like me?
+- Under 800 words?
+- No banned words?
+- First line makes you read on?
+- Every quote unchanged?</pre>
+      </section>
+
+      <section id="keep-in-mind" aria-labelledby="keep-title">
+        <p class="section-label">Keep in mind</p>
+        <h2 id="keep-title">It takes time, and it is worth it.</h2>
+        <ul class="notes">
+          <li><strong>Start small.</strong>One job per skill. A skill that tries to do everything confuses Claude about when to use it.</li>
+          <li><strong>Don't write every step.</strong>Give the goal and the rules. Claude handles the rest better than a long script of steps.</li>
+          <li><strong>Long details go in other files.</strong>Keep <code>SKILL.md</code> short and point to <code>references/</code> for examples, so Claude reads them only when needed.</li>
+          <li><strong>Steal good examples.</strong>Anthropic's own skills are open source on GitHub. Read a few before you write yours.</li>
+        </ul>
+      </section>
+
+      <section class="reading" id="sources" aria-labelledby="sources-title">
+        <p class="section-label">Go deeper</p>
+        <h2 id="sources-title">From Anthropic.</h2>
+        <ul class="reading-list">
+          <li><a href="https://claude.com/blog/lessons-from-building-claude-code-how-we-use-skills" target="_blank" rel="noopener noreferrer"><strong>Lessons from building Claude Code: How we use skills</strong><em>Thariq Shihipar, Claude Code team, Anthropic ↗</em></a></li>
+          <li><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener noreferrer"><strong>Skills in Claude Code</strong><em>Official docs, with every SKILL.md field ↗</em></a></li>
+          <li><a href="https://github.com/anthropics/skills" target="_blank" rel="noopener noreferrer"><strong>anthropics/skills</strong><em>Anthropic's example skills on GitHub ↗</em></a></li>
+        </ul>
+      </section>
+
+      <aside class="closing">
+        <p>Making a skill file takes time.</p>
+        <strong>But it is totally worth it.</strong>
+        <a class="button" href="https://www.instagram.com/deon_tech/" target="_blank" rel="noopener noreferrer">Follow @deon_tech for more ↗</a>
+      </aside>
+    </article>
+  </main>
+  <footer><span>Written by Deon Menezes · Not affiliated with Anthropic · No affiliate links</span><a href="/resources">More free resources →</a></footer>
+  <script>
+    document.querySelectorAll('[data-copy]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var text = document.getElementById(btn.dataset.copy).innerText;
+        navigator.clipboard.writeText(text).then(function () {
+          btn.textContent = 'Copied ✓';
+          setTimeout(function () { btn.textContent = 'Copy the skill file'; }, 1800);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
